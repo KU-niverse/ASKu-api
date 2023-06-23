@@ -1,5 +1,5 @@
 CREATE TABLE `users` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `stu_id`   char(10)   NOT NULL,
    `name`   varchar(15)   NOT NULL,
    `email`   varchar(255)   NOT NULL,
@@ -11,40 +11,44 @@ CREATE TABLE `users` (
    `point`   int   NOT NULL   DEFAULT 0,
    `is_admin`   bool   NOT NULL   DEFAULT 0,
    `restrict_period`   date   NULL,
-   `restrict_count`   tinyint   NOT NULL   DEFAULT 0
+   `restrict_count`   tinyint   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `wiki_docs` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `title`   varchar(100)   NOT NULL,
    `content`   text   NULL,
    `text_pointer`   text   NOT NULL,
    `type`   enum('doc', 'list', 'image')   NOT NULL,
-   `is_deleted`   bool   NOT NULL   DEFAULT 0
+   `is_deleted`   bool   NOT NULL   DEFAULT 0,
+   PRIMARY KEY(`id`)
 );
 
 CREATE TABLE `questions` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `doc_id`   int   NOT NULL,
    `index_title`   text   NOT NULL,
    `writer_id`   int   NOT NULL,
    `content`   text   NOT NULL,
    `created_at`   timestamp   NOT NULL,
    `comment_or_not`   bool   NOT NULL,
-   `is_bad`   bool   NOT NULL
+   `is_bad`   bool   NOT NULL,
+   PRIMARY KEY (`id`, `doc_id`)
 );
 
 CREATE TABLE `badges` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `name`   varchar(20)   NOT NULL,
    `image`   text   NOT NULL,
    `desc`   text   NOT NULL,
    `event`   bool   NOT NULL   DEFAULT 0,
-   `cont`   bool   NOT NULL   DEFAULT 0
+   `cont`   bool   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `wiki_history` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `doc_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
    `text_pointer`   text   NOT NULL,
@@ -52,106 +56,119 @@ CREATE TABLE `wiki_history` (
    `created_at`   timestamp   NOT NULL,
    `count`   int   NOT NULL,
    `diff`   int   NOT NULL,
-   `is_bad`   bool   NOT NULL   DEFAULT 0
+   `is_bad`   bool   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`, `doc_id`, `user_id`)
 );
 
 CREATE TABLE `wiki_favorites` (
-   `doc_id`   int   NOT NULL,
-   `user_id`   int   NOT NULL
+   `doc_id`   int   NOT NULL AUTO_INCREMENT,
+   `user_id`   int   NOT NULL,
+   PRIMARY KEY (`doc_id`, `user_id`)
 );
 
 CREATE TABLE `debates` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `doc_id`   int   NOT NULL,
    `subject`   varchar(20)   NOT NULL,
    `host_id`   int   NOT NULL,
    `created_at`   timestamp   NOT NULL,
-   `edited_at`   timestamp   NOT NULL,
+   `edited_at`   timestamp   NULL,
    `is_debating`   bool   NOT NULL,
-   `done_at`   timestamp   NULL
+   `done_at`   timestamp   NULL,
+   PRIMARY KEY (`id`, `doc_id`)
 );
 
 CREATE TABLE `badge_history` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `badge_id`   int   NOT NULL,
-   `created_at`   timestamp   NOT NULL
+   `created_at`   timestamp   NOT NULL,
+   PRIMARY KEY (`id`, `user_id`, `badge_id`)
 );
 
 CREATE TABLE `ai_session` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
-   `file_pointer`   text   NOT NULL
+   `file_pointer`   text   NOT NULL, 
+   PRIMARY KEY (`id`, `user_id`)
 );
 
 CREATE TABLE `comments` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `question_id`   int   NOT NULL,
    `doc_id`   int   NOT NULL,
    `history_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
    `writer_id`   int   NOT NULL,
-   `created_at`   timestamp   NOT NULL
+   `created_at`   timestamp   NOT NULL,
+   PRIMARY KEY (`id`, `question_id`, `doc_id`, `history_id`, `user_id`)
 );
 
 CREATE TABLE `debate_history` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `debate_id`   int   NOT NULL,
    `doc_id`   int   NOT NULL,
    `content`   text   NOT NULL,
    `writer_id`   int   NOT NULL,
-   `created_at`   timestamp   NOT NULL
+   `created_at`   timestamp   NOT NULL,
+   PRIMARY KEY (`id`, `debate_id`,`doc_id`)
 );
 
 CREATE TABLE `ai_history` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `session_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
    `content`   text   NOT NULL,
    `type`   bool   NOT NULL,
    `reference`   text   NULL,
    `created_at`   timestamp   NOT NULL,
-   `review`   tinyint   NOT NULL   DEFAULT 0
+   `review`   tinyint   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`, `session_id`, `user_id`)
 );
 
 CREATE TABLE `report` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `type`   tinyint   NOT NULL,
    `target`   int   NOT NULL,
-   `reason`   varchar(20)   NOT NULL
+   `reason`   varchar(20)   NOT NULL,
+   PRIMARY KEY (`id`, `user_id`)
 );
 
 CREATE TABLE `question_like` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `doc_id`   int   NOT NULL,
-   `user_id`   int   NOT NULL
+   `user_id`   int   NOT NULL,
+   PRIMARY KEY (`id`, `doc_id`, `user_id`)
 );
 
 CREATE TABLE `notification_type` (
-   `id`   int   NOT NULL,
-   `desc`   text   NOT NULL
+   `id`   int   NOT NULL AUTO_INCREMENT,
+   `desc`   text   NOT NULL,
+   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `user_attend` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `today_attend`   bool   NOT NULL   DEFAULT 0,
    `cont_attend`   int   NOT NULL   DEFAULT 0,
    `total_attend`   int   NOT NULL   DEFAULT 0,
-   `max_attend`   int   NOT NULL   DEFAULT 0
+   `max_attend`   int   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`)
 );
 
 CREATE TABLE `notifications` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `receiver_id`   int   NOT NULL,
    `type_id`   int   NOT NULL,
    `read_or_not`   bool   NOT NULL,
    `message`   varchar(255)   NOT NULL,
-   `created_at`   timestamp   NOT NULL
+   `created_at`   timestamp   NOT NULL,
+   PRIMARY KEY (`id`, `receiver_id`)
 );
 
 CREATE TABLE `user_action` (
-   `id`   int   NOT NULL,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `record_count`   int   NOT NULL   DEFAULT 0,
    `revise_count`   int   NOT NULL   DEFAULT 0,
@@ -160,100 +177,8 @@ CREATE TABLE `user_action` (
    `question_count`   int   NOT NULL   DEFAULT 0,
    `like_count`   int   NOT NULL   DEFAULT 0,
    `answer_count`   int   NOT NULL,
-   `event_begin`   bool   NOT NULL   DEFAULT 0
-);
-
-ALTER TABLE `users` ADD CONSTRAINT `PK_USERS` PRIMARY KEY (
-   `id`
-);
-
-ALTER TABLE `wiki_docs` ADD CONSTRAINT `PK_WIKI_DOCS` PRIMARY KEY (
-   `id`
-);
-
-ALTER TABLE `questions` ADD CONSTRAINT `PK_QUESTIONS` PRIMARY KEY (
-   `id`,
-   `doc_id`
-);
-
-ALTER TABLE `badges` ADD CONSTRAINT `PK_BADGES` PRIMARY KEY (
-   `id`
-);
-
-ALTER TABLE `wiki_history` ADD CONSTRAINT `PK_WIKI_HISTORY` PRIMARY KEY (
-   `id`,
-   `doc_id`,
-   `user_id`
-);
-
-ALTER TABLE `wiki_favorites` ADD CONSTRAINT `PK_WIKI_FAVORITES` PRIMARY KEY (
-   `doc_id`,
-   `user_id`
-);
-
-ALTER TABLE `debates` ADD CONSTRAINT `PK_DEBATES` PRIMARY KEY (
-   `id`,
-   `doc_id`
-);
-
-ALTER TABLE `badge_history` ADD CONSTRAINT `PK_BADGE_HISTORY` PRIMARY KEY (
-   `id`,
-   `user_id`,
-   `badge_id`
-);
-
-ALTER TABLE `ai_session` ADD CONSTRAINT `PK_AI_SESSION` PRIMARY KEY (
-   `id`,
-   `user_id`
-);
-
-ALTER TABLE `comments` ADD CONSTRAINT `PK_COMMENTS` PRIMARY KEY (
-   `id`,
-   `question_id`,
-   `doc_id`,
-   `history_id`,
-   `user_id`
-);
-
-ALTER TABLE `debate_history` ADD CONSTRAINT `PK_DEBATE_HISTORY` PRIMARY KEY (
-   `id`,
-   `debate_id`,
-   `doc_id`
-);
-
-ALTER TABLE `ai_history` ADD CONSTRAINT `PK_AI_HISTORY` PRIMARY KEY (
-   `id`,
-   `session_id`,
-   `user_id`
-);
-
-ALTER TABLE `report` ADD CONSTRAINT `PK_REPORT` PRIMARY KEY (
-   `id`,
-   `user_id`
-);
-
-ALTER TABLE `question_like` ADD CONSTRAINT `PK_QUESTION_LIKE` PRIMARY KEY (
-   `id`,
-   `doc_id`,
-   `user_id`
-);
-
-ALTER TABLE `notification_type` ADD CONSTRAINT `PK_NOTIFICATION_TYPE` PRIMARY KEY (
-   `id`
-);
-
-ALTER TABLE `user_attend` ADD CONSTRAINT `PK_USER_ATTEND` PRIMARY KEY (
-   `id`
-);
-
-ALTER TABLE `notifications` ADD CONSTRAINT `PK_NOTIFICATIONS` PRIMARY KEY (
-   `id`,
-   `receiver_id`
-);
-
-ALTER TABLE `user_action` ADD CONSTRAINT `PK_USER_ACTION` PRIMARY KEY (
-   `id`,
-   `user_id`
+   `event_begin`   bool   NOT NULL   DEFAULT 0,
+   PRIMARY KEY (`id`, `user_id`)
 );
 
 ALTER TABLE `questions` ADD CONSTRAINT `FK_wiki_docs_TO_questions_1` FOREIGN KEY (
