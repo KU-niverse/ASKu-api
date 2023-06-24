@@ -1,17 +1,15 @@
-// const Wiki_history = require("../models/wikiModel.js");
+const Wiki = require("../models/wikiModel.js");
 // const fs = require("fs");
 // const Point = require("../models/pointModel.js");
 const dotenv = require("dotenv");
 const AWS = require("aws-sdk");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
-const {v4:uuidv4} = require("uuid");
+const edp = "https://kr.object.ncloudstorage.com/";
 
-const allowedExtention = ["jpg", "jpeg", "png", "gif"];
 const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
 const region = "kr-standard";
 dotenv.config();
 
+// S3 객체 생성
 const S3 = new AWS.S3({
   endpoint,
   region,
@@ -20,39 +18,6 @@ const S3 = new AWS.S3({
     secretAccessKey: process.env.SECRETACCESSKEY,
   },
 });
-
-exports.imageUploader = multer({
-  storage: multerS3({
-    s3: S3,
-    bucket: "image-bucket",
-    acl: "public-read",
-    key: (req, file, cb) => {
-      const uuid = uuidv4();
-      const extension = file.originalname.split(".").pop();
-      const fileName = `${uuid}.${extension}`;
-      console.log(fileName);
-      if(!allowedExtention.includes(extension)){
-        return cb(new Error("Wrong extension"), false);
-      }
-      cb(null, fileName);
-    },
-  }),
-  limits: {
-    fileSize: 5 * 1024 * 1024 // 5MB 크기 제한
-  },
-});
-
-// 버킷 리스트 가져오기
-exports.bucketListGetMid = async (req, res) => {
-  S3.listBuckets((err, data) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log(data);
-    res.status(200).send(data);
-  });
-};
 
 // 위키 파일 읽어오기
 exports.wikiGetMid = async (req, res) => {
@@ -64,6 +29,7 @@ exports.wikiGetMid = async (req, res) => {
   }, (err, data) => {
     if (err) {
       console.log(err);
+      res.status(404).send(err);
       return;
     }
     const text = data.Body.toString('utf-8');
@@ -73,9 +39,9 @@ exports.wikiGetMid = async (req, res) => {
 };
 
 // 위키 파일 업로드
-exports.wikiPutMid = async (req, res) => {
+exports.wikiPostMid = async (req, res) => {
   const title = req.params.title.replace(/\/+/g, "_");
-  const text = req.body.text; 
+  const text = req.body.text;
   const version = 1; // 수정 필요
   S3.putObject({
     Bucket: "wiki-bucket",
@@ -91,117 +57,193 @@ exports.wikiPutMid = async (req, res) => {
   });
 };
 
-// //TODO: POST 요청에 사용자가 로그인 했는지 확인
-// //TODO: 문서 수정시 사용자에게 보상 지급
-// //TODO: 현재는 editor_id 받고 있는데, 백엔드에서 editor_id를 받아오는 방식 도입
+// 새 위키 문서 생성하기 [기여도 지급]
+// 1. 기존에 같은 타이틀의 문서가 있는지 체크
+// 2-1. 없으면 새로운 문서 생성
+// 2-2. 있으면 지워진 문서인지 확인
+// 3-1. 지워진 문서면 처리
+// 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
+exports.newWikiPostMid = async (req, res) => {
+  // 1. 기존에 같은 타이틀의 문서가 있는지 체크
+  const doc_id = await Wiki.Wiki_docs.getWiki_docs_by_title(req.params.title);
 
-// // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
-// exports.contentsGetMid = async (req, res) => {
-//     const rows = await Wiki_history.readRecent();
-//     let jsonData = {};
+  if (doc_id !== null) {
+    // 2-2. 있으면 지워진 문서인지 확인
+    const row = await Wiki.Wiki_docs.getWiki_docs_by_id(doc_id);
+    if (row.is_deleted === 1) {
+      // 3-1. 지워진 문서면 처리
+    }
+    else {
+      // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
+      res.status(409).send({
+        message: "Already exist",
+      });
+      return;
+    }
+  }
 
-//     // 가장 최근 버전의 파일 읽어서 jsonData에 저장
-//     fs.readFile(
-//         `./documents/${rows[0].text_pointer}.wiki`,
-//         "utf8",
-//         (err, data) => {
-//             // 없는 파일 요청 시 에러 처리
-//             if (err) {
-//                 res.status(404).send({
-//                     message: "File not found",
-//                 });
-//                 return;
-//             }
+  const title = req.params.title.replace(/\/+/g, "_");
+  const text = req.body.text;
+  const version = 1;
+  const type = req.body.type;
 
-//             // 원래 통으로 가져오는 코드
-//             const lines = data.split(/\r?\n/);
-//             const text = lines.join("\n");
+  // 2-1. 없으면 새로운 문서 생성
+  let count = 0;
+  // 아래는 S3에 저장하는 코드
+  S3.putObject({
+    Bucket: "wiki-bucket",
+    Key: `${title}/r${version}.wiki`,
+    Body: text,
+  }, (err, data) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(data);
+    count = data.fileSize;
+  });
 
-//             jsonData["version"] = rows[0].text_pointer;
-//             jsonData["text"] = text;
+  // 아래는 DB에 저장하는 코드
+  const newWiki_docs = new Wiki.Wiki_docs({
+    title: req.params.title,
+    text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+    type: type,
+    latest_ver: version,
+  });
 
-//             const sections = [];
-//             let currentSection = null;
-//             let currentContent = null;
-//             const numbers = [];
+  const rows_docs = await Wiki.Wiki_docs.create(newWiki_docs);
+  console.log(rows_docs);
 
-//             // 파일 읽고 section 나누기
-//             for (let line of lines) {
-//                 const matches = line.match(/^(\={2,})\s+(.+?)\s+\1\s*$/); // 정규식 패턴에 맞는지 검사합니다.
-//                 if (matches !== null) {
-//                     // 해당 라인이 섹션 타이틀인 경우
-//                     numbers.push(matches[1].length - 1);
-//                     if (currentSection !== null) {
-//                         currentSection.content.push(currentContent);
-//                         sections.push(currentSection);
-//                     }
-//                     currentSection = {
-//                         title: matches[2],
-//                         content: [],
-//                     };
-//                     currentContent = "";
-//                 } else {
-//                     // 해당 라인이 섹션 내용인 경우
-//                     if (currentContent !== "") {
-//                         // 빈 줄이면
-//                         currentContent += "\n";
-//                     }
-//                     currentContent += line;
-//                 }
-//             }
+  const newWiki_history = new Wiki.Wiki_history({
+    //user_id: req.user[0].user_id, 로그인 후 반영
+    user_id: 1,
+    doc_id: rows_docs.id,
+    text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+    summary: "새 위키 문서 생성", //으로 둘 건지 받을 건지, 있으면 그걸로 하고 없으면 이걸로 할지
+    count: count,
+    diff: count,
+    version: version,
+  });
 
-//             if (currentSection !== null) {
-//                 // 마지막 섹션 push
-//                 currentSection.content.push(currentContent);
-//                 sections.push(currentSection);
-//             }
+  const rows_history = await Wiki.Wiki_history.create(newWiki_history);
+  console.log(rows_history);
 
-//             let content_json = []; // content의 메타데이터와 데이터
-//             let numList = []; // index의 리스트
-//             let idx = 1; // 가장 상위 목차
+  // TODO: 기여도 주는 api 요청
 
-//             // 인덱싱
-//             for (let i = 0; i < numbers.length; i++) {
-//                 let section_dic = {}; // section : section, index : index, title: title, content: content
-//                 section_dic["section"] = (i + 1).toString();
-//                 const num = numbers[i];
+  res.status(200).send({
+    message: "Successfully created",
+  });
+};
 
-//                 if (num === 1) {
-//                     // 가장 상위 목차가 변경됐을 경우
-//                     numList = [idx++];
-//                     section_dic["index"] = numList[0].toString();
-//                 } else {
-//                     if (num > numList.length) {
-//                         // 하위 목차로 들어갈 때
-//                         while (numList.length < num) numList.push(1);
-//                     } else {
-//                         while (numList.length > 0 && num < numList.length) {
-//                             // depth가 똑같아질 때까지 pop
-//                             numList.pop();
-//                         }
-//                         let tmp = numList[numList.length - 1]; // 한 단계 올리기
-//                         numList.pop();
-//                         numList.push(tmp + 1);
-//                     }
-//                     section_dic["index"] = numList.join(".");
-//                 }
+// 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
+exports.contentsGetMid = async (req, res) => {
+  const doc_id = await Wiki.Wiki_docs.getWiki_docs_by_title(req.params.title);
+  const rows = await Wiki.Wiki_history.getRecent_wiki_history_by_doc_id(doc_id);
+  const title = req.params.title.replace(/\/+/g, "_");
+  const version = rows[0].version;
+  let text = ""; 
+  let jsonData = {};
 
-//                 // title과 content 저장
-//                 section_dic["title"] = sections[i].title;
-//                 let content_text = "";
-//                 for (let content of sections[i].content) {
-//                     content_text += content;
-//                 }
-//                 section_dic["content"] = content_text;
+  // 가장 최근 버전의 파일 읽어서 jsonData에 저장
+  S3.getObject({
+    Bucket: "wiki-bucket",
+    Key: `${title}/r${version}.wiki`,
+  }, (err, data) => {
+    if (err) {
+      console.log(err);
+      res.status(404).send(err);
+      return;
+    }
+    text = data.Body.toString('utf-8');
+    
+    // 원래 통으로 가져오는 코드
+    const lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-//                 content_json.push(section_dic);
-//             }
+    jsonData["version"] = version;
+    jsonData["text"] = text;
 
-//             jsonData["contents"] = content_json;
-//             res.status(200).send(jsonData);
-//         }
-//     );
-// };
+    const sections = [];
+    let currentSection = null;
+    let currentContent = null;
+    const numbers = [];
+    
+    // 파일 읽고 section 나누기
+    for (let line of lines) {
+      const matches = line.match(/^(={2,})\s+(.+?)\s+\1\s*$/); // 정규식 패턴에 맞는지 검사합니다.
+      if (matches !== null) {
+        // 해당 라인이 섹션 타이틀인 경우
+        numbers.push(matches[1].length - 1);
+        if (currentSection !== null) {
+          currentSection.content.push(currentContent);
+          sections.push(currentSection);
+        }
+        currentSection = {
+          title: matches[2],
+          content: [],
+        };
+        currentContent = "";
+      } else {
+        // 해당 라인이 섹션 내용인 경우
+        if (currentContent !== "") {
+          // 빈 줄이면
+          currentContent += "\n";
+        }
+        currentContent += line;
+      }
+    }
+
+    if (currentSection !== null) {
+      // 마지막 섹션 push
+      currentSection.content.push(currentContent);
+      sections.push(currentSection);
+    }
+
+    let content_json = []; // content의 메타데이터와 데이터
+    let numList = []; // index의 리스트
+    let idx = 1; // 가장 상위 목차
+
+    // 인덱싱
+    for (let i = 0; i < numbers.length; i++) {
+      let section_dic = {}; // section : section, index : index, title: title, content: content
+      section_dic["section"] = (i + 1).toString();
+      const num = numbers[i];
+
+      if (num === 1) {
+        // 가장 상위 목차가 변경됐을 경우
+        numList = [idx++];
+        section_dic["index"] = numList[0].toString();
+      } else {
+        if (num > numList.length) {
+          // 하위 목차로 들어갈 때
+          while (numList.length < num) numList.push(1);
+        } else {
+          while (numList.length > 0 && num < numList.length) {
+            // depth가 똑같아질 때까지 pop
+            numList.pop();
+          }
+          let tmp = numList[numList.length - 1]; // 한 단계 올리기
+          numList.pop();
+          numList.push(tmp + 1);
+        }
+        section_dic["index"] = numList.join(".");
+      }
+
+      // title과 content 저장
+      section_dic["title"] = sections[i].title;
+      let content_text = "";
+      for (let content of sections[i].content) {
+        content_text += content;
+      }
+      section_dic["content"] = content_text;
+
+      content_json.push(section_dic);
+    }
+
+    jsonData["contents"] = content_json;
+    res.status(200).send(jsonData);
+  });
+};
 
 // // 전체 글 수정하기
 // exports.contentsPostMid = async (req, res) => {

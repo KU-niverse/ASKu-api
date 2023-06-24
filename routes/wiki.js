@@ -1,26 +1,27 @@
 const express = require('express');
 const wikiMid = require('../controllers/wikiController');
+const imageMid = require('../middlewares/image');
 // const { isSignedIn } = require('../middlewares/sign_in');
 
 const router = express.Router();
-// 버킷 리스트 불러오기
-router.get('/bucket', wikiMid.bucketListGetMid);
 
 // 위키 불러오기
 router.get('/getWiki/:title(*)', wikiMid.wikiGetMid);
 
 // 위키 올리기
-router.put('/putWiki/:title(*)', wikiMid.wikiPutMid);
+router.post('/postWiki/:title(*)', wikiMid.wikiPostMid);
 
 // 이미지 업로드
-router.post('/postImage', wikiMid.imageUploader.single('image'), (req, res) => {
+router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => {
   console.log(req.file);
   res.json({ url: req.file.location });
 });
 
-// // 전체 글 불러오기 / 전체 글 수정시 사용
-// router.get('/contents', wikiMid.contentsGetMid);
-// //이거 요청할 때 /user/point/wikiaccess 도 같이 요청해야함
+// 새 위키 문서 생성하기 [기여도 지급]
+router.post('/contents/new/:title(*)', wikiMid.newWikiPostMid);
+
+// 전체 글 불러오기 / 전체 글 수정시 사용
+router.get('/contents/:title(*)', wikiMid.contentsGetMid);
 
 // // 전체 글 수정하기
 // router.post('/contents', isSignedIn, wikiMid.contentsPostMid);
