@@ -94,42 +94,40 @@ exports.newWikiPostMid = async (req, res) => {
     Bucket: "wiki-bucket",
     Key: `${title}/r${version}.wiki`,
     Body: text,
-  }, (err, data) => {
+  }, async (err) => {
     if (err) {
       console.log(err);
       return;
     }
-    console.log(data);
-    count = data.fileSize;
-  });
+    count = text.length;
 
-  // 아래는 DB에 저장하는 코드
-  const newWiki_docs = new Wiki.Wiki_docs({
-    title: req.params.title,
-    text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
-    type: type,
-    latest_ver: version,
-  });
+    // 아래는 DB에 저장하는 코드
+    const newWiki_docs = new Wiki.Wiki_docs({
+      title: req.params.title,
+      text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+      type: type,
+      latest_ver: version,
+    });
 
-  const rows_docs = await Wiki.Wiki_docs.create(newWiki_docs);
-  console.log(rows_docs);
+    const rows_docs = await Wiki.Wiki_docs.create(newWiki_docs);
+    console.log(rows_docs);
 
-  const newWiki_history = new Wiki.Wiki_history({
-    //user_id: req.user[0].user_id, 로그인 후 반영
-    user_id: 1,
-    doc_id: rows_docs.id,
-    text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
-    summary: "새 위키 문서 생성", //으로 둘 건지 받을 건지, 있으면 그걸로 하고 없으면 이걸로 할지
-    count: count,
-    diff: count,
-    version: version,
-  });
+    const newWiki_history = new Wiki.Wiki_history({
+      //user_id: req.user[0].user_id, 로그인 후 반영
+      user_id: 1,
+      doc_id: rows_docs.id,
+      text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+      summary: "새 위키 문서 생성", //으로 둘 건지 받을 건지, 있으면 그걸로 하고 없으면 이걸로 할지
+      count: count,
+      diff: count,
+      version: version,
+    });
 
-  const rows_history = await Wiki.Wiki_history.create(newWiki_history);
-  console.log(rows_history);
+    const rows_history = await Wiki.Wiki_history.create(newWiki_history);
+    console.log(rows_history);
 
   // TODO: 기여도 주는 api 요청
-
+  });
   res.status(200).send({
     message: "Successfully created",
   });
@@ -245,87 +243,74 @@ exports.contentsGetMid = async (req, res) => {
   });
 };
 
-// // 전체 글 수정하기
-// exports.contentsPostMid = async (req, res) => {
-//     // 빈 내용 요청 시 에러 처리
-//     // if (req.body===undefined) {
-//     //     res.status(400).send({
-//     //         message: "Content can't be empty"
-//     //     });
-//     //     return;
-//     // }
+// 전체 글 수정하기
+exports.contentsPostMid = async (req, res) => {
+  // 빈 내용 요청 시 에러 처리
+  // if (req.body===undefined) {
+  //     res.status(400).send({
+  //         message: "Content can't be empty"
+  //     });
+  //     return;
+  // }
 
-//     const rows = await Wiki_history.readRecent();
-//     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
-//     if (req.body.version != rows[0].text_pointer) {
-//         res.status(426).send({
-//             message: "Version is not matched",
-//             newContent: req.body.newContent,
-//         });
-//         return;
-//     }
+  const doc_id = await Wiki.Wiki_docs.getWiki_docs_by_title(req.params.title);
+  const rows = await Wiki.Wiki_history.getRecent_wiki_history_by_doc_id(doc_id);
+  const version = rows[0].version;
 
-//     // 전체 글 저장하는 새 파일(버전) 만들기
-//     const latestVersion = parseInt(rows[0].text_pointer.substring(1));
-//     const updatedFileName = `./documents/r${latestVersion + 1}.wiki`;
-//     const newContent = req.body.newContent;
+  // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
+  if (req.body.version != version) {
+    res.status(426).send({
+      message: "Version is not matched",
+      newContent: req.body.newContent,
+    });
+    return;
+  }
 
-//     console.log("hihihihiidsaf");
+  // 전체 글 저장하는 새 파일(버전) 만들기
+  const title = req.params.title.replace(/\/+/g, "_");
+  const newContent = req.body.newContent;
+  const newVersion = version + 1; // 수정 필요
 
-//     fs.writeFile(updatedFileName, newContent, (err) => {
-//         // 파일 쓰다가 에러난 경우
-//         if (err) {
-//             res.status(432).send({
-//                 message: "Something went wrong while writing file",
-//                 newContent: req.body.newContent,
-//             });
-//             return;
-//         }
-//         console.log("The file has been updated!");
-//     });
+  S3.putObject({
+    Bucket: "wiki-bucket",
+    Key: `${title}/r${newVersion}.wiki`,
+    Body: newContent,
+  }, async (err) => {
+    if (err) {
+      res.status(432).send({
+        message: "Something went wrong while writing file",
+        newContent: newContent,
+      });
+      return;
+    }
+    console.log("The file has been updated!");
 
-//     // 새로운 히스토리 생성
-//     const newWiki_history = new Wiki_history({
-//         editor_id: req.user[0].user_id,
-//         text_pointer: `r${latestVersion + 1}`,
-//         is_rollback: 0,
-//         //content_summary: req.body.content_summary
-//     });
+    // 새로운 히스토리 생성
+    const newWiki_history = new Wiki.Wiki_history({
+      //user_id: req.user[0].user_id, 로그인 후 반영
+      user_id: 1,
+      doc_id: doc_id,
+      text_pointer: `${edp}/wiki-bucket/${title}/r${newVersion}.wiki`,
+      summary: req.body.summary,
+      count: newContent.length,
+      diff: newContent.length - rows[0].count,
+      version: newVersion,
+    });
 
-//     const rows_history = await Wiki_history.create(newWiki_history);
+    const rows_history = await Wiki.Wiki_history.create(newWiki_history);
+    console.log(rows_history);
+    
+    // 위키 문서의 latest_ver 업데이트
+    const newWiki_docs = await Wiki.Wiki_docs.updateWikiDocsVersion(doc_id, newVersion);
+    console.log(newWiki_docs);
 
-//     console.log(rows_history);
+    // TODO: 기여도 주기
 
-//     // point 주는 api 요청
-//     try {
-//         const reason = 5;
-//         const point = 15000;
-//         const user_id = req.user[0].user_id;
-//         req.user_id = user_id;
-//         req.reason = reason;
-//         req.point = point;
-//         const isWikiEdited = await Point.isWikiEdited(user_id);
-//         console.log(isWikiEdited);
-//         if (isWikiEdited >= 3) {
-//             return res
-//                 .status(210)
-//                 .json({ success: true, message: "전체 글이 업데이트 됐고, 이미 당일 수정으로 인한 포인트를 모두 받았습니다." });
-//         }
-//         else if (isWikiEdited < 3) {
-//             await Point.getPoint(user_id, reason, point);
-//             return res
-//                 .status(200)
-//                 .json({ success: true, message: "전체 글이 업데이트 됐고, 15000 포인트가 지급되었습니다." });
-//         }
-//     } catch (error) {
-//         console.error(error);
-//         res.status(404).send({ message: "오류가 발생했습니다." });
-//     }
-
-//     // res.status(200).send({
-//     //     message: "Successfully updated",
-//     // });
-// };
+    res.status(200).send({
+      message: "Successfully updated",
+    });
+  });
+};
 
 // // 수정 시 기존 섹션 텍스트 불러오기
 // exports.contentsSectionGetMid = async (req, res) => {

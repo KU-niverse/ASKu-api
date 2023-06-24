@@ -19,11 +19,13 @@ router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => 
 
 // 새 위키 문서 생성하기 [기여도 지급]
 router.post('/contents/new/:title(*)', wikiMid.newWikiPostMid);
+// //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
 router.get('/contents/:title(*)', wikiMid.contentsGetMid);
 
-// // 전체 글 수정하기
+// 전체 글 수정하기
+router.post('/contents/:title(*)', wikiMid.contentsPostMid);
 // router.post('/contents', isSignedIn, wikiMid.contentsPostMid);
 // //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
