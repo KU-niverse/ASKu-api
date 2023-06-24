@@ -9,20 +9,20 @@ class Wiki_docs {
     this.latest_ver = wiki_docs.latest_ver;
   }
   // wiki_docs 테이블에 새로운 문서를 생성해주는 함수
-  static async create(newWiki_docs) {
-    const [result] = await pool.query("INSERT INTO wiki_docs SET ?", newWiki_docs);
+  static async create(new_wiki_docs) {
+    const [result] = await pool.query("INSERT INTO wiki_docs SET ?", new_wiki_docs);
     const id = result.insertId;
 
-    return Wiki_docs.getWiki_docs_by_id(id);
+    return Wiki_docs.getWikiDocsById(id);
   }
   // wiki_docs 테이블에서 id를 통해 문서를 찾아주는 함수
-  static async getWiki_docs_by_id(id) {
+  static async getWikiDocsById(id) {
     const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE id = ?`, [id]);
 
     return rows[0];
   }
   // wiki_docs 테이블에서 title을 통해 문서의 id를 찾아주는 함수
-  static async getWiki_docs_by_title(title) {
+  static async getWikiDocsIdByTitle(title) {
     const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title = ?`, [title]);
 
     if (rows.length == 0) {
@@ -51,30 +51,25 @@ class Wiki_history {
     this.version = wiki_history.version;
   }
   // wiki_history 내림차순으로 정렬해서 반환해주는 함수
-  static async getWiki_historys_by_id(doc_id) {
+  static async getWikiHistorysById(doc_id) {
     const [rows] = await pool.query("SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC", [doc_id]);
     return rows;
   }
-  // 가장 최근에 수정된 wiki_history를 반환해주는 함수(id로)
-  static async getRecent_wiki_history_by_doc_id(doc_id) {
+  // 가장 최근에 수정된 wiki_history를 반환해주는 함수(doc_id로)
+  static async getRecentWikiHistoryByDocId(doc_id) {
     const [rows] = await pool.query("SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC LIMIT 1", [doc_id]);
     return rows;
   }
-  // wiki_history 테이블에서 wiki_history_id를 통해 문서를 찾아주는 함수
-  static async getWiki_history_by_wiki_history_id(wiki_history_id) {
-    const [rows] = await pool.query(`SELECT * FROM wiki_history WHERE id = ?`, [wiki_history_id]);
-
-    return rows[0];
-  }
+ 
   // doc id, history version 넣어주면 해당 wiki_history를 반환해주는 함수
-  static async getWiki_history_by_version(doc_id, version) {
+  static async getWikiHistoryByVersion(doc_id, version) {
     const [rows] = await pool.query(`SELECT * FROM wiki_history WHERE doc_id = ? AND version = ?`, [doc_id, version]);
 
     return rows[0];
   }
   // 새로운 wiki_history를 생성해주는 함수
-  static async create(newWiki_history) {
-    const [result] = await pool.query("INSERT INTO wiki_history SET ?", newWiki_history);
+  static async create(new_wiki_history) {
+    const [result] = await pool.query("INSERT INTO wiki_history SET ?", new_wiki_history);
     const wiki_history_id = result.insertId;
 
     return Wiki_history.getWiki_history_by_wiki_history_id(wiki_history_id);

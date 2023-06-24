@@ -18,6 +18,49 @@ router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => 
 });
 
 // 새 위키 문서 생성하기 [기여도 지급]
+/**
+ * @swagger
+ * /api/wiki/contents/new/{title}:
+ *  post:
+ *   tags: [wiki]
+ *  summary: "새 위키 문서 생성하기 및 기여도 지급"
+ *  description: "POST 방식으로 새 문서를 생성하고 기여도를 지급합니다."
+ *  requestBody:
+ *   description: "새 위키 문서 생성하기 위한 정보"
+ *   required: true
+ *   content:
+ *    application/json:
+ *     schema:
+ *      type: object
+ *      properties:
+ *      text:
+ *       type: string
+ *       description: "문서 내용"
+ *      type:
+ *       type: string
+ *       description: " 'doc' or 'list'"
+ *   responses:
+ *    200:
+ *     description: "새 위키 문서 생성 성공"
+ *     content:
+ *      application/json:
+ *       schema:
+ *       type: object
+ *       properties:
+ *       status:
+ *       type: integer
+ *      description: "200"
+ *   409:
+ *    description: "이미 존재하는 문서"
+ *   content:
+ *   application/json:
+ *   schema:
+ *  type: object
+ * properties:
+ * status:
+ * type: integer
+ * description: "409"
+ */
 router.post('/contents/new/:title(*)', wikiMid.newWikiPostMid);
 // //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 

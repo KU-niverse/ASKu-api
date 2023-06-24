@@ -7,7 +7,26 @@ const wikiRoutes = require("./routes/wiki");
 
 const app = express();
 
-app.set("port", 8080);
+app.set("port", process.env.PORT || 3000);
+
+/* 스웨거 코드  */
+
+const { swaggerUi, specs } = require("./swagger/swagger");
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
+
+/**
+ * 파라미터 변수 뜻
+ * req : request 요청
+ * res : response 응답
+ */
+
+/**
+ * @path {GET} http://localhost:3000/
+ * @description 요청 데이터 값이 없고 반환 값이 있는 GET Method
+ */
+
+/* 스웨거 코드 */
 
 app.get("/", (req, res) => {
   res.send("Hello, Express");
