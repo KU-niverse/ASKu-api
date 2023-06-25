@@ -29,8 +29,8 @@ exports.idDupCheck = async (req, res, next) => {
 exports.nickDupCheck = async (req, res, next) => {
   const nickname = req.params.nick;
   try {
-    const ex_user_login_id = await User.findByNickname(nickname);
-    if (ex_user_login_id.length != 0) {
+    const ex_user_nickname = await User.findByNickname(nickname);
+    if (ex_user_nickname.length != 0) {
       return res.status(400).json({
         success: false,
         message: "이미 존재하는 닉네임입니다.",
@@ -39,6 +39,39 @@ exports.nickDupCheck = async (req, res, next) => {
       return res.status(201).json({
         success: true,
         message: "사용 가능한 닉네임입니다.",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+};
+
+exports.emailDupCheck = async (req, res, next) => {
+  const email = req.params.email;
+
+  // '@korea.ac.kr' 형식인지 확인하기 위한 정규식
+  const regex = /[@]korea[.]ac[.]kr$/;
+
+  try {
+    // '@korea.ac.kr' 형식이 아닌 경우 에러 메시지 전송
+    if (!regex.test(email) || email == "@korea.ac.kr") {
+      return res.status(400).json({
+        success: false,
+        message: "이메일은 '{email_id}@korea.ac.kr' 형식이어야 합니다.",
+      });
+    }
+
+    const ex_user_email = await User.findByEmail(email);
+    if (ex_user_email.length != 0) {
+      return res.status(400).json({
+        success: false,
+        message: "이미 존재하는 이메일입니다.",
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        message: "사용 가능한 이메일입니다.",
       });
     }
   } catch (error) {

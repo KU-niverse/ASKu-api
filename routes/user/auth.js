@@ -7,6 +7,7 @@ const {
   signOut,
   idDupCheck,
   nickDupCheck,
+  emailDupCheck,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -104,7 +105,7 @@ router.get("/iddupcheck/:loginid", isNotSignedIn, idDupCheck);
 router.get("/nickdupcheck/:nick", isNotSignedIn, nickDupCheck);
 
 //TODO:이메일 중복검사, api명세 추가
-/* router.get("/emaildupcheck/:email", isNotSignedIn, emailIdDupCheck); */
+router.get("/emaildupcheck/:email", isNotSignedIn, emailDupCheck);
 
 router.get("/issignedin", isSignedIn, (req, res) => {
   console.log("로그인한 상태입니다.");
