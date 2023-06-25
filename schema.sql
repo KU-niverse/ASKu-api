@@ -10,20 +10,19 @@ CREATE TABLE `badges` (
 
 CREATE TABLE `users` (
 	`id`	int	NOT NULL AUTO_INCREMENT,
-	`login_id`	varchar(30)	NOT NULL, -- 로그인 시 사용되는 id
+	`login_id`	varchar(30)	NOT NULL UNIQUE, -- 로그인 시 사용되는 id
 	`name`	varchar(15)	NOT NULL,
 	`stu_id`	char(10)	NOT NULL,
-	`email`	varchar(255)	NOT NULL,
-	`phone`	varchar(20)	NOT NULL,
+	`email`	varchar(255)	NOT NULL UNIQUE,
 	`password`	varchar(255)	NOT NULL,
-	`nickname`	varchar(20)	NOT NULL,
+	`nickname`	varchar(20)	NOT NULL UNIQUE,
 	`rep_badge`	int	NULL, -- 대표 배지
 	`created_at`	timestamp	NOT NULL	DEFAULT CURRENT_TIMESTAMP,
 	`point`	int	NOT NULL	DEFAULT 0,
 	`is_admin`	bool	NOT NULL	DEFAULT 0, -- [유저 종류] 0: 일반 유저, 1: 관리자 유저
 	`restrict_period`	date	NULL, -- 이용 제한 기한(date: 2023-06-25)
 	`restrict_count`	tinyint	NOT NULL	DEFAULT 0, -- 이용 제한 횟수
-	`uuid`	varchar(255)	NOT NULL, -- 식별을 위한 uuid column,
+	`uuid`	varchar(255)	NOT NULL UNIQUE, -- 식별을 위한 uuid column,
     `is_deleted` bool NOT NULL DEFAULT 0, -- [탈퇴 여부] 0: 존재 회원 1: 탈퇴 회원
     PRIMARY KEY(`id`),
     FOREIGN KEY (`rep_badge`) REFERENCES `badges` (`id`) 

@@ -46,6 +46,14 @@ router.get("/signout", isSignedIn, signOut); */
 
  */
 router.get("/iddupcheck/:loginid", isNotSignedIn, idDupCheck);
+//TODO:학번 중복검사, api명세 추가
+/* router.get("/stuiddupcheck/:stuid", isNotSignedIn, stdIdDupCheck); */
+
+//TODO:닉네임 중복검사, api명세 추가
+/* router.get("/nickdupcheck/:nick", isNotSignedIn, stdIdDupCheck); */
+
+//TODO:이메일 중복검사, api명세 추가
+/* router.get("/emaildupcheck/:email", isNotSignedIn, stdIdDupCheck); */
 
 router.get("/issignedin", isSignedIn, (req, res) => {
   console.log("로그인한 상태입니다.");
