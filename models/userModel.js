@@ -20,9 +20,25 @@ class User {
     this.is_deleted = user.is_deleted;
   }
 }
+
+//#FIXME:함수명 변경
 User.find_by_login_id = async (login_id) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
+  ]);
+  return rows;
+};
+
+User.findByNickname = async (nickname) => {
+  const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
+    nickname,
+  ]);
+  return rows;
+};
+
+User.findByEmail = async (email) => {
+  const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
+    email,
   ]);
   return rows;
 };

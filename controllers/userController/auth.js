@@ -26,8 +26,29 @@ exports.idDupCheck = async (req, res, next) => {
   }
 };
 
+exports.nickDupCheck = async (req, res, next) => {
+  const nickname = req.params.nick;
+  try {
+    const ex_user_login_id = await User.findByNickname(nickname);
+    if (ex_user_login_id.length != 0) {
+      return res.status(400).json({
+        success: false,
+        message: "이미 존재하는 닉네임입니다.",
+      });
+    } else {
+      return res.status(201).json({
+        success: true,
+        message: "사용 가능한 닉네임입니다.",
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return next(error);
+  }
+};
+
 //회원가입
-exports.signUp = async (req, res, next) => {
+exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
   try {
     //아이디, 이메일, nickname 중복검사, 비밀번호 확인은 프론트에서 처리, 학번은 중복검사x
