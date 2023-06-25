@@ -32,4 +32,9 @@ User.find_by_id = async (id) => {
   return rows;
 };
 
+User.create = async (newUser) => {
+  const [rows] = await pool.query(`INSERT INTO users SET ?`, [newUser]);
+  return rows;
+};
+
 module.exports = User;
