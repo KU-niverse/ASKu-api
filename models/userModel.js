@@ -21,21 +21,23 @@ class User {
   }
 }
 
-//#FIXME:함수명 변경
-User.find_by_login_id = async (login_id) => {
+//login_id로 유저 찾기
+User.findByLoginId = async (login_id) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
   ]);
+  console.log("🚀 ~ file: userModel.js:28 ~ User.findByLoginId= ~ rows:", rows);
+
   return rows;
 };
-
+//nickname으로 유저 찾기
 User.findByNickname = async (nickname) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
     nickname,
   ]);
   return rows;
 };
-
+//email로 유저 찾기
 User.findByEmail = async (email) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
@@ -43,17 +45,6 @@ User.findByEmail = async (email) => {
   return rows;
 };
 
-User.find_by_id = async (id) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
-  return rows;
-};
-
-User.find_user = async (user_id) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE user_id = ?`, [
-    user_id,
-  ]);
-  return rows;
-};
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
 User.create = async (newUser) => {
   const [rows] = await pool.query(
@@ -73,10 +64,11 @@ User.create = async (newUser) => {
 };
 
 /* User.changePW = async (password, user_id, phone_number) => {
-  const [rows] = await pool.query(`UPDATE users SET password = ? WHERE user_id = ? AND phone_number = ?`, [password, user_id, phone_number]);
+  const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
   return rows;
 }
  */
+
 /* User.wikiHistory = async (user_id) => {
   const [rows] = await pool.query(
     "SELECT * FROM wiki_history WHERE editor_id = ?",

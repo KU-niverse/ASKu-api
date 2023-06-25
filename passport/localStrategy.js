@@ -14,7 +14,7 @@ module.exports = () => {
       },
       async (login_id, password, done) => {
         try {
-          const exUser = await User.find_user(login_id);
+          const exUser = await User.findByLoginId(login_id);
           if (exUser.length != 0) {
             const result = await bcrypt.compare(password, exUser[0].password);
             if (result) {

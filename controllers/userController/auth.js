@@ -2,13 +2,15 @@
 const bycrypt = require("bcrypt");
 const User = require("../../models/userModel");
 const { v4: uuidv4 } = require("uuid");
+const passport = require("passport");
+
 /* const { isSignedIn, isNotSignedIn } = require("../../middlewares/sign_in");
 const { signUp, signIn, signOut } = require("../../controllers/user/auth"); */
 
 exports.idDupCheck = async (req, res, next) => {
   const login_id = req.params.loginid;
   try {
-    const ex_user_login_id = await User.find_by_login_id(login_id);
+    const ex_user_login_id = await User.findByLoginId(login_id);
     if (ex_user_login_id.length != 0) {
       return res.status(400).json({
         success: false,
@@ -110,6 +112,46 @@ exports.signUp = async (req, res) => {
     return res.status(400).json({
       success: false,
       maessage: "회원가입에 실패하였습니다.",
+    });
+  }
+};
+
+//로그인
+exports.signIn = async (req, res, next) => {
+  passport.authenticate("local", (authError, user, info) => {
+    if (authError) {
+      console.error(authError);
+      return next(authError);
+    }
+    if (!user) {
+      return res.status(401).json({ success: false, message: info.message });
+    }
+
+    return req.login(user, (loginError) => {
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+      console.log("로그인 성공");
+      return res
+        .status(201)
+        .json({ success: true, message: "로그인에 성공하였습니다!" });
+    });
+  })(req, res, next);
+};
+
+//로그아웃
+exports.signOut = (req, res) => {
+  try {
+    req.logout(() => {
+      console.log("로그아웃 되었습니다.");
+      res.status(200).send({ success: true, message: "로그아웃 되었습니다." });
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(400).json({
+      success: false,
+      message: "로그아웃에 실패하였습니다.",
     });
   }
 };

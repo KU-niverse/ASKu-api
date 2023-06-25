@@ -45,8 +45,6 @@ const router = express.Router();
  *              nickname:
  *                type: string
  *                escription: "유저 닉네임"
- *
- *
  *    responses:
  *      "201":
  *        description: 성공시 결과값 (회원가입)
@@ -64,10 +62,9 @@ const router = express.Router();
 
 router.post("/signup", isNotSignedIn, signUp);
 
-/* 
 router.post("/signin", isNotSignedIn, signIn);
 
-router.get("/signout", isSignedIn, signOut); */
+router.get("/signout", isSignedIn, signOut);
 
 /**
  * @swagger
@@ -101,10 +98,8 @@ router.get("/signout", isSignedIn, signOut); */
 
 router.get("/iddupcheck/:loginid", isNotSignedIn, idDupCheck);
 
-//TODO:닉네임 중복검사, api명세 추가
 router.get("/nickdupcheck/:nick", isNotSignedIn, nickDupCheck);
 
-//TODO:이메일 중복검사, api명세 추가
 router.get("/emaildupcheck/:email", isNotSignedIn, emailDupCheck);
 
 router.get("/issignedin", isSignedIn, (req, res) => {
