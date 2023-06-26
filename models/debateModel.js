@@ -51,6 +51,13 @@ Debate.createDebate = async (newDebate) => {
 // 새로운 history를 생성하는 함수
 History.createHistory = async (newHistory) => {
   const result = await pool.query("INSERT INTO debate_history SET ?", newHistory);
+  const date = new Date();
+  date.setHours(date.getHours()+9);
+  const debate_update = await pool.query(
+    `UPDATE debates SET recent_edited_at = ? WHERE id = ?`,
+    [date.toISOString().slice(0, 19).replace('T', ' '), newHistory.debate_id]
+  );
+  console.log(debate_update); 
   const id = result[0].insertId;
   return getHistory(id);
 };
@@ -76,9 +83,11 @@ History.getAllHistory = async (debate_id) => {
 
 // debate를 종료시키는 함수 -> done_at 컬럼 적용 필요 (db 스키마에 on update 옵션)
 Debate.endDebate = async (id) => {
+  const date = new Date();
+  date.setHours(date.getHours()+9);
   const result = await pool.query(
-    `UPDATE debates SET done_or_not = 1 WHERE id = ?`,
-    [id]
+    `UPDATE debates SET done_or_not = 1, done_at = ? WHERE id = ?`,
+    [date.toISOString().slice(0, 19).replace('T', ' '), id]
   );
   if (!result[0].changedRows) {
     return 0;
