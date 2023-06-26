@@ -190,6 +190,16 @@ CREATE TABLE `notification_type` (
     PRIMARY KEY (`id`)
 );
 
+INSERT INTO `notification_type` (`description`, `is_admin`) VALUES
+('즐겨찾기한 문서 질문', 0),
+('좋아요한 질문 답변', 0),
+('자기가 한 질문에 답변 등록됨', 0),
+('새로운 배지 부여', 0),
+('특정 토큰 이상의 데이터 수정', 1),
+('새로운 문서 생성됨', 1),
+('새로운 신고 생성됨', 1),
+('비정상/반복적 글 수정', 1);
+
 CREATE TABLE `user_attend` (
    `user_id`   int   NOT NULL,
    `today_attend`   bool   NOT NULL   DEFAULT 0, -- [일일 출석 여부] 0: 오늘  출석 안 함 1: 오늘 출석함
