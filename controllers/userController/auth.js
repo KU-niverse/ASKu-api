@@ -160,12 +160,7 @@ exports.changePw = async (req, res) => {
   try {
     const { login_id, password } = req.body;
     const new_pw = password;
-    console.log("🚀 ~ file: auth.js:162 ~ exports.changePw= ~ new_pw:", new_pw);
     const current_pw = req.user[0].password;
-    console.log(
-      "🚀 ~ file: auth.js:164 ~ exports.changePw= ~ current_pw:",
-      current_pw
-    );
     //기존 비밀번호와 비교
     const is_not_changeed = await bcrypt.compare(new_pw, current_pw);
     if (is_not_changeed) {
@@ -188,6 +183,36 @@ exports.changePw = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "아마 쿼리상에 문제가 있습니다.",
+    });
+  }
+};
+
+exports.findId = async (req, res) => {
+  try {
+    const email = req.body.email;
+    console.log("🚀 ~ file: auth.js:193 ~ exports.findId= ~ email:", email);
+    const found_user = await User.findByEmail(email);
+    console.log(
+      "🚀 ~ file: auth.js:194 ~ exports.findId= ~ found_user:",
+      found_user
+    );
+    if (found_user.length == 0) {
+      return res.status(400).json({
+        success: false,
+        message: "이메일과 일치하는 유저가 없습니다.",
+      });
+    }
+    const login_id = found_user[0].login_id;
+    return res.status(200).json({
+      success: true,
+      message: "아이디를 성공적으로 찾았습니다.",
+      login_id,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "findId(controller)에서 문제가 발생했습니다.",
     });
   }
 };

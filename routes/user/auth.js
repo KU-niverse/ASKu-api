@@ -9,6 +9,7 @@ const {
   nickDupCheck,
   emailDupCheck,
   changePw,
+  findId,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -97,6 +98,7 @@ router.get("/signout", isSignedIn, signOut);
 
  */
 
+//중복체크
 router.get("/iddupcheck/:loginid", isNotSignedIn, idDupCheck);
 
 router.get("/nickdupcheck/:nick", isNotSignedIn, nickDupCheck);
@@ -109,7 +111,7 @@ router.get("/issignedin", isSignedIn, (req, res) => {
     .status(201)
     .json({ success: true, message: "로그인한 상태입니다." });
 });
-
+router.post("/findid", isNotSignedIn, findId);
 router.put("/changepw", isSignedIn, changePw);
 
 module.exports = router;
