@@ -490,34 +490,53 @@ exports.contentsSectionPostMid = async (req, res, next) => {
 
 };
 
-// // 수정 내역 불러오기
-// exports.historyGetMid = async (req, res) => {
-//     const rows = await Wiki_history.read();
-//     res.status(200).send(rows);
-// };
+// 위키 히스토리 불러오기
+exports.historyGetMid = async (req, res) => {
+  try{
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
+    res.status(200).send(rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
+  }
+};
 
-// // 각 수정 내역의 raw 파일 불러오기
-// exports.historyVersionGetMid = async (req, res) => {
-//     let jsonData = {};
+// 특정 위키 히스토리의 raw 파일 불러오기
+exports.historyRawGetMid = async (req, res) => {
+  let jsonData = {};
 
-//     // 해당 버전의 파일 읽어서 jsonData에 저장
-//     fs.readFile(`./documents/${req.params.version}.wiki`, "utf8", (err, data) => {
-//         // 없는 파일 요청 시 에러 처리
-//         if (err) {
-//             res.status(404).send({
-//                 message: "File not found",
-//             });
-//             return;
-//         }
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const title = req.params.title.replace(/\/+/g, "_");
+    const version = req.params.version;
 
-//         const lines = data.split(/\r?\n/);
-//         const text = lines.join("\n");
+    // 해당 버전의 파일 읽어서 jsonData에 저장
+    S3.getObject({
+      Bucket: "wiki-bucket",
+      Key: `${title}/r${version}.wiki`,
+    }, (err, data) => {
+      if (err) {
+        console.log(err);
+        res.status(404).send(err);
+        return;
+      }
+      let text = data.Body.toString('utf-8');
 
-//         jsonData["version"] = req.params.version;
-//         jsonData["text"] = text;
-//         res.status(200).send(jsonData);
-//     });
-// };
+      // 원래 통으로 가져오는 코드
+      const lines = text.split(/\r?\n/);
+      text = lines.join("\n");
+
+      jsonData["doc_id"] = doc_id;
+      jsonData["version"] = version;
+      jsonData["text"] = text;
+      res.status(200).send(jsonData);
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 raw data 불러오기 중 오류" });
+  }
+};
 
 // // 롤백하기
 // exports.historyVersionPostMid = async (req, res) => {

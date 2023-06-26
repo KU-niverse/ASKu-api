@@ -44,7 +44,7 @@ class Wiki_history {
     this.diff = wiki_history.diff;
     this.version = wiki_history.version;
   }
-  // wiki_history 내림차순으로 정렬해서 반환해주는 함수
+  // wiki_history 내림차순으로 정렬해서 반환해주는 함수(doc_id로)
   static async getWikiHistorysById(doc_id) {
     const [rows] = await pool.query("SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC", [doc_id]);
     return rows;
@@ -56,6 +56,7 @@ class Wiki_history {
   }
  
   // doc id, history version 넣어주면 해당 wiki_history를 반환해주는 함수
+  // 사용 안 되면 삭제 예정
   static async getWikiHistoryByVersion(doc_id, version) {
     const [rows] = await pool.query(`SELECT * FROM wiki_history WHERE doc_id = ? AND version = ?`, [doc_id, version]);
 

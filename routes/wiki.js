@@ -12,12 +12,6 @@ router.get('/getWiki/:title(*)', wikiCont.wikiGetMid);
 // 위키 올리기
 router.post('/postWiki/:title(*)', wikiCont.wikiPostMid);
 
-// 이미지 업로드
-router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => {
-  console.log(req.file);
-  res.json({ url: req.file.location });
-});
-
 // 새 위키 문서 생성하기 [기여도 지급]
 /**
  * @swagger
@@ -76,13 +70,18 @@ router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contents
 
 // 특정 섹션의 글 수정하기
 router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
-//이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
-// // 위키 전체 히스토리 불러오기
-// router.get('/historys', wikiMid.historyGetMid);
+// 이미지 업로드
+router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
+  console.log(req.file);
+  res.json({ url: req.file.location });
+});
 
-// // 특정 버전의 위키 raw data 불러오기
-// router.get('/historys/:version', wikiMid.historyVersionGetMid);
+// 위키 히스토리 불러오기
+router.get('/historys:title(*)', wikiCont.historyGetMid);
+
+// 특정 버전의 위키 raw data 불러오기
+router.get('/historys/:title(*)/version/:version', wikiCont.historyRawGetMid);
 
 // // 특정 버전으로 롤백하기
 // router.post('/historys/:version', isSignedIn, wikiMid.historyVersionPostMid);
