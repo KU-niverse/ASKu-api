@@ -31,12 +31,6 @@ class Wiki_docs {
 
     return rows[0].id;
   }
-  // wiki_docs의 latest_ver를 업데이트해주는 함수
-  static async updateWikiDocsVersion(doc_id, version) {
-    const [rows] = await pool.query(`UPDATE wiki_docs SET latest_ver = ? WHERE id = ?`, [version, doc_id]);
-
-    return rows;
-  }
 }
 
 // wiki_history 테이블의 column을 가지는 객체
@@ -67,12 +61,13 @@ class Wiki_history {
 
     return rows[0];
   }
-  // 새로운 wiki_history를 생성해주는 함수
+  // 새로운 wiki_history를 생성해주는 함수, wiki_docs의 text_pointer와 lastest_ver도 업데이트해준다.
   static async create(new_wiki_history) {
     const [result] = await pool.query("INSERT INTO wiki_history SET ?", new_wiki_history);
+    await pool.query("UPDATE wiki_docs SET text_pointer = ?, latest_ver = ? WHERE id = ?", [new_wiki_history.text_pointer, new_wiki_history.version, new_wiki_history.doc_id]);
     const wiki_history_id = result.insertId;
 
-    return Wiki_history.getWiki_history_by_wiki_history_id(wiki_history_id);
+    return Wiki_history.getWikiHistorysById(wiki_history_id);
   }
 }
 

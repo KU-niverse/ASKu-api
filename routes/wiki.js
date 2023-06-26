@@ -1,15 +1,16 @@
 const express = require('express');
-const wikiMid = require('../controllers/wikiController');
+const wikiCont = require('../controllers/wikiController');
+const wikiMid = require('../middlewares/wiki');
 const imageMid = require('../middlewares/image');
 // const { isSignedIn } = require('../middlewares/sign_in');
 
 const router = express.Router();
 
 // 위키 불러오기
-router.get('/getWiki/:title(*)', wikiMid.wikiGetMid);
+router.get('/getWiki/:title(*)', wikiCont.wikiGetMid);
 
 // 위키 올리기
-router.post('/postWiki/:title(*)', wikiMid.wikiPostMid);
+router.post('/postWiki/:title(*)', wikiCont.wikiPostMid);
 
 // 이미지 업로드
 router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => {
@@ -61,14 +62,14 @@ router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => 
  * type: integer
  * description: "409"
  */
-router.post('/contents/new/:title(*)', wikiMid.newWikiPostMid);
+router.post('/contents/new/:title(*)', wikiCont.newWikiPostMid, wikiMid.createHistoryMid);
 // //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
-router.get('/contents/:title(*)', wikiMid.contentsGetMid);
+router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
-router.post('/contents/:title(*)', wikiMid.contentsPostMid);
+router.post('/contents/:title(*)', wikiCont.contentsPostMid, wikiMid.createHistoryMid);
 // router.post('/contents', isSignedIn, wikiMid.contentsPostMid);
 // //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
