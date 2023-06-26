@@ -26,8 +26,6 @@ User.findByLoginId = async (login_id) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
   ]);
-  console.log("🚀 ~ file: userModel.js:28 ~ User.findByLoginId= ~ rows:", rows);
-
   return rows;
 };
 //nickname으로 유저 찾기
@@ -48,7 +46,7 @@ User.findByEmail = async (email) => {
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
 User.create = async (newUser) => {
   const [rows] = await pool.query(
-    `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?);`,
     [
       newUser.login_id,
       newUser.name,
@@ -61,6 +59,14 @@ User.create = async (newUser) => {
   );
 
   return rows;
+};
+
+//비밀번호 변경
+User.changePw = async (login_id, hashed_new_pw) => {
+  pool.query(`UPDATE users SET password = ? WHERE login_id = ?;`, [
+    hashed_new_pw,
+    login_id,
+  ]);
 };
 
 /* User.changePW = async (password, user_id, phone_number) => {

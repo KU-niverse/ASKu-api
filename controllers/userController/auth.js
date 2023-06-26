@@ -1,5 +1,5 @@
 /* const express = require("express"); */
-const bycrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const User = require("../../models/userModel");
 const { v4: uuidv4 } = require("uuid");
 const passport = require("passport");
@@ -87,7 +87,7 @@ exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
   try {
     //아이디, 이메일, nickname 중복검사, 비밀번호 확인은 프론트에서 처리, 학번은 중복검사x
-    const hash = await bycrypt.hash(password, 12);
+    const hash = await bcrypt.hash(password, 12);
     const uuid = uuidv4();
     await User.create({
       login_id,
@@ -152,6 +152,42 @@ exports.signOut = (req, res) => {
     return res.status(400).json({
       success: false,
       message: "로그아웃에 실패하였습니다.",
+    });
+  }
+};
+
+exports.changePw = async (req, res) => {
+  try {
+    const { login_id, password } = req.body;
+    const new_pw = password;
+    console.log("🚀 ~ file: auth.js:162 ~ exports.changePw= ~ new_pw:", new_pw);
+    const current_pw = req.user[0].password;
+    console.log(
+      "🚀 ~ file: auth.js:164 ~ exports.changePw= ~ current_pw:",
+      current_pw
+    );
+    //기존 비밀번호와 비교
+    const is_not_changeed = await bcrypt.compare(new_pw, current_pw);
+    if (is_not_changeed) {
+      return res.status(400).json({
+        success: false,
+        message: "기존 비밀번호와 동일합니다.",
+      });
+    } else {
+      const hashed_pw = await bcrypt.hash(new_pw, 12);
+      const result = User.changePw(login_id, hashed_pw);
+      if (result) {
+        return res.status(400).json({
+          success: true,
+          message: "비밀번호 변경이 완료되었습니다.",
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "아마 쿼리상에 문제가 있습니다.",
     });
   }
 };
