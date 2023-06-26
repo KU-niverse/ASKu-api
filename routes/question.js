@@ -22,6 +22,6 @@ router.post("/like/:question", questionMid.questionLikeMid);
 //router.get("/query/:query", questionMid);
 
 // GET question/popular
-//router.get("/popular", questionMid);
+router.get("/popular", questionMid.questionPopularGetMid);
 
 module.exports = router;

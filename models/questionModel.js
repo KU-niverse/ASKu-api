@@ -100,4 +100,19 @@ Question.likeQuestion = async (id, user_id) => {
   }
 };
 
+
+
+Question.getQuestionsPopular = async () => {
+  const rows = await pool.query(
+    `SELECT q.id, q.doc_id, q.user_id, q.index_title, q.content, q.created_at, q.answer_or_not, q.is_bad, COUNT(ql.id) AS like_count
+    FROM questions q
+    LEFT JOIN question_like ql ON q.id = ql.id
+    WHERE q.answer_or_not = 0
+    GROUP BY q.id
+    ORDER BY like_count DESC
+    LIMIT 5;`
+  );
+  return rows[0];
+};
+
 module.exports = {Question, getIdByTitle};

@@ -38,7 +38,7 @@ exports.questionPostMid = async (req, res) => {
 // 질문 수정하기 [답변이 달리기 전까지만 가능]
 exports.questionEditMid = async(req, res) => {
   try {
-    const result = await Question.updateQuestion(req.params.question, req.body.new_content);
+    const result = await Question.updateQuestion(req.params.question, req.body.user_id, req.body.new_content);
     if (!result) {
       res.status(400).send({messsage: "이미 답변이 달렸거나, 다른 회원의 질문입니다,"});
     } else {
@@ -74,7 +74,7 @@ exports.questionLikeMid = async (req, res) => {
     if (result == 0) {
       res.status(400).send({message: "이미 좋아요를 눌렀습니다."});
     } else if (result == -1) {
-      res.status(400).send({message: "본인의 질문에는 좋아요를 누를 수 없습니다."});
+      res.status(401).send({message: "본인의 질문에는 좋아요를 누를 수 없습니다."});
     } else {
       res.status(200).send({message: "좋아요를 등록했습니다."});
     }
@@ -89,4 +89,13 @@ exports.questionLikeMid = async (req, res) => {
 
 
 // 인기 질문 조회하기
-
+exports.questionPopularGetMid = async (req, res) => {
+  try {
+    const questions = await Question.getQuestionsPopular();
+    console.log(questions);
+    res.status(200).send(questions);
+  } catch (err) {
+    console.error(err);
+    res.status(404).send({message: "오류가 발생하였습니다."}); 
+  }
+};
