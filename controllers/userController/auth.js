@@ -182,7 +182,7 @@ exports.changePw = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "아마 쿼리상에 문제가 있습니다.",
+      message: "changePw(controller)에서 문제가 발생했습니다.",
     });
   }
 };
@@ -190,12 +190,7 @@ exports.changePw = async (req, res) => {
 exports.findId = async (req, res) => {
   try {
     const email = req.body.email;
-    console.log("🚀 ~ file: auth.js:193 ~ exports.findId= ~ email:", email);
     const found_user = await User.findByEmail(email);
-    console.log(
-      "🚀 ~ file: auth.js:194 ~ exports.findId= ~ found_user:",
-      found_user
-    );
     if (found_user.length == 0) {
       return res.status(400).json({
         success: false,
