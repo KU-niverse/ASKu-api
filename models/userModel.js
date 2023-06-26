@@ -7,7 +7,6 @@ class User {
     this.name = user.name;
     this.stu_id = user.stu_id;
     this.email = user.email;
-    this.phone = user.phone;
     this.password = user.password;
     this.nickname = user.nickname;
     this.rep_badge = user.rep_badge;
