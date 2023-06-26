@@ -3,6 +3,7 @@ const wikiCont = require('../controllers/wikiController');
 const wikiMid = require('../middlewares/wiki');
 const imageMid = require('../middlewares/image');
 const { isSignedIn } = require('../middlewares/sign_in');
+// const { isAdmin } = require('../middlewares/admin');
 
 const router = express.Router();
 
@@ -84,9 +85,30 @@ router.get('/historys:title(*)', wikiCont.historyGetMid);
 router.get('/historys/:title(*)/version/:version', wikiCont.historyRawGetMid);
 
 // // 특정 버전으로 롤백하기
-// router.post('/historys/:version', isSignedIn, wikiMid.historyVersionPostMid);
+// router.post('/historys/:title(*)/version/:version', isSignedIn, wikiMid.historyVersionPostMid);
 
 // // 두 버전 비교하기
-// router.get('/comparison/:rev/:oldrev', wikiMid.comparisonGetMid);
+// router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiMid.comparisonGetMid);
+
+// // 위키 문서 삭제하기
+// router.delete('/delete/:title(*)', isAdmin, wikiCont.deleteWikiDeleteMid);
+
+// // 위키 제목 기반으로 문서 검색하기
+// router.get('/search/:title(*)', wikiCont.searchWikiGetMid);
+
+// // 목차 글 불러오기(질문 기반 문서 수정  위함)→ 있으면 섹션과 함께 주고 섹션 수정, 없으면 섹션 0으로 주고 전체 수정
+// router.get('/contents/:title(*)/index/:index(*)', wikiCont.contentsSectionGetMidByIndex);
+
+// // 위키 즐겨찾기 조회
+// router.get('/favorite', isSignedIn, wikiCont.favoriteGetMid);
+
+// // 위키 즐겨찾기 추가
+// router.post('/favorite/:title(*)', isSignedIn, wikiCont.favoritePostMid);
+
+// 문서 내 기여도 리스트 조회
+router.get('/contributions/:title(*)', wikiCont.contributionGetMid);
+
+// // 특정 히스토리 bad로 변경
+// router.put('/badhis/:docid/:version', isAdmin, wikiCont.badHistoryPutMid);
 
 module.exports = router;

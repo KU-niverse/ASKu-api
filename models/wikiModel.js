@@ -74,10 +74,13 @@ class Wiki_history {
 
 // 기여도 관련 함수들을 가지는 객체
 class Wiki_point {
-  // 기여도를 지급해주는 함수
-  static async givePoint(user_id, point) {
+  // 기여도를 지급해주는 함수 (TODO: 질문 기반 작성일 시 20% 추가)
+  static async givePoint(user_id, point, is_qbased) {
     if(point <= 0){
       return;
+    }
+    if(is_qbased == 1){
+      point = point * 1.2;
     }
     await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point, user_id]);
 
@@ -86,21 +89,14 @@ class Wiki_point {
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    const [rows] = await pool.query("SELECT * FROM wiki_history WHERE user_id = ? AND is_bad = 0", [user_id]);
-    let point = 0;
-    for (let i = 0; i < rows.length; i++) {
-      if(rows[i].diff > 0){
-        point += rows[i].diff;
-      }
-    }
-    await pool.query("UPDATE users SET point = ? WHERE id = ?", [point, user_id]);
+    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_qbased = 1 THEN diff * 1.2 WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0) WHERE id = ?", [user_id, user_id]);
 
     return;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
+    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_qbased = 1 THEN diff * 1.2 WHEN diff > 0 THEN diff ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
     return rows;
   }
 

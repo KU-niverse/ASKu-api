@@ -625,3 +625,15 @@ exports.historyRawGetMid = async (req, res) => {
 
 //     res.status(200).send(jsonData);
 // };
+
+// 문서 내 기여도 리스트 조회
+exports.contributionGetMid = async (req, res) => {
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_point.getContributors(doc_id);
+    res.status(200).send(rows);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 기여도 리스트 조회 중 오류" });
+  }
+};

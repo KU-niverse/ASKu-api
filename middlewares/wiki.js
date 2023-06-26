@@ -30,8 +30,9 @@ exports.createHistoryMid = async (req, res) => {
 // 위키 작성 기여도 지급 미들웨어
 exports.wikiPointMid = async (req, res) => {
   try {
-    // 기여도 지급
-    Wiki.Wiki_point.givePoint(req.user[0].user_id, req.diff);
+    // 기여도 지급, 프론트에서 질문 기반 수정이면 꼭 req.body.is_qbased = 1 넣어주기
+    const is_qbased = req.body.is_qbased !== undefined ? req.body.is_qbased : 0;
+    Wiki.Wiki_point.givePoint(req.user[0].user_id, req.diff, is_qbased);
     // 알림
     //next();
     res.status(200).json({ message: "위키 작성 기여도 지급 성공" });
