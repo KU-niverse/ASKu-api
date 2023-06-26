@@ -19,7 +19,7 @@ router.delete("/delete/:question", questionMid.questionDeleteMid);
 router.post("/like/:question", questionMid.questionLikeMid);
 
 // GET question/query/:query(*)
-//router.get("/query/:query", questionMid);
+router.get("/query/:query(*)", questionMid.questionSearchGetMid);
 
 // GET question/popular
 router.get("/popular", questionMid.questionPopularGetMid);

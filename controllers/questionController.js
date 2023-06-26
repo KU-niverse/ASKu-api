@@ -86,6 +86,20 @@ exports.questionLikeMid = async (req, res) => {
 
 
 // 질문 제목 기반으로 검색하기
+exports.questionSearchGetMid = async (req, res) => {
+  try {
+    if (!req.params.query || req.params.query == " ") {
+      res.status(400).send({message: "검색어를 입력해주세요."});
+    } else {
+      const questions = await Question.getQuestionSearchByQuery(decodeURIComponent(req.params.query));
+      res.status(200).send(questions);
+    }
+
+  } catch (err) {
+    console.error(err);
+    res.status(404).send({message: "오류가 발생하였습니다."});
+  }
+};
 
 
 // 인기 질문 조회하기

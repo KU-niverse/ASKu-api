@@ -60,6 +60,7 @@ CREATE TABLE `wiki_history` (
     `version`   int   NOT NULL,
    `summary`   text   NOT NULL,
    `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
+   `is_q_based`  bool NOT NULL DEFAULT 0, -- 질문 기반 수정 여부
    `count`   int   NOT NULL, -- 글자수
    `diff`   int   NOT NULL, -- 이전 히스토리와의 변경 글자수
    `is_bad`   bool   NOT NULL   DEFAULT 0, -- [부적절한 히스토리인지 여부] 0: 적절, 1: 부적절

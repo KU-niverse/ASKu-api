@@ -100,7 +100,10 @@ Question.likeQuestion = async (id, user_id) => {
   }
 };
 
-
+Question.getQuestionSearchByQuery = async (query) => {
+  const result = await pool.query(`SELECT * FROM questions WHERE content LIKE ?`, [`%${query}%`]);
+  return result[0];
+};
 
 Question.getQuestionsPopular = async () => {
   const rows = await pool.query(
