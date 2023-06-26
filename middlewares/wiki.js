@@ -31,6 +31,8 @@ exports.createHistoryMid = async (req, res) => {
 exports.wikiPointMid = async (req, res) => {
   try {
     // 기여도 지급
+    Wiki.Wiki_point.givePoint(req.user[0].user_id, req.diff);
+    // 알림
     //next();
     res.status(200).json({ message: "위키 작성 기여도 지급 성공" });
   } catch (err) {

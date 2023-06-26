@@ -2,7 +2,7 @@ const express = require('express');
 const wikiCont = require('../controllers/wikiController');
 const wikiMid = require('../middlewares/wiki');
 const imageMid = require('../middlewares/image');
-// const { isSignedIn } = require('../middlewares/sign_in');
+const { isSignedIn } = require('../middlewares/sign_in');
 
 const router = express.Router();
 
@@ -21,7 +21,7 @@ router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => 
 // 새 위키 문서 생성하기 [기여도 지급]
 /**
  * @swagger
- * /api/wiki/contents/new/{title}:
+ * /wiki/contents/new/{title}:
  *  post:
  *   tags: [wiki]
  *  summary: "새 위키 문서 생성하기 및 기여도 지급"
@@ -62,23 +62,21 @@ router.post('/postImage', imageMid.imageUploader.single('image'), (req, res) => 
  * type: integer
  * description: "409"
  */
-router.post('/contents/new/:title(*)', wikiCont.newWikiPostMid, wikiMid.createHistoryMid);
-// //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
+router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
 router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
-router.post('/contents/:title(*)', wikiCont.contentsPostMid, wikiMid.createHistoryMid);
+router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 // router.post('/contents', isSignedIn, wikiMid.contentsPostMid);
-// //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
-// // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
-// router.get('/contents/:section', isSignedIn, wikiMid.contentsSectionGetMid);
+// 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
+router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
 
-// // 특정 섹션의 글 수정하기
-// router.post('/contents/:section', isSignedIn, wikiMid.contentsSectionPostMid);
-// //이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
+// 특정 섹션의 글 수정하기
+router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
+//이거 성공 status 코드 받았을 때 /user/point/wikiedit 요청해야함
 
 // // 위키 전체 히스토리 불러오기
 // router.get('/historys', wikiMid.historyGetMid);
