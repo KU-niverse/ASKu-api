@@ -16,6 +16,15 @@ async function getQuestion(id) {
   return rows[0];
 }
 
+// wiki_docs의 title을 입력하면 해당 문서의 id 반환하는 함수
+async function getIdByTitle(title) {
+  const result = await pool.query(
+    `SELECT id FROM wiki_docs WHERE title = ?`,
+    [title]
+  );
+  return result[0][0].id;
+}
+
 Question.createQuestion = async (newQuestion) => {
   const [result] = await pool.query(
     `INSERT INTO questions SET ?`,
@@ -25,21 +34,63 @@ Question.createQuestion = async (newQuestion) => {
   return getQuestion(id);
 };
 
-Question.getQuestionsAll = async (title) => {
+Question.getQuestionsAll = async (id) => {
   const rows = await pool.query(
-    `SELECT * FROM questions WHERE index_title = ?`,
-    [title]
+    `SELECT * FROM questions WHERE doc_id = ?`,
+    [id]
   );
   return rows[0];
 };
 
-Question.likeQuestion = async (id, user_id) => {
+Question.updateQuestion = async (question_id, user_id, new_content) => {
   const flag = await pool.query(
+    `SELECT user_id, answer_or_not FROM questions WHERE id = ?`,
+    [question_id]
+  ); // update 시간 기록을 위해 컬럼 추가 필요할 듯
+  if (!flag[0][0].answer_or_not && flag[0][0].user_id == user_id) {
+    const result = await pool.query(
+      `UPDATE questions SET content = ? WHERE id = ?`,
+      [new_content, question_id]
+    );
+    return result;
+  } else {
+    return 0;
+  }
+};
+
+Question.deleteQuestion = async (question_id, user_id) => {
+  const flag = await pool.query(
+    `SELECT user_id, answer_or_not FROM questions WHERE id = ?`,
+    [question_id]
+  );
+  const flag_like = await pool.query(
+    `SELECT id FROM question_like WHERE id = ?`,
+    [question_id]
+  );
+  if (!flag[0][0] && !flag_like[0][0] && flag[0][0].user_id == user_id) {
+    const result = await pool.query(
+      `DELETE FROM questions WHERE id = ?`,
+      [question_id]
+    );
+    return result;
+  } else {
+    return 0;
+  }
+};
+
+Question.likeQuestion = async (id, user_id) => {
+  const flag_writer = await pool.query(
+    `SELECT user_id FROM questions WHERE id = ?`,
+    [id]
+  );
+  const flag_like = await pool.query(
     `SELECT * FROM question_like WHERE id = ?  AND user_id = ?`,
     [id, user_id]
   );
-  if (flag[0].length) {
+  if (flag_like[0].length) {
     return 0;
+  } else if (flag_writer[0][0].user_id == user_id){
+    return -1;
   } else {
     const result = await pool.query(
       `INSERT INTO question_like (id, user_id) VALUES (?, ?)`,
@@ -49,10 +100,4 @@ Question.likeQuestion = async (id, user_id) => {
   }
 };
 
-module.exports = Question;
-
-//Question.updateQuestion = async () => {
-//  const [result] = await pool.query(
-//    `UPDATE `
-//  )
-//}
+module.exports = {Question, getIdByTitle};
