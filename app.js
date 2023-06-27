@@ -11,6 +11,7 @@ const userRouter = require("./routes/user");
 const questionRoutes = require("./routes/question");
 const debateRoutes = require("./routes/debate");
 const notificationRoutes = require("./routes/notification");
+const reportRoutes = require("./routes/report");
 
 dotenv.config();
 
@@ -69,6 +70,7 @@ app.use("/user", userRouter);
 app.use("/question", questionRoutes);
 app.use("/debate", debateRoutes);
 app.use("/notification", notificationRoutes);
+app.use("/report", reportRoutes);
 
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");
