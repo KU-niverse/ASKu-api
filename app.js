@@ -6,8 +6,10 @@ const morgan = require("morgan");
 /* const path = require("path"); */
 const session = require("express-session");
 const passport = require("passport");
+
 const userRouter = require("./routes/user");
 const questionRoutes = require("./routes/question");
+const debateRoutes = require("./routes/debate");
 
 dotenv.config();
 
@@ -63,8 +65,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 /* 스웨거 코드 */
 
 app.use("/user", userRouter);
-
 app.use("/question", questionRoutes);
+app.use("/debate", debateRoutes);
 
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");
