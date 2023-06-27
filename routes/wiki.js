@@ -64,7 +64,6 @@ router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
-// router.post('/contents', isSignedIn, wikiMid.contentsPostMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);

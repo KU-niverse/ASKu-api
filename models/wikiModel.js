@@ -74,36 +74,43 @@ class Wiki_history {
 
 // 기여도 관련 함수들을 가지는 객체
 class Wiki_point {
-  // 기여도를 지급해주는 함수 (TODO: 질문 기반 작성일 시 20% 추가)
-  static async givePoint(user_id, point, is_qbased) {
+  // 기여도를 지급해주는 함수 (그냥 위키 수정 diff * 4, 질문 기반 작성일 시 diff * 5)
+  static async givePoint(user_id, point, is_q_based) {
     if(point <= 0){
       return;
     }
-    if(is_qbased == 1){
-      point = point * 1.2;
+    if(is_q_based == 1){
+      point = point * 5;
     }
-    await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point, user_id]);
+    await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point * 4, user_id]);
 
     return;
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_qbased = 1 THEN diff * 1.2 WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0) WHERE id = ?", [user_id, user_id]);
+    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0) WHERE id = ?", [user_id, user_id]);
 
     return;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_qbased = 1 THEN diff * 1.2 WHEN diff > 0 THEN diff ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
+    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
     return rows;
   }
 
-  // 유저 기여도 순위를 반환해주는 함수
+  // 유저 기여도 전체 순위를 반환해주는 함수
   static async getRanking() {
     const [rows] = await pool.query("SELECT id, login_id, nickname, point FROM users WHERE is_deleted = 0 ORDER BY point DESC");
     return rows;
+  }
+  
+  // 유저 id 넣어주면 전체 유저의 수와 해당 유저의 기여도 순위를 반환해주는 함수
+  static async getRankingById(user_id) {
+    const [rows] = await pool.query("SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0");
+    const [rows2] = await pool.query("SELECT COUNT(*) AS rank FROM users WHERE point > (SELECT point FROM users WHERE id = ?)", [user_id]);
+    return { count: rows[0].count, rank: rows2[0].rank + 1 };
   }
 }
 
