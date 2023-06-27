@@ -88,8 +88,8 @@ router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonG
 // 위키 문서 삭제하기
 router.delete('/delete/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 
-// // 위키 제목 기반으로 문서 검색하기
-// router.get('/search/:title(*)', wikiCont.searchWikiGetMid);
+// 위키 제목 기반으로 문서 검색하기
+router.get('/query/:title(*)', wikiCont.wikiSearchGetMid);
 
 // // 목차 글 불러오기(질문 기반 문서 수정  위함)→ 있으면 섹션과 함께 주고 섹션 수정, 없으면 섹션 0으로 주고 전체 수정
 // router.get('/contents/:title(*)/index/:index(*)', wikiCont.contentsSectionGetMidByIndex);

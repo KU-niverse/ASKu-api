@@ -37,6 +37,12 @@ class Wiki_docs {
 
     return rows[0].id;
   }
+  // wiki_docs 테이블에서 title을 통해 like 기반으로 문서를 찾아주는 함수, 나중에 업데이트 예정
+  static async searchWikiDocsByTitle(title) {
+    const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title LIKE ?`, [`%${title}%`]);
+
+    return rows;
+  }
 }
 
 // wiki_history 테이블의 column을 가지는 객체

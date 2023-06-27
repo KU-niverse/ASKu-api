@@ -551,6 +551,17 @@ exports.wikiDeleteMid = async (req, res) => {
   }
 };
 
+// 위키 제목 기반으로 문서 검색하기
+exports.wikiSearchGetMid = async (req, res) => {
+  try{
+    const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(req.params.title);
+    res.status(200).send({ success: true, rows });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 검색 중 오류" });
+  }
+};
+
 // 위키 즐겨찾기 조회
 exports.wikiFavoriteGetMid = async (req, res) => {
   try{
