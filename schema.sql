@@ -63,6 +63,7 @@ CREATE TABLE `wiki_history` (
    `count`   int   NOT NULL, -- 글자수
    `diff`   int   NOT NULL, -- 이전 히스토리와의 변경 글자수
    `is_bad`   bool   NOT NULL   DEFAULT 0, -- [부적절한 히스토리인지 여부] 0: 적절, 1: 부적절
+   `is_rollback`   bool   NOT NULL   DEFAULT 0, -- [롤백 히스토리인지 여부] 0: 일반, 1: 롤백
     PRIMARY KEY(`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)

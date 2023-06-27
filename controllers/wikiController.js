@@ -21,15 +21,14 @@ const S3 = new AWS.S3({
 
 // 이전 위키의 내용을 가져오는 함수
 const getWikiContent = (res, title, version) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     S3.getObject({
       Bucket: "wiki-bucket",
       Key: `${title}/r${version}.wiki`,
     }, (err, data) => {
       if (err) {
         console.log(err);
-        res.status(404).send(err);
-        reject(err);
+        res.status(404).send(err);  // 내부에서 404 에러 처리
         return;
       }
       resolve(data.Body.toString('utf-8'));
@@ -443,94 +442,83 @@ exports.historyRawGetMid = async (req, res) => {
   }
 };
 
-// // 롤백하기
-// exports.historyVersionPostMid = async (req, res) => {
-//   const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-//   const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+// 롤백하기
+exports.historyVersionPostMid = async (req, res, next) => {
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const version = rows[0].version;
 
-//   // 전체 글 저장하는 새 파일(버전) 만들기
-//   const latestVersion = parseInt(rows[0].text_pointer.substring(1));
-//   const rollbackVersion = parseInt(req.params.version.substr(1));
-//   const updatedFileName = `./documents/r${latestVersion + 1}.wiki`;
-//   const originalFileName = `./documents/r${rollbackVersion}.wiki`;
+    // 전체 글 저장하는 새 파일(버전) 만들기
+    const title = req.params.title.replace(/\/+/g, "_");
+    const new_version = version + 1;
+    const rollback_version = parseInt(req.params.version);
+    let text = "";
 
-//   try {
-//     fs.copyFileSync(originalFileName, updatedFileName);
-//     console.log("rollback success!");
-//   } catch (err) {
-//     // 파일 쓰다가 에러난 경우
-//     res.status(432).send({
-//       message: "Something went wrong while doing rollback",
-//     });
-//     return;
-//   }
+    text = await getWikiContent(res, title, rollback_version);
 
-//   // 새로운 히스토리 생성
-//   const new_wiki_history = new Wiki_history({
-//     editor_id: req.user[0].user_id,
-//     text_pointer: `r${latestVersion + 1}`,
-//     is_rollback: rollbackVersion,
-//     //content_summary: req.body.content_summary
-//   });
+    // 원래 통으로 가져오는 코드
+    const lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-//   const rows_history = await Wiki_history.create(new_wiki_history);
-//   console.log(rows_history);
+    // 새 파일 만들기
+    await saveWikiContent(res, title, new_version, text);
 
-//   res.status(200).send({
-//     message: "Rollback is success",
-//   });
-// };
+    req.doc_id = doc_id;
+    req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+    req.summary = `version ${rollback_version}으로 롤백`;
+    req.count = text.length;
+    req.diff = text.length - rows[0].count;
+    req.version = new_version;
+    req.is_rollback = 1;
 
-// // 두 버전 비교하기
-// exports.comparisonGetMid = async (req, res) => {
-//   let rev = req.params.rev;
-//   let oldrev = req.params.oldrev;
-//   let jsonData = {};
+    // 히스토리 생성 -> 알림
+    next();
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "롤백 중 오류" });
+  }
+};
 
-//   try {
-//     // 해당 버전의 파일 읽어서 jsonData에 저장
-//     const data = fs.readFileSync(`./documents/${rev}.wiki`, "utf8");
-//     const lines = data.split(/\r?\n/);
-//     const text = lines.join("\n");
+// 두 버전 비교하기
+exports.comparisonGetMid = async (req, res) => {
+  try {
+    const title = req.params.title.replace(/\/+/g, "_");
+    const rev = req.params.rev;
+    const oldrev = req.params.oldrev;
+    let jsonData = {};
+    let text = "";
+    let lines = [];
 
-//     jsonData["rev"] = rev;
-//     jsonData["rev_text"] = text;
-//   } catch (err) {
-//     // 없는 파일 요청 시 에러 처리
-//     res.status(404).send({
-//       message: "File not found",
-//     });
-//     return;
-//   }
+    if (oldrev >= rev) {
+      res.status(432).send({
+        message: "oldrev should be smaller than rev",
+      });
+      return;
+    }
 
-//   try {
-//     // 해당 버전의 파일 읽어서 jsonData에 저장
-//     const data = fs.readFileSync(`./documents/${oldrev}.wiki`, "utf8");
-//     const lines = data.split(/\r?\n/);
-//     const text = lines.join("\n");
+    // rev 버전의 파일 읽어서 jsonData에 저장
+    text = await getWikiContent(res, title, rev);
+    lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-//     jsonData["oldrev"] = oldrev;
-//     jsonData["oldrev_text"] = text;
-//   } catch (err) {
-//     // 없는 파일 요청 시 에러 처리
-//     res.status(404).send({
-//       message: "File not found",
-//     });
-//     return;
-//   }
+    jsonData["rev"] = rev;
+    jsonData["rev_text"] = text;
 
-//   oldrev = parseInt(oldrev.substring(1));
-//   rev = parseInt(rev.substring(1));
+    // oldrev 버전의 파일 읽어서 jsonData에 저장
+    text = await getWikiContent(res, title, oldrev);
+    lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-//   if (oldrev >= rev) {
-//     res.status(432).send({
-//       message: "oldrev should be smaller than rev",
-//     });
-//     return;
-//   }
+    jsonData["oldrev"] = oldrev;
+    jsonData["oldrev_text"] = text;
 
-//   res.status(200).send(jsonData);
-// };
+    res.status(200).send(jsonData);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "두 버전 비교 중 오류" });
+  }
+};
 
 // 문서 내 기여도 리스트 조회
 exports.contributionGetMid = async (req, res) => {

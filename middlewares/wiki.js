@@ -5,7 +5,8 @@ exports.createHistoryMid = async (req, res, next) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1 넣어주기
   try {
     const is_q_based = req.body.is_q_based !== undefined ? req.body.is_q_based : 0;
-    
+    const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
+
     const new_wiki_history = new Wiki.Wiki_history({
       user_id: req.user[0].id,
       doc_id: req.doc_id,
@@ -15,6 +16,7 @@ exports.createHistoryMid = async (req, res, next) => {
       diff: req.diff,
       version: req.version,
       is_q_based: is_q_based,
+      is_rollback: is_rollback,
     });
 
     const rows_history = await Wiki.Wiki_history.create(new_wiki_history);

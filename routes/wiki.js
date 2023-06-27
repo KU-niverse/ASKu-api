@@ -53,17 +53,17 @@ const router = express.Router();
  */
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 
-// 전체 글 불러오기 / 전체 글 수정시 사용
-router.get('/contents/:title(*)', wikiCont.contentsGetMid);
-
-// 전체 글 수정하기
-router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
-
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
 
 // 특정 섹션의 글 수정하기
 router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
+
+// 전체 글 불러오기 / 전체 글 수정시 사용
+router.get('/contents/:title(*)', wikiCont.contentsGetMid);
+
+// 전체 글 수정하기
+router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
@@ -71,17 +71,19 @@ router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
   res.json({ url: req.file.location });
 });
 
-// 위키 히스토리 불러오기
-router.get('/historys:title(*)', wikiCont.historyGetMid);
-
 // 특정 버전의 위키 raw data 불러오기
 router.get('/historys/:title(*)/version/:version', wikiCont.historyRawGetMid);
 
-// // 특정 버전으로 롤백하기
-// router.post('/historys/:title(*)/version/:version', isSignedIn, wikiMid.historyVersionPostMid);
+// 특정 버전으로 롤백하기
+router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.historyVersionPostMid, wikiMid.createHistoryMid, (req, res) => {
+  res.status(200).json({ message: '위키 롤백 성공' });
+}); // 뒤에 알림 넣어야함
 
-// // 두 버전 비교하기
-// router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiMid.comparisonGetMid);
+// 위키 히스토리 불러오기
+router.get('/historys/:title(*)', wikiCont.historyGetMid);
+
+// 두 버전 비교하기
+router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonGetMid);
 
 // // 위키 문서 삭제하기
 // router.delete('/delete/:title(*)', isAdmin, wikiCont.deleteWikiDeleteMid);

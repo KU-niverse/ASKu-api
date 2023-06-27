@@ -43,6 +43,8 @@ class Wiki_history {
     this.count = wiki_history.count;
     this.diff = wiki_history.diff;
     this.version = wiki_history.version;
+    this.is_q_based = wiki_history.is_q_based;
+    this.is_rollback = wiki_history.is_rollback;
   }
   // wiki_history 내림차순으로 정렬해서 반환해주는 함수(doc_id로)
   static async getWikiHistorysById(doc_id) {
@@ -89,14 +91,14 @@ class Wiki_point {
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0) WHERE id = ?", [user_id, user_id]);
+    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
 
     return;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
+    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
     return rows;
   }
 
