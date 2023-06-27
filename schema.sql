@@ -235,3 +235,15 @@ CREATE TABLE `user_action` (
     PRIMARY KEY (`user_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
+
+CREATE TABLE `temporary_user` (
+   `login_id`   varchar(30)   NOT NULL UNIQUE, -- 로그인 시 사용되는 id
+   `name`   varchar(15)   NOT NULL,
+   `stu_id`   char(10)   NOT NULL,
+   `email`   varchar(255)   NOT NULL UNIQUE,
+   `password`   varchar(255)   NOT NULL,
+   `nickname`   varchar(20)   NOT NULL UNIQUE,
+   `uuid`   varchar(255) NOT NULL,
+   `auth_uuid`  varchar(255) NOT NULL,
+   PRIMARY KEY(`email`)
+);

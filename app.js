@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const session = require("express-session");
 const dotenv = require("dotenv");
 const passport = require("passport");
-const userRouter = require("./routes/user");
+const userRoutes = require("./routes/user");
 dotenv.config();
 
 const passportConfig = require("./passport");
@@ -58,7 +58,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 /* 스웨거 코드 */
 
-app.use("/user", userRouter);
+app.use("/user", userRoutes);
 
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");

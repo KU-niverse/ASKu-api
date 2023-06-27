@@ -60,6 +60,23 @@ User.create = async (newUser) => {
   return rows;
 };
 
+User.tempCreate = async (newUser) => {
+  const [rows] = await pool.query(
+    `INSERT INTO temporary_user  (login_id, name, stu_id, email, password, nickname, uuid, auth_uuid) values (?, ?, ?, ?, ?, ?, ?, ?);`,
+    [
+      newUser.login_id,
+      newUser.name,
+      newUser.stu_id,
+      newUser.email,
+      newUser.password,
+      newUser.nickname,
+      newUser.uuid,
+      newUser.auth_uuid,
+    ]
+  );
+  return rows;
+};
+
 //비밀번호 변경
 User.changePw = async (login_id, hashed_new_pw) => {
   pool.query(`UPDATE users SET password = ? WHERE login_id = ?;`, [
