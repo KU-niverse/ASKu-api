@@ -7,12 +7,6 @@ const { isSignedIn } = require('../middlewares/sign_in');
 
 const router = express.Router();
 
-// 위키 불러오기
-router.get('/getWiki/:title(*)', wikiCont.wikiGetMid);
-
-// 위키 올리기
-router.post('/postWiki/:title(*)', wikiCont.wikiPostMid);
-
 // 새 위키 문서 생성하기 [기여도 지급]
 /**
  * @swagger

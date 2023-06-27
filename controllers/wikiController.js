@@ -20,8 +20,8 @@ const S3 = new AWS.S3({
 });
 
 // 이전 위키의 내용을 가져오는 함수
-const getWikiContent = async (res, title, version) => {
-  try {
+const getWikiContent = (res, title, version) => {
+  return new Promise((resolve, reject) => {
     S3.getObject({
       Bucket: "wiki-bucket",
       Key: `${title}/r${version}.wiki`,
@@ -29,70 +29,30 @@ const getWikiContent = async (res, title, version) => {
       if (err) {
         console.log(err);
         res.status(404).send(err);
+        reject(err);
         return;
       }
-      return data.Body.toString('utf-8');
+      resolve(data.Body.toString('utf-8'));
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "위키 읽기 중 오류" });
-  }
+  });
 };
 
 // 새 위키 파일을 저장하는 함수
-const saveWikiContent = async (res, title, version, content) => {
-  try {
+const saveWikiContent = (res, title, version, content) => {
+  return new Promise((resolve, reject) => {
     S3.putObject({
       Bucket: "wiki-bucket",
       Key: `${title}/r${version}.wiki`,
       Body: content,
-    }, async (err) => {
+    }, (err) => {
       if (err) {
         console.log(err);
+        err.content = content; // content 정보를 에러 객체에 추가
+        reject(err);
         return;
       }
+      resolve();
     });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ message: "위키 쓰기 중 오류" });
-  }
-};
-
-// 위키 파일 읽어오기
-exports.wikiGetMid = async (req, res) => {
-  const title = req.params.title.replace(/\/+/g, "_");
-  const version = 1; // 수정 필요
-  S3.getObject({
-    Bucket: "wiki-bucket",
-    Key: `${title}/r${version}.wiki`,
-  }, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(404).send(err);
-      return;
-    }
-    const text = data.Body.toString('utf-8');
-    console.log(text);
-    res.status(200).send(text);
-  });
-};
-
-// 위키 파일 업로드
-exports.wikiPostMid = async (req, res) => {
-  const title = req.params.title.replace(/\/+/g, "_");
-  const text = req.body.text;
-  const version = 1; // 수정 필요
-  S3.putObject({
-    Bucket: "wiki-bucket",
-    Key: `${title}/r${version}.wiki`,
-    Body: text,
-  }, (err, data) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    console.log(data);
-    res.status(200).send(data);
   });
 };
 
@@ -128,44 +88,34 @@ exports.newWikiPostMid = async (req, res, next) => {
     const type = req.body.type;
 
     // 2-1. 없으면 새로운 문서 생성
-    let count = 0;
     // 아래는 S3에 저장하는 코드
-    S3.putObject({
-      Bucket: "wiki-bucket",
-      Key: `${title}/r${version}.wiki`,
-      Body: text,
-    }, async (err) => {
-      if (err) {
-        console.log(err);
-        return;
-      }
-      count = text.length;
+    await saveWikiContent(res, title, version, text);
 
-      // 아래는 DB에 저장하는 코드
-      const new_wiki_docs = new Wiki.Wiki_docs({
-        title: req.params.title,
-        text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
-        type: type,
-        latest_ver: version,
-      });
-
-      const rows_docs = await Wiki.Wiki_docs.create(new_wiki_docs);
-      console.log(rows_docs);
-
-      req.rows_docs = rows_docs;
-      req.version = version;
-      req.count = count;
-      req.summary = "새 위키 문서 생성";
-      req.text_pointer = `${edp}wiki-bucket/${title}/r${version}.wiki`;
-      req.diff = count;
-
-      // 히스토리 생성 -> 기여도 -> 알림
-      next();
+    // 아래는 DB에 저장하는 코드
+    const new_wiki_docs = new Wiki.Wiki_docs({
+      title: req.params.title,
+      text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+      type: type,
+      latest_ver: version,
     });
 
+    const rows_docs = await Wiki.Wiki_docs.create(new_wiki_docs);
+    console.log(rows_docs);
+
+    let count = text.length;
+
+    req.doc_id = rows_docs.id;
+    req.version = version;
+    req.count = count;
+    req.summary = "새 위키 문서 생성";
+    req.text_pointer = `${edp}wiki-bucket/${title}/r${version}.wiki`;
+    req.diff = count;
+
+    // 히스토리 생성 -> 기여도 -> 알림
+    next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 생성 중 오류" });
+    res.status(500).json({ message: "위키 생성 중 오류", content: err.content });
   }
 };
 
@@ -179,105 +129,97 @@ exports.contentsGetMid = async (req, res) => {
     let text = "";
     let jsonData = {};
 
+
     // 가장 최근 버전의 파일 읽어서 jsonData에 저장
-    S3.getObject({
-      Bucket: "wiki-bucket",
-      Key: `${title}/r${version}.wiki`,
-    }, (err, data) => {
-      if (err) {
-        console.log(err);
-        res.status(404).send(err);
-        return;
-      }
-      text = data.Body.toString('utf-8');
+    // S3에서 파일 읽어오는 코드
+    text = await getWikiContent(res, title, version);
 
-      // 원래 통으로 가져오는 코드
-      const lines = text.split(/\r?\n/);
-      text = lines.join("\n");
+    // 원래 통으로 가져오는 코드
+    const lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-      jsonData["version"] = version;
-      jsonData["text"] = text;
+    jsonData["version"] = version;
+    jsonData["text"] = text;
 
-      const sections = [];
-      let current_section = null;
-      let current_content = null;
-      const numbers = [];
+    const sections = [];
+    let current_section = null;
+    let current_content = null;
+    const numbers = [];
 
-      // 파일 읽고 section 나누기
-      for (let line of lines) {
-        const matches = line.match(/^(={2,})\s+(.+?)\s+\1\s*$/); // 정규식 패턴에 맞는지 검사합니다.
-        if (matches !== null) {
-          // 해당 라인이 섹션 타이틀인 경우
-          numbers.push(matches[1].length - 1);
-          if (current_section !== null) {
-            current_section.content.push(current_content);
-            sections.push(current_section);
-          }
-          current_section = {
-            title: matches[2],
-            content: [],
-          };
-          current_content = "";
-        } else {
-          // 해당 라인이 섹션 내용인 경우
-          if (current_content !== "") {
-            // 빈 줄이면
-            current_content += "\n";
-          }
-          current_content += line;
+    // 파일 읽고 section 나누기
+    for (let line of lines) {
+      const matches = line.match(/^(={2,})\s+(.+?)\s+\1\s*$/); // 정규식 패턴에 맞는지 검사합니다.
+      if (matches !== null) {
+        // 해당 라인이 섹션 타이틀인 경우
+        numbers.push(matches[1].length - 1);
+        if (current_section !== null) {
+          current_section.content.push(current_content);
+          sections.push(current_section);
         }
+        current_section = {
+          title: matches[2],
+          content: [],
+        };
+        current_content = "";
+      } else {
+        // 해당 라인이 섹션 내용인 경우
+        if (current_content !== "") {
+          // 빈 줄이면
+          current_content += "\n";
+        }
+        current_content += line;
       }
+    }
 
-      if (current_section !== null) {
-        // 마지막 섹션 push
-        current_section.content.push(current_content);
-        sections.push(current_section);
-      }
+    if (current_section !== null) {
+      // 마지막 섹션 push
+      current_section.content.push(current_content);
+      sections.push(current_section);
+    }
 
-      let content_json = []; // content의 메타데이터와 데이터
-      let num_list = []; // index의 리스트
-      let idx = 1; // 가장 상위 목차
+    let content_json = []; // content의 메타데이터와 데이터
+    let num_list = []; // index의 리스트
+    let idx = 1; // 가장 상위 목차
 
-      // 인덱싱
-      for (let i = 0; i < numbers.length; i++) {
-        let section_dic = {}; // section : section, index : index, title: title, content: content
-        section_dic["section"] = (i + 1).toString();
-        const num = numbers[i];
+    // 인덱싱
+    for (let i = 0; i < numbers.length; i++) {
+      let section_dic = {}; // section : section, index : index, title: title, content: content
+      section_dic["section"] = (i + 1).toString();
+      const num = numbers[i];
 
-        if (num === 1) {
-          // 가장 상위 목차가 변경됐을 경우
-          num_list = [idx++];
-          section_dic["index"] = num_list[0].toString();
+      if (num === 1) {
+        // 가장 상위 목차가 변경됐을 경우
+        num_list = [idx++];
+        section_dic["index"] = num_list[0].toString();
+      } else {
+        if (num > num_list.length) {
+          // 하위 목차로 들어갈 때
+          while (num_list.length < num) num_list.push(1);
         } else {
-          if (num > num_list.length) {
-            // 하위 목차로 들어갈 때
-            while (num_list.length < num) num_list.push(1);
-          } else {
-            while (num_list.length > 0 && num < num_list.length) {
-              // depth가 똑같아질 때까지 pop
-              num_list.pop();
-            }
-            let tmp = num_list[num_list.length - 1]; // 한 단계 올리기
+          while (num_list.length > 0 && num < num_list.length) {
+            // depth가 똑같아질 때까지 pop
             num_list.pop();
-            num_list.push(tmp + 1);
           }
-          section_dic["index"] = num_list.join(".");
+          let tmp = num_list[num_list.length - 1]; // 한 단계 올리기
+          num_list.pop();
+          num_list.push(tmp + 1);
         }
-
-        // title과 content 저장
-        section_dic["title"] = sections[i].title;
-        let content_text = "";
-        for (let content of sections[i].content) {
-          content_text += content;
-        }
-        section_dic["content"] = content_text;
-
-        content_json.push(section_dic);
+        section_dic["index"] = num_list.join(".");
       }
 
-      jsonData["contents"] = content_json;
-      res.status(200).send(jsonData);
-    });
+      // title과 content 저장
+      section_dic["title"] = sections[i].title;
+      let content_text = "";
+      for (let content of sections[i].content) {
+        content_text += content;
+      }
+      section_dic["content"] = content_text;
+
+      content_json.push(section_dic);
+    }
+
+    jsonData["contents"] = content_json;
+    res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 불러오기 중 오류" });
@@ -287,14 +229,6 @@ exports.contentsGetMid = async (req, res) => {
 // 전체 글 수정하기
 exports.contentsPostMid = async (req, res, next) => {
   try {
-    // 빈 내용 요청 시 에러 처리
-    // if (req.body===undefined) {
-    //     res.status(400).send({
-    //         message: "Content can't be empty"
-    //     });
-    //     return;
-    // }
-
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const version = rows[0].version;
@@ -311,62 +245,41 @@ exports.contentsPostMid = async (req, res, next) => {
     // 전체 글 저장하는 새 파일(버전) 만들기
     const title = req.params.title.replace(/\/+/g, "_");
     const new_content = req.body.new_content;
-    const new_version = version + 1; // 수정 필요
+    const new_version = version + 1;
 
-    S3.putObject({
-      Bucket: "wiki-bucket",
-      Key: `${title}/r${new_version}.wiki`,
-      Body: new_content,
-    }, async (err) => {
-      if (err) {
-        res.status(432).send({
-          message: "Something went wrong while writing file",
-          new_content: new_content,
-        });
-        return;
-      }
-      console.log("The file has been updated!");
+    await saveWikiContent(res, title, new_version, new_content);
 
-      req.doc_id = doc_id;
-      req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
-      req.summary = req.body.summary;
-      req.count = new_content.length;
-      req.diff = new_content.length - rows[0].count;
-      req.version = new_version;
+    req.doc_id = doc_id;
+    req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+    req.summary = req.body.summary;
+    req.count = new_content.length;
+    req.diff = new_content.length - rows[0].count;
+    req.version = new_version;
 
-      // 히스토리 생성 -> 기여도 -> 알림
-      next();
-    });
+    // 히스토리 생성 -> 기여도 -> 알림
+    next();
+
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 수정 중 오류" });
+    res.status(500).json({ message: "위키 수정 중 오류", new_content: req.body.new_content });
   }
 };
 
 // 수정 시 기존 섹션 텍스트 불러오기
 // req에 doc_id, section 필요
 exports.contentsSectionGetMid = async (req, res) => {
-  const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-  const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
-  const title = req.params.title.replace(/\/+/g, "_");
-  const version = rows[0].version;
-  let text = "";
-  let sections = [];
-  let jsonData = {};
-  let section = null;
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const title = req.params.title.replace(/\/+/g, "_");
+    const version = rows[0].version;
+    let text = "";
+    let sections = [];
+    let jsonData = {};
+    let section = null;
 
-  S3.getObject({
-    Bucket: "wiki-bucket",
-    Key: `${title}/r${version}.wiki`,
-  }, (err, data) => {
-    if (err) {
-      console.log(err);
-      res.status(404).send({
-        message: "File not found",
-      });
-      return;
-    }
-    text = data.Body.toString('utf-8');
+    // S3에서 파일 읽어오는 코드
+    text = await getWikiContent(res, title, version);
 
     // 정규화로 섹션 분리
     const lines = text.split(/\r?\n/);
@@ -400,94 +313,95 @@ exports.contentsSectionGetMid = async (req, res) => {
       sections.push(current_section);
     }
 
-    // 섹션 번호에 맞는 섹션 불러오기, 유효하지 않은 번호일 경우 에러 처리
-    try {
-      section = sections[parseInt(req.params.section) - 1];
-      //console.log(sections)
-      jsonData = {};
-      jsonData["doc_id"] = doc_id;
-      jsonData["version"] = version;
-      jsonData["title"] = section.title;
-      jsonData["content"] = section.content.join("\n");
-      res.status(200).send(jsonData);
-    } catch (err) {
-      res.status(422).send({ error: "Invalid section number" });
-    }
-  });
+    // 섹션 번호에 맞는 섹션 불러오기
+    section = sections[parseInt(req.params.section) - 1];
+    jsonData = {};
+    jsonData["doc_id"] = doc_id;
+    jsonData["version"] = version;
+    jsonData["title"] = section.title;
+    jsonData["content"] = section.content.join("\n");
+    res.status(200).send(jsonData);
+  } catch (err) {
+    res.status(422).send({ error: "Invalid section number" });
+  }
 };
 
 // 섹션 수정하기
 exports.contentsSectionPostMid = async (req, res, next) => {
-  const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-  const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
 
-  // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
-  if (req.body.version != rows[0].version) {
-    res.status(426).send({
-      message: "Version is not matched",
-      new_content: req.body.new_content,
-    });
-    return;
-  }
-
-  // 섹션 수정하고 새 위키 파일(버전) 만들기
-  const title = req.params.title.replace(/\/+/g, "_");
-  const latest_ver = rows[0].version;
-  const new_version = latest_ver + 1;
-  const updated_section_index = req.params.section - 1;
-  const new_content = req.body.new_content;
-
-  // 이전 파일의 내용에서 일부 섹션을 다른 내용으로 대체하는 함수
-  const updateFileContent = async () => {
-    try {
-      const fileContent = await getWikiContent(res, title, latest_ver);
-      const lines = fileContent.split(/\r?\n/);
-
-      let updated_content = "";
-      let current_sectionIndex = -1;
-      let flag = 0;
-
-      lines.forEach((line) => {
-        if (/^(={2,})\s+(.+?)\s+\1\s*$/.test(line)) {
-          current_sectionIndex++;
-        }
-        if (current_sectionIndex === updated_section_index && flag === 0) {
-          updated_content += new_content + "\n";
-          flag = 1;
-        }
-        else if (current_sectionIndex === updated_section_index & flag === 1){
-          void 0; // 아무것도 안함 섹션 내용을 아예 갈아끼운 것
-        }
-        else {
-          updated_content += line + "\n";
-        }
+    // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
+    if (req.body.version != rows[0].version) {
+      res.status(426).send({
+        message: "Version is not matched",
+        new_content: req.body.new_content,
       });
-
-      updated_content = updated_content.replace(/\s+$/, "");
-      await saveWikiContent(res, title, new_version, updated_content);
-
-      console.log("The file has been updated!");
-
-      req.doc_id = doc_id;
-      req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
-      req.summary = req.body.summary;
-      req.count = updated_content.length;
-      req.diff = updated_content.length - rows[0].count;
-      req.version = new_version;
-
-      // 히스토리 생성 -> 기여도 -> 알림
-      next();
-    } catch (error) {
-      res.status(432).send({
-        message: "섹션 수정 중 오류",
-        new_content: new_content,
-      });
+      return;
     }
-  };
 
-  // 파일 내용 업데이트 실행
-  updateFileContent();
+    // 섹션 수정하고 새 위키 파일(버전) 만들기
+    const title = req.params.title.replace(/\/+/g, "_");
+    const latest_ver = rows[0].version;
+    const new_version = latest_ver + 1;
+    const updated_section_index = req.params.section - 1;
+    const new_content = req.body.new_content;
 
+    // 이전 파일의 내용에서 일부 섹션을 다른 내용으로 대체하는 함수
+    const updateFileContent = async () => {
+      try {
+        const fileContent = await getWikiContent(res, title, latest_ver);
+        const lines = fileContent.split(/\r?\n/);
+
+        let updated_content = "";
+        let current_sectionIndex = -1;
+        let flag = 0;
+
+        lines.forEach((line) => {
+          if (/^(={2,})\s+(.+?)\s+\1\s*$/.test(line)) {
+            current_sectionIndex++;
+          }
+          if (current_sectionIndex === updated_section_index && flag === 0) {
+            updated_content += new_content + "\n";
+            flag = 1;
+          }
+          else if (current_sectionIndex === updated_section_index & flag === 1) {
+            void 0; // 아무것도 안함 섹션 내용을 아예 갈아끼운 것
+          }
+          else {
+            updated_content += line + "\n";
+          }
+        });
+
+        updated_content = updated_content.replace(/\s+$/, "");
+        await saveWikiContent(res, title, new_version, updated_content);
+
+        console.log("The file has been updated!");
+
+        req.doc_id = doc_id;
+        req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+        req.summary = req.body.summary;
+        req.count = updated_content.length;
+        req.diff = updated_content.length - rows[0].count;
+        req.version = new_version;
+
+        // 히스토리 생성 -> 기여도 -> 알림
+        next();
+      } catch (error) {
+        res.status(432).send({
+          message: "섹션 수정 중 오류",
+          new_content: new_content,
+        });
+      }
+    };
+
+    // 파일 내용 업데이트 실행
+    updateFileContent();
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "섹션 수정 중 오류", new_content: req.body.new_content });
+  }
 };
 
 // 위키 히스토리 불러오기
@@ -510,28 +424,19 @@ exports.historyRawGetMid = async (req, res) => {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const title = req.params.title.replace(/\/+/g, "_");
     const version = req.params.version;
+    let text = "";
 
     // 해당 버전의 파일 읽어서 jsonData에 저장
-    S3.getObject({
-      Bucket: "wiki-bucket",
-      Key: `${title}/r${version}.wiki`,
-    }, (err, data) => {
-      if (err) {
-        console.log(err);
-        res.status(404).send(err);
-        return;
-      }
-      let text = data.Body.toString('utf-8');
+    text = await getWikiContent(res, title, version);
 
-      // 원래 통으로 가져오는 코드
-      const lines = text.split(/\r?\n/);
-      text = lines.join("\n");
+    // 원래 통으로 가져오는 코드
+    const lines = text.split(/\r?\n/);
+    text = lines.join("\n");
 
-      jsonData["doc_id"] = doc_id;
-      jsonData["version"] = version;
-      jsonData["text"] = text;
-      res.status(200).send(jsonData);
-    });
+    jsonData["doc_id"] = doc_id;
+    jsonData["version"] = version;
+    jsonData["text"] = text;
+    res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 raw data 불러오기 중 오류" });
