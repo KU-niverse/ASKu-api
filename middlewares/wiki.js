@@ -2,7 +2,7 @@ const Wiki = require("../models/wikiModel.js");
 
 // 위키 히스토리 생성 미들웨어
 exports.createHistoryMid = async (req, res, next) => {
-  // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1 넣어주기
+  // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
     const is_q_based = req.body.is_q_based !== undefined ? req.body.is_q_based : 0;
     const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
@@ -23,10 +23,13 @@ exports.createHistoryMid = async (req, res, next) => {
     console.log(rows_history);
     
     req.is_q_based = is_q_based;
+    if (is_q_based) {
+      // 답변 생성
+      Wiki.Wiki_history.createAnswer(req.body.qid, rows_history.id);
+    }
     // 기여도 -> 알림
     next();
     // res.status(200).json({ message: "위키 히스토리 생성 성공" });
-
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 생성 중 오류" });

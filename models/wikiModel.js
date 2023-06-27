@@ -86,6 +86,17 @@ class Wiki_history {
 
     return;
   }
+
+  // 답변 생성하는 함수, 질문 기반 수정일 때만 사용
+  static async createAnswer(wiki_history_id, qid) {
+    const [rows] = await pool.query(`INSERT INTO answers SET wiki_history_id = ?, question_id = ?`, [wiki_history_id, qid]);
+    const answer_id = rows.insertId;
+
+    // questions의 answer_or_not 업데이트
+    await pool.query(`UPDATE questions SET answer_or_not = 1 WHERE id = ?`, [qid]);
+
+    return answer_id;
+  }
   
   // 새로운 wiki_history를 생성해주는 함수, wiki_docs의 text_pointer와 lastest_ver도 업데이트해준다.
   static async create(new_wiki_history) {

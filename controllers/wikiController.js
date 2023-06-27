@@ -562,6 +562,20 @@ exports.wikiSearchGetMid = async (req, res) => {
   }
 };
 
+// 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
+exports.contentsSectionGetMidByIndex = async (req, res) => {
+  try {
+    // 질문을 받아온다
+    // 질문에 해당하는 문서를 가져와서 목차를 가져온다
+    // 목차를 순회하면서 질문과 같은 목차가 있는지 확인한다
+    // 같은 목차가 있으면 res에 based_on_section: true, section: section을 넣어서 보낸다
+    // 같은 목차가 없으면 res에 based_on_section: false를 넣어서 보낸다
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 목차 불러오기 중 오류" });
+  }
+};
+
 // 위키 즐겨찾기 조회
 exports.wikiFavoriteGetMid = async (req, res) => {
   try{

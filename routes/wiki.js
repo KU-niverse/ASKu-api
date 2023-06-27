@@ -59,6 +59,9 @@ router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contents
 // 특정 섹션의 글 수정하기
 router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 
+// 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
+router.get('/contents/question/:qid', wikiCont.contentsSectionGetMidByIndex);
+
 // 전체 글 불러오기 / 전체 글 수정시 사용
 router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
@@ -90,9 +93,6 @@ router.delete('/delete/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 
 // 위키 제목 기반으로 문서 검색하기
 router.get('/query/:title(*)', wikiCont.wikiSearchGetMid);
-
-// // 목차 글 불러오기(질문 기반 문서 수정  위함)→ 있으면 섹션과 함께 주고 섹션 수정, 없으면 섹션 0으로 주고 전체 수정
-// router.get('/contents/:title(*)/index/:index(*)', wikiCont.contentsSectionGetMidByIndex);
 
 // 위키 즐겨찾기 조회
 router.get('/favorite', isSignedIn, wikiCont.wikiFavoriteGetMid);
