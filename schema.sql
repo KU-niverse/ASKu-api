@@ -72,6 +72,7 @@ CREATE TABLE `wiki_history` (
 CREATE TABLE `wiki_favorites` (
    `doc_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`doc_id`, `user_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
@@ -162,8 +163,8 @@ CREATE TABLE `report_reason` (
 insert into `report_reason` (description) values ('문서 훼손');
 insert into `report_reason` (description) values ('욕설');
 
-CREATE TABLE `report` (
-   `id`   int   NOT NULL,
+CREATE TABLE `reports` (
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `type_id`   int   NOT NULL, -- [신고 종류] 1: 위키 히스토리 2: 질문 3: 토론방 4: 토론 메시지
    `target`   int   NOT NULL, -- [신고 대상] 1: wiki_history(id) 2: questions(id) 3: debates(id) 4: debate_history(id)
@@ -212,7 +213,7 @@ CREATE TABLE `user_attend` (
 );
 
 CREATE TABLE `notifications` (
-   `id`   int   NOT NULL ,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `type_id`   int   NOT NULL,
    `read_or_not`   bool   NOT NULL   DEFAULT 0, -- [읽음 여부]

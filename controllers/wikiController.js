@@ -494,7 +494,7 @@ exports.historyVersionPostMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "롤백 중 오류" });
+    res.status(500).json({ success: false, message: "롤백 중 오류" });
   }
 };
 
@@ -510,6 +510,7 @@ exports.comparisonGetMid = async (req, res) => {
 
     if (oldrev >= rev) {
       res.status(432).send({
+        success: false,
         message: "oldrev should be smaller than rev",
       });
       return;
@@ -531,10 +532,10 @@ exports.comparisonGetMid = async (req, res) => {
     jsonData["oldrev"] = oldrev;
     jsonData["oldrev_text"] = text;
 
-    res.status(200).send(jsonData);
+    res.status(200).send({ success: true, jsonData });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "두 버전 비교 중 오류" });
+    res.status(500).json({ success: false, message: "두 버전 비교 중 오류" });
   }
 };
 
@@ -543,11 +544,49 @@ exports.wikiDeleteMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     await Wiki.Wiki_docs.deleteWikiDocsById(doc_id);
-    res.status(200).json({ message: "위키 문서 삭제 성공" });
-  }
-  catch (err) {
+    res.status(200).json({ success: true, message: "위키 문서 삭제 성공" });
+  } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 문서 삭제 중 오류" });
+    res.status(500).json({ success: false, message: "위키 문서 삭제 중 오류" });
+  }
+};
+
+// 위키 즐겨찾기 조회
+exports.wikiFavoriteGetMid = async (req, res) => {
+  try{
+    const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(req.user[0].id);
+    res.status(200).send({ success: true, rows });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 즐겨찾기 조회 중 오류" });
+  }
+};
+
+// 위키 즐겨찾기 추가
+exports.wikiFavoritePostMid = async (req, res) => {
+  try{
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const new_wiki_favorite = new Wiki.Wiki_favorite({
+      user_id: req.user[0].id,
+      doc_id: doc_id,
+    });
+    await Wiki.Wiki_favorite.create(new_wiki_favorite);
+    res.status(200).json({ success: true, message: "위키 즐겨찾기 추가 성공" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 즐겨찾기 추가 중 오류" });
+  }
+};
+
+// 위키 즐겨찾기 삭제
+exports.wikiFavoriteDeleteMid = async (req, res) => {
+  try{
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
+    res.status(200).json({ success: true, message: "위키 즐겨찾기 삭제 성공" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 즐겨찾기 삭제 중 오류" });
   }
 };
 
@@ -556,9 +595,9 @@ exports.contributionGetMid = async (req, res) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_point.getContributors(doc_id);
-    res.status(200).send(rows);
+    res.status(200).send({ success: true, rows});
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 기여도 리스트 조회 중 오류" });
+    res.status(500).json({ success: false, message: "위키 기여도 리스트 조회 중 오류" });
   }
 };

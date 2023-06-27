@@ -94,11 +94,14 @@ router.delete('/delete/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 // // 목차 글 불러오기(질문 기반 문서 수정  위함)→ 있으면 섹션과 함께 주고 섹션 수정, 없으면 섹션 0으로 주고 전체 수정
 // router.get('/contents/:title(*)/index/:index(*)', wikiCont.contentsSectionGetMidByIndex);
 
-// // 위키 즐겨찾기 조회
-// router.get('/favorite', isSignedIn, wikiCont.favoriteGetMid);
+// 위키 즐겨찾기 조회
+router.get('/favorite', isSignedIn, wikiCont.wikiFavoriteGetMid);
 
-// // 위키 즐겨찾기 추가
-// router.post('/favorite/:title(*)', isSignedIn, wikiCont.favoritePostMid);
+// 위키 즐겨찾기 추가
+router.post('/favorite/:title(*)', isSignedIn, wikiCont.wikiFavoritePostMid);
+
+// 위키 즐겨찾기 삭제
+router.delete('/favorite/:title(*)', isSignedIn, wikiCont.wikiFavoriteDeleteMid);
 
 // 문서 내 기여도 리스트 조회
 router.get('/contributions/:title(*)', wikiCont.contributionGetMid);

@@ -122,4 +122,46 @@ class Wiki_point {
   }
 }
 
-module.exports = { Wiki_history, Wiki_docs, Wiki_point };
+// 위키 즐겨찾기
+class Wiki_favorite {
+  constructor(wiki_favorite) {
+    this.doc_id = wiki_favorite.doc_id;
+    this.user_id = wiki_favorite.user_id;
+  }
+
+  // 위키 즐겨찾기 추가
+  static async create(new_wiki_favorite) {
+    // 이미 즐겨찾기에 추가되어 있는지 확인
+    const [rows] = await pool.query(`SELECT * FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [new_wiki_favorite.doc_id, new_wiki_favorite.user_id]);
+    // 즐겨찾기에 추가되어 있지 않다면 
+    if (rows.length == 0) {
+      await pool.query("INSERT INTO wiki_favorites SET ?", new_wiki_favorite);
+
+      return ;
+    } else {
+      return ;
+    }
+  }
+
+  // 위키 즐겨찾기 삭제
+  static async deleteWikiFavorite(doc_id, user_id) {
+    await pool.query(`DELETE FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [doc_id, user_id]);
+    
+    return;
+  }
+
+  // user_id로 위키 즐겨찾기 조회
+  static async getWikiFavoriteByUserId(user_id) {
+    const [rows] = await pool.query(
+      `SELECT wd.*
+      FROM wiki_favorites wf
+      JOIN wiki_docs wd ON wf.doc_id = wd.id
+      WHERE wf.user_id = ?
+      ORDER BY wf.created_at DESC`,
+      [user_id]);
+
+    return rows;
+  } 
+}
+
+module.exports = { Wiki_history, Wiki_docs, Wiki_point, Wiki_favorite };
