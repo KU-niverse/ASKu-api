@@ -601,3 +601,15 @@ exports.contributionGetMid = async (req, res) => {
     res.status(500).json({ success: false, message: "위키 기여도 리스트 조회 중 오류" });
   }
 };
+
+// 특정 히스토리 bad로 변경
+exports.badHistoryPutMid = async (req, res) => {
+  try {
+    const history_id = req.params.hisid;
+    await Wiki.Wiki_history.badHistoryById(history_id);
+    res.status(200).json({ success: true, message: "히스토리 bad로 변경 성공" });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "히스토리 bad로 변경 중 오류" });
+  }
+};

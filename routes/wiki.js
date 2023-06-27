@@ -106,7 +106,7 @@ router.delete('/favorite/:title(*)', isSignedIn, wikiCont.wikiFavoriteDeleteMid)
 // 문서 내 기여도 리스트 조회
 router.get('/contributions/:title(*)', wikiCont.contributionGetMid);
 
-// // 특정 히스토리 bad로 변경
-// router.put('/badhis/:docid/:version', isAdmin, wikiCont.badHistoryPutMid);
+// 특정 히스토리 bad로 변경
+router.put('/badhis/:hisid', isAdmin, wikiCont.badHistoryPutMid);
 
 module.exports = router;

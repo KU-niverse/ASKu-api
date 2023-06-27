@@ -70,6 +70,17 @@ class Wiki_history {
 
     return rows[0];
   }
+
+  // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도도 재계산해준다.
+  static async badHistoryById(id) {
+    await pool.query(`UPDATE wiki_history SET is_bad = 1 WHERE id = ?`, [id]);
+
+    const [rows] = await pool.query(`SELECT user_id FROM wiki_history WHERE id = ?`, [id]);
+    await Wiki_point.recalculatePoint(rows[0].user_id);
+
+    return;
+  }
+  
   // 새로운 wiki_history를 생성해주는 함수, wiki_docs의 text_pointer와 lastest_ver도 업데이트해준다.
   static async create(new_wiki_history) {
     const [result] = await pool.query("INSERT INTO wiki_history SET ?", new_wiki_history);
