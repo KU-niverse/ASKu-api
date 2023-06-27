@@ -1,11 +1,14 @@
 const express = require("express");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 /* const path = require("path"); */
 const session = require("express-session");
-const dotenv = require("dotenv");
 const passport = require("passport");
 const userRouter = require("./routes/user");
+const questionRoutes = require("./routes/question");
+
 dotenv.config();
 
 const passportConfig = require("./passport");
@@ -13,6 +16,7 @@ const passportConfig = require("./passport");
 const app = express();
 passportConfig(); // 패스포트 설정
 
+app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -59,6 +63,8 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 /* 스웨거 코드 */
 
 app.use("/user", userRouter);
+
+app.use("/question", questionRoutes);
 
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");
