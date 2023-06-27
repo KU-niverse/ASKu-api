@@ -3,7 +3,7 @@ const wikiCont = require('../controllers/wikiController');
 const wikiMid = require('../middlewares/wiki');
 const imageMid = require('../middlewares/image');
 const { isSignedIn } = require('../middlewares/sign_in');
-// const { isAdmin } = require('../middlewares/admin');
+const { isAdmin } = require('../middlewares/admin');
 
 const router = express.Router();
 
@@ -85,8 +85,8 @@ router.get('/historys/:title(*)', wikiCont.historyGetMid);
 // 두 버전 비교하기
 router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonGetMid);
 
-// // 위키 문서 삭제하기
-// router.delete('/delete/:title(*)', isAdmin, wikiCont.deleteWikiDeleteMid);
+// 위키 문서 삭제하기
+router.delete('/delete/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 
 // // 위키 제목 기반으로 문서 검색하기
 // router.get('/search/:title(*)', wikiCont.searchWikiGetMid);

@@ -28,7 +28,10 @@ const getWikiContent = (res, title, version) => {
     }, (err, data) => {
       if (err) {
         console.log(err);
-        res.status(404).send(err);  // 내부에서 404 에러 처리
+        res.status(404).send({ // 내부에서 404 에러 처리
+          success: false,
+          err:err
+        });
         return;
       }
       resolve(data.Body.toString('utf-8'));
@@ -75,6 +78,7 @@ exports.newWikiPostMid = async (req, res, next) => {
       else {
         // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
         res.status(409).send({
+          success: false,
           message: "Already exist",
         });
         return;
@@ -114,7 +118,7 @@ exports.newWikiPostMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 생성 중 오류", content: err.content });
+    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: err.content });
   }
 };
 
@@ -128,6 +132,15 @@ exports.contentsGetMid = async (req, res) => {
     let text = "";
     let jsonData = {};
 
+    // 삭제된 문서인지 확인
+    const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
+    if (row.is_deleted === 1) {
+      res.status(410).send({
+        success: false,
+        message: "삭제된 문서입니다.",
+      });
+      return;
+    }
 
     // 가장 최근 버전의 파일 읽어서 jsonData에 저장
     // S3에서 파일 읽어오는 코드
@@ -218,10 +231,11 @@ exports.contentsGetMid = async (req, res) => {
     }
 
     jsonData["contents"] = content_json;
+    jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 불러오기 중 오류" });
+    res.status(500).json({ success: false, message: "위키 불러오기 중 오류" });
   }
 };
 
@@ -235,6 +249,7 @@ exports.contentsPostMid = async (req, res, next) => {
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != version) {
       res.status(426).send({
+        success: false,
         message: "Version is not matched",
         new_content: req.body.new_content,
       });
@@ -260,7 +275,7 @@ exports.contentsPostMid = async (req, res, next) => {
 
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 수정 중 오류", new_content: req.body.new_content });
+    res.status(500).json({ success: false, message: "위키 수정 중 오류", new_content: req.body.new_content });
   }
 };
 
@@ -319,9 +334,10 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["version"] = version;
     jsonData["title"] = section.title;
     jsonData["content"] = section.content.join("\n");
+    jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
-    res.status(422).send({ error: "Invalid section number" });
+    res.status(422).send({ success: false, error: "Invalid section number" });
   }
 };
 
@@ -334,6 +350,7 @@ exports.contentsSectionPostMid = async (req, res, next) => {
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != rows[0].version) {
       res.status(426).send({
+        success: false,
         message: "Version is not matched",
         new_content: req.body.new_content,
       });
@@ -389,6 +406,7 @@ exports.contentsSectionPostMid = async (req, res, next) => {
         next();
       } catch (error) {
         res.status(432).send({
+          success: false,
           message: "섹션 수정 중 오류",
           new_content: new_content,
         });
@@ -399,7 +417,7 @@ exports.contentsSectionPostMid = async (req, res, next) => {
     updateFileContent();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "섹션 수정 중 오류", new_content: req.body.new_content });
+    res.status(500).json({ success: false, message: "섹션 수정 중 오류", new_content: req.body.new_content });
   }
 };
 
@@ -408,7 +426,7 @@ exports.historyGetMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
-    res.status(200).send(rows);
+    res.status(200).send({success: true, rows});
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -435,10 +453,10 @@ exports.historyRawGetMid = async (req, res) => {
     jsonData["doc_id"] = doc_id;
     jsonData["version"] = version;
     jsonData["text"] = text;
-    res.status(200).send(jsonData);
+    res.status(200).send({ success: true, jsonData });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 raw data 불러오기 중 오류" });
+    res.status(500).json({ success: false, message: "위키 raw data 불러오기 중 오류" });
   }
 };
 
@@ -517,6 +535,19 @@ exports.comparisonGetMid = async (req, res) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "두 버전 비교 중 오류" });
+  }
+};
+
+// 문서 삭제하기
+exports.wikiDeleteMid = async (req, res) => {
+  try{
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    await Wiki.Wiki_docs.deleteWikiDocsById(doc_id);
+    res.status(200).json({ message: "위키 문서 삭제 성공" });
+  }
+  catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 문서 삭제 중 오류" });
   }
 };
 
