@@ -46,7 +46,7 @@ Question.updateQuestion = async (question_id, user_id, new_content) => {
   const flag = await pool.query(
     `SELECT user_id, answer_or_not FROM questions WHERE id = ?`,
     [question_id]
-  ); // update 시간 기록을 위해 컬럼 추가 필요할 듯
+  );
   if (!flag[0][0].answer_or_not && flag[0][0].user_id == user_id) {
     const result = await pool.query(
       `UPDATE questions SET content = ? WHERE id = ?`,
