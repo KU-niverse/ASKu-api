@@ -25,7 +25,7 @@ exports.createHistoryMid = async (req, res, next) => {
     req.is_q_based = is_q_based;
     if (is_q_based) {
       // 답변 생성
-      Wiki.Wiki_history.createAnswer(req.body.qid, rows_history.id);
+      Wiki.Wiki_history.createAnswer(rows_history.id, req.body.qid);
     }
     // 기여도 -> 알림
     next();

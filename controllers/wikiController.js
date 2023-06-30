@@ -1,4 +1,5 @@
 const Wiki = require("../models/wikiModel.js");
+const Question = require("../models/questionModel.js");
 // const fs = require("fs");
 // const Point = require("../models/pointModel.js");
 const dotenv = require("dotenv");
@@ -56,6 +57,52 @@ const saveWikiContent = (res, title, version, content) => {
       resolve();
     });
   });
+};
+
+// 인덱싱 함수
+const indexing = (numbers, sections) => {
+  let content_json = []; // content의 메타데이터와 데이터
+  let num_list = []; // index의 리스트
+  let idx = 1; // 가장 상위 목차
+
+  // 인덱싱
+  for (let i = 0; i < numbers.length; i++) {
+    let section_dic = {}; // section : section, index : index, title: title, content: content
+    section_dic["section"] = (i + 1).toString();
+    const num = numbers[i];
+
+    if (num === 1) {
+      // 가장 상위 목차가 변경됐을 경우
+      num_list = [idx++];
+      section_dic["index"] = num_list[0].toString();
+    } else {
+      if (num > num_list.length) {
+        // 하위 목차로 들어갈 때
+        while (num_list.length < num) num_list.push(1);
+      } else {
+        while (num_list.length > 0 && num < num_list.length) {
+          // depth가 똑같아질 때까지 pop
+          num_list.pop();
+        }
+        let tmp = num_list[num_list.length - 1]; // 한 단계 올리기
+        num_list.pop();
+        num_list.push(tmp + 1);
+      }
+      section_dic["index"] = num_list.join(".");
+    }
+
+    // title과 content 저장
+    section_dic["title"] = sections[i].title;
+    let content_text = "";
+    for (let content of sections[i].content) {
+      content_text += content;
+    }
+    section_dic["content"] = content_text;
+
+    content_json.push(section_dic);
+  }
+  
+  return content_json;
 };
 
 // 새 위키 문서 생성하기 [기여도 지급]
@@ -189,48 +236,7 @@ exports.contentsGetMid = async (req, res) => {
       sections.push(current_section);
     }
 
-    let content_json = []; // content의 메타데이터와 데이터
-    let num_list = []; // index의 리스트
-    let idx = 1; // 가장 상위 목차
-
-    // 인덱싱
-    for (let i = 0; i < numbers.length; i++) {
-      let section_dic = {}; // section : section, index : index, title: title, content: content
-      section_dic["section"] = (i + 1).toString();
-      const num = numbers[i];
-
-      if (num === 1) {
-        // 가장 상위 목차가 변경됐을 경우
-        num_list = [idx++];
-        section_dic["index"] = num_list[0].toString();
-      } else {
-        if (num > num_list.length) {
-          // 하위 목차로 들어갈 때
-          while (num_list.length < num) num_list.push(1);
-        } else {
-          while (num_list.length > 0 && num < num_list.length) {
-            // depth가 똑같아질 때까지 pop
-            num_list.pop();
-          }
-          let tmp = num_list[num_list.length - 1]; // 한 단계 올리기
-          num_list.pop();
-          num_list.push(tmp + 1);
-        }
-        section_dic["index"] = num_list.join(".");
-      }
-
-      // title과 content 저장
-      section_dic["title"] = sections[i].title;
-      let content_text = "";
-      for (let content of sections[i].content) {
-        content_text += content;
-      }
-      section_dic["content"] = content_text;
-
-      content_json.push(section_dic);
-    }
-
-    jsonData["contents"] = content_json;
+    jsonData["contents"] = indexing(numbers, sections);
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
@@ -566,10 +572,85 @@ exports.wikiSearchGetMid = async (req, res) => {
 exports.contentsSectionGetMidByIndex = async (req, res) => {
   try {
     // 질문을 받아온다
+    const q = await Question.getQuestion(req.params.qid);
     // 질문에 해당하는 문서를 가져와서 목차를 가져온다
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(q.doc_id);
+    const wiki_docs = await Wiki.Wiki_docs.getWikiDocsById(q.doc_id);
+    const title = wiki_docs.title.replace(/\/+/g, "_");
+    const version = rows[0].version;
+    let text = "";
+    let jsonData = {};
+
+    // S3에서 파일 읽어오는 코드
+    text = await getWikiContent(res, title, version);
+
+    // 원래 통으로 가져오는 코드
+    const lines = text.split(/\r?\n/);
+    text = lines.join("\n");
+
+    jsonData["version"] = version;
+    jsonData["text"] = text;
+
+    const sections = [];
+    let current_section = null;
+    let current_content = null;
+    const numbers = [];
+
+    // 파일 읽고 section 나누기
+    for (let line of lines) {
+      const matches = line.match(/^(={2,})\s+(.+?)\s+\1\s*$/); // 정규식 패턴에 맞는지 검사합니다.
+      if (matches !== null) {
+        // 해당 라인이 섹션 타이틀인 경우
+        numbers.push(matches[1].length - 1);
+        if (current_section !== null) {
+          current_section.content.push(current_content);
+          sections.push(current_section);
+        }
+        current_section = {
+          title: matches[2],
+          content: [],
+        };
+        current_content = "";
+      } else {
+        // 해당 라인이 섹션 내용인 경우
+        if (current_content !== "") {
+          // 빈 줄이면
+          current_content += "\n";
+        }
+        current_content += line;
+      }
+    }
+
+    if (current_section !== null) {
+      // 마지막 섹션 push
+      current_section.content.push(current_content);
+      sections.push(current_section);
+    }
+
+    const content_json = indexing(numbers, sections);
+    jsonData["contents"] = content_json;
+
+    let index_title_list = [];
+    for(let i = 0; i < content_json.length; i++){
+      index_title_list.push(content_json[i].index + " " + content_json[i].title);
+    }
+
+    const found = index_title_list.includes(q.index_title);
+
     // 목차를 순회하면서 질문과 같은 목차가 있는지 확인한다
     // 같은 목차가 있으면 res에 based_on_section: true, section: section을 넣어서 보낸다
+    if(found){
+      jsonData["based_on_section"] = true;
+      const section = index_title_list.indexOf(q.index_title) + 1;
+      jsonData["section"] = section;
+    }
     // 같은 목차가 없으면 res에 based_on_section: false를 넣어서 보낸다
+    else {
+      jsonData["based_on_section"] = false;
+    } 
+    jsonData["success"] = true;
+
+    res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 목차 불러오기 중 오류" });

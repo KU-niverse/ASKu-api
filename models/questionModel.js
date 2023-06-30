@@ -118,4 +118,4 @@ Question.getQuestionsPopular = async () => {
   return rows[0];
 };
 
-module.exports = {Question, getIdByTitle};
+module.exports = {Question, getIdByTitle, getQuestion};

@@ -60,7 +60,7 @@ router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contents
 router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid);
 
 // 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
-router.get('/contents/question/:qid', wikiCont.contentsSectionGetMidByIndex);
+router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
 router.get('/contents/:title(*)', wikiCont.contentsGetMid);
