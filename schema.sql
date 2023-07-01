@@ -1,3 +1,7 @@
+--이벤트 스케줄러 on
+SET GLOBAL event_scheduler = ON;
+
+
 CREATE TABLE `badges` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `name`   varchar(20)   NOT NULL,
@@ -236,7 +240,7 @@ CREATE TABLE `user_action` (
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
 
-CREATE TABLE `temporary_user` (
+CREATE TABLE `temp_users` (
    `login_id`   varchar(30)   NOT NULL UNIQUE, -- 로그인 시 사용되는 id
    `name`   varchar(15)   NOT NULL,
    `stu_id`   char(10)   NOT NULL,
@@ -247,3 +251,11 @@ CREATE TABLE `temporary_user` (
    `auth_uuid`  varchar(255) NOT NULL,
    PRIMARY KEY(`email`)
 );
+
+--매일 새벽 4시마다 임시 회원상태 초기화
+DROP EVENT IF EXISTS reset_temp_users;
+
+CREATE EVENT reset_temp_users
+ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
+DO 
+  TRUNCATE TABLE temp_users;

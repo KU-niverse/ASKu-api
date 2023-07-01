@@ -89,7 +89,7 @@ exports.emailDupCheck = async (req, res, next) => {
   }
 };
 
-//회원가입
+//회원가입 후 인증 이메일 전송
 exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
   try {
@@ -97,7 +97,7 @@ exports.signUp = async (req, res) => {
     const hash = await bcrypt.hash(password, 12);
     const uuid = uuidv4();
     const auth_uuid = uuidv4();
-    await User.tempCreate({
+    const result = await User.tempCreate({
       login_id,
       name,
       stu_id,
@@ -107,6 +107,12 @@ exports.signUp = async (req, res) => {
       uuid,
       auth_uuid,
     });
+    if (!result) {
+      return res.status(400).json({
+        success: false,
+        maessage: "회원가입에 실패하였습니다. 중복된 항목이 있습니다.",
+      });
+    }
 
     //메일 전송
     const transporter = nodemailer.createTransport({
@@ -177,20 +183,19 @@ exports.signUp = async (req, res) => {
                   <p>가입해주셔서 감사합니다! 이메일 인증을 완료하려면 아래 버튼을 클릭해주세요.</p>
               </div>
               <div class="button-container">
-                  <a href="#" class="button">가입확인</a>
+                  <a href="https://www.asku.wiki/signup/complete/${auth_uuid}" class="button">가입확인</a>
               </div>
           </div>
       </body>
-      </html>
-      
-        `,
+      </html>`,
     };
     await transporter.sendMail(mailOptions);
 
     //회원가입로직 return
     return res.status(201).json({
       success: true,
-      message: "임시 회원가입을 하였습니다. 이메일인증을 완료해주세요.",
+      message:
+        "임시 회원가입을 하였습니다. 04:00까지 이메일인증을 완료해주세요.",
       login_id: login_id,
       nickname,
       name,
@@ -298,6 +303,33 @@ exports.findId = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "findId(controller)에서 문제가 발생했습니다.",
+    });
+  }
+};
+
+exports.signUpEmailCheck = async (req, res) => {
+  try {
+    const auth_uuid = req.body.auth_uuid;
+    const result = await User.register_auth(auth_uuid);
+    if (result) {
+      console.log("회원가입을 성공적으로 완료하였습니다.");
+      return res.status(200).json({
+        success: true,
+        message: "회원가입을 성공적으로 완료하였습니다.",
+      });
+    } else {
+      console.log("회원가입 세션이 만료되었습니다.");
+      return res.status(400).json({
+        success: false,
+        message:
+          "회원가입 세션이 만료되었습니다. 처음부터 다시 회원가입을 진행해주세요.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "signUpEmailCheck-controller에서 문제가 발생했습니다.",
     });
   }
 };
