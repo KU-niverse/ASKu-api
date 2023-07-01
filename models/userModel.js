@@ -21,6 +21,35 @@ class User {
 }
 
 //login_id로 유저 찾기
+User.findByLoginIdTemp = async (login_id) => {
+  const [rows] = await pool.query(
+    `SELECT * FROM temp_users WHERE login_id = ?`,
+    [login_id]
+  );
+  return rows;
+};
+//nickname으로 유저 찾기
+User.findByNicknameTemp = async (nickname) => {
+  const [rows] = await pool.query(
+    `SELECT * FROM temp_users WHERE nickname = ?`,
+    [nickname]
+  );
+  return rows;
+};
+//email로 유저 찾기
+User.findByEmailTemp = async (email) => {
+  const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
+    email,
+  ]);
+  console.log(
+    "🚀 ~ file: userModel.js:43 ~ User.findByEmailTemp= ~ rows:",
+    rows
+  );
+
+  return rows;
+};
+
+//login_id로 유저 찾기
 User.findByLoginId = async (login_id) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
@@ -39,6 +68,7 @@ User.findByEmail = async (email) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
   ]);
+
   return rows;
 };
 
@@ -59,7 +89,6 @@ User.create = async (newUser) => {
 
   return rows;
 };
-//TODO: 중복된 유저 있는지 교차 검증 필요
 //이메일 인증 전 임시 유저 생성
 User.tempCreate = async (newUser) => {
   const [dup_user] = await pool.query(

@@ -11,6 +11,7 @@ const {
   changePw,
   findId,
   signUpEmailCheck,
+  findPw,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -120,6 +121,8 @@ router.get("/issignedin", isSignedIn, (req, res) => {
 });
 //아이디 찾기
 router.post("/findid", isNotSignedIn, findId);
+//비밀번호 찾기
+router.post("/findpw", isNotSignedIn, findPw);
 //비밀번호 변경
 router.put("/changepw", isSignedIn, changePw);
 
