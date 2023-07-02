@@ -20,7 +20,7 @@ class User {
   }
 }
 
-//login_id로 유저 찾기
+//temp에서 login_id로 유저 찾기
 User.findByLoginIdTemp = async (login_id) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE login_id = ?`,
@@ -28,7 +28,8 @@ User.findByLoginIdTemp = async (login_id) => {
   );
   return rows;
 };
-//nickname으로 유저 찾기
+
+//temp에서 nickname으로 유저 찾기
 User.findByNicknameTemp = async (nickname) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE nickname = ?`,
@@ -36,13 +37,19 @@ User.findByNicknameTemp = async (nickname) => {
   );
   return rows;
 };
-//email로 유저 찾기
+//temp에서 email로 유저 찾기
 User.findByEmailTemp = async (email) => {
   const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
     email,
   ]);
 
   return rows;
+};
+
+//user_id로 유저 찾기
+User.findById = async (id) => {
+  const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
+  return user;
 };
 
 //login_id로 유저 찾기

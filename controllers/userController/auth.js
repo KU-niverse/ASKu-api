@@ -413,7 +413,7 @@ exports.findPw = async (req, res) => {
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "findPw(controller)에서 문제가 발생했습니다.",
+      message: "findPw-controller에서 문제가 발생했습니다.",
     });
   }
 };
@@ -449,6 +449,7 @@ exports.sessionValidation = async (req, res) => {
   try {
     const hashed_login_id = await req.body.hashed_login_id;
     const session = await User.checkPwChangeSession(hashed_login_id);
+
     if (session.length == 0) {
       return res.status(400).json({
         success: false,
@@ -456,6 +457,8 @@ exports.sessionValidation = async (req, res) => {
           "만료되었거나 존재하지 않는 세션 접근입니다. 다시 한 번 비밀번호 찾기를 진행해주세요.",
       });
     } else {
+      const user = await User.findById(session[0].user_id);
+      session[0].login_id = user[0].login_id;
       return res.status(200).json({
         success: true,
         message: session[0],
