@@ -12,6 +12,7 @@ const {
   findId,
   signUpEmailCheck,
   findPw,
+  sessionValidation,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -119,6 +120,9 @@ router.get("/issignedin", isSignedIn, (req, res) => {
     .status(201)
     .json({ success: true, message: "로그인한 상태입니다." });
 });
+
+//세션 유효성 확인
+router.post("/sessionvalidation", isNotSignedIn, sessionValidation);
 //아이디 찾기
 router.post("/findid", isNotSignedIn, findId);
 //비밀번호 찾기

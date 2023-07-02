@@ -3,9 +3,7 @@ const bcrypt = require("bcrypt");
 const User = require("../../models/userModel");
 const { v4: uuidv4 } = require("uuid");
 const passport = require("passport");
-
 const express = require("express");
-const router = express.Router();
 const nodemailer = require("nodemailer");
 const ejs = require("ejs");
 const path = require("path");
@@ -74,15 +72,9 @@ exports.emailDupCheck = async (req, res, next) => {
     }
 
     const ex_user_email = await User.findByEmail(email);
-    console.log(
-      "🚀 ~ file: auth.js:77 ~ exports.emailDupCheck= ~ ex_user_email:",
-      ex_user_email.length != 0
-    );
+
     const ex_temp_user_email = await User.findByEmailTemp(email);
-    console.log(
-      "🚀 ~ file: auth.js:78 ~ exports.emailDupCheck= ~ ex_temp_user_email:",
-      ex_temp_user_email
-    );
+
     if (ex_user_email.length != 0 || ex_temp_user_email != 0) {
       return res.status(400).json({
         success: false,
@@ -99,8 +91,9 @@ exports.emailDupCheck = async (req, res, next) => {
     return next(error);
   }
 };
-
+//TODO: 회원가입이 각 시도마다 12시간의 유효기간을 가지도록 수정요함
 //FIXME: 회원가입시 이메일을 잘못 입력했을때 로직 추가요함
+//FIXME: auth_uuid를 더짧고 효율적인 방식의 것으로 수정 요함
 //회원가입 후 인증 이메일 전송
 exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
@@ -322,10 +315,20 @@ exports.findId = async (req, res) => {
 exports.findPw = async (req, res) => {
   try {
     const login_id = req.body.login_id;
-    const user = User.findByLoginId(login_id);
-    const hashed_id = await bcrypt.hash(login_id, 12);
+    const user = await User.findByLoginId(login_id);
+    if (user.length != 1) {
+      return res.status(401).json({
+        success: false,
+        message: "존재하지 않는 유저 아이디입니다.",
+      });
+    }
+    //아이디 암호화
+    const hashed_login_id = await bcrypt.hash(login_id, 12);
+    //비밀번호 변경 세션 생성
+    User.createChangePwSession(login_id, hashed_login_id);
+
     //메일 전송
-    const transporter = nodemailer.createTransport({
+    const transporter = await nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
       port: 587,
@@ -337,14 +340,14 @@ exports.findPw = async (req, res) => {
     });
 
     const mailOptions = {
-      to: user.email,
+      to: user[0].email,
       subject: "ASKu 비밀번호 변경",
       html: `
       <!DOCTYPE html>
       <html>
       <head>
           <meta charset="UTF-8">
-          <title>이메일 인증</title>
+          <title>비밀번호 변경</title>
           <style>
               body {
                   font-family: Arial, sans-serif;
@@ -394,13 +397,18 @@ exports.findPw = async (req, res) => {
                   비밀번호 변경을 요청하신 적이 없다면, 이메일을 무시하셔도 됩니다.</p>
               </div>
               <div class="button-container">
-                  <a href="https://www.asku.wiki/changepw/${hashed_id}" class="button">가입확인</a>
+                  <a href="https://www.asku.wiki/changepw/${hashed_login_id}" class="button">비밀번호 변경</a>
               </div>
           </div>
       </body>
       </html>`,
     };
+
     await transporter.sendMail(mailOptions);
+    return res.status(201).json({
+      success: true,
+      message: "비밀번호 변경 이메일을 전송하였습니다.",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
@@ -433,6 +441,31 @@ exports.signUpEmailCheck = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "signUpEmailCheck-controller에서 문제가 발생했습니다.",
+    });
+  }
+};
+
+exports.sessionValidation = async (req, res) => {
+  try {
+    const hashed_login_id = await req.body.hashed_login_id;
+    const session = await User.checkPwChangeSession(hashed_login_id);
+    if (session.length == 0) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "만료되었거나 존재하지 않는 세션 접근입니다. 다시 한 번 비밀번호 찾기를 진행해주세요.",
+      });
+    } else {
+      return res.status(200).json({
+        success: true,
+        message: session[0],
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "sessionValidation-controller에서 문제가 발생했습니다.",
     });
   }
 };

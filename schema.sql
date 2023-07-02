@@ -249,13 +249,31 @@ CREATE TABLE `temp_users` (
    `nickname`   varchar(20)   NOT NULL UNIQUE,
    `uuid`   varchar(255) NOT NULL,
    `auth_uuid`  varchar(255) NOT NULL,
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY(`email`)
 );
 
---매일 새벽 4시마다 임시 회원상태 초기화
+-- 매일 오전 4시에 생성된 행 중 2시간 이상 된 행을 삭제
 DROP EVENT IF EXISTS reset_temp_users;
 
 CREATE EVENT reset_temp_users
 ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
-DO 
-  TRUNCATE TABLE temp_users;
+DO
+  DELETE FROM temp_users WHERE created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);
+
+CREATE TABLE `change_pw_session` (
+   `user_id` int NOT NULL,
+   `change_pw_token` varchar(255) NOT NULL,
+   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY (`user_id`, `change_pw_token`),
+   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+);
+
+
+-- 매일 오전 4시에 생성된 행 중 2시간 이상 된 행을 삭제
+DROP EVENT IF EXISTS reset_change_pw_session;
+
+CREATE EVENT reset_change_pw_session
+ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
+DO
+  DELETE FROM change_pw_session WHERE created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);

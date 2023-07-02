@@ -41,10 +41,6 @@ User.findByEmailTemp = async (email) => {
   const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
     email,
   ]);
-  console.log(
-    "🚀 ~ file: userModel.js:43 ~ User.findByEmailTemp= ~ rows:",
-    rows
-  );
 
   return rows;
 };
@@ -131,10 +127,6 @@ User.register_auth = async (auth_uuid) => {
     [auth_uuid]
   );
 
-  console.log(
-    "🚀 ~ file: userModel.js:93 ~ User.register_auth= ~ temp_user:",
-    temp_user
-  );
   console.log(temp_user.length);
   if (temp_user.length == 1) {
     User.create(temp_user[0]);
@@ -144,6 +136,25 @@ User.register_auth = async (auth_uuid) => {
     console.log("해당 회원가입의 세션이 만료되었습니다.");
     return false;
   }
+};
+
+User.createChangePwSession = async (login_id, hashed_login_id) => {
+  const [user] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
+    login_id,
+  ]);
+  await pool.query(
+    `INSERT INTO change_pw_session (user_id, change_pw_token) VALUES (?, ?)`,
+    [user[0].id, hashed_login_id]
+  );
+  return true;
+};
+
+User.checkPwChangeSession = async (hashed_login_id) => {
+  const [pw_session] = await pool.query(
+    `SELECT * FROM change_pw_session WHERE change_pw_token = ?`,
+    [hashed_login_id]
+  );
+  return pw_session;
 };
 
 /* User.changePW = async (password, user_id, phone_number) => {
