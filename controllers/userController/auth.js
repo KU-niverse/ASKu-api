@@ -255,28 +255,29 @@ exports.signOut = (req, res) => {
     });
   }
 };
-
+//FIXME: 해당 로직 취약점 많음
 exports.changePw = async (req, res) => {
   try {
-    const { login_id, password } = req.body;
+    const { login_id, hashed_login_id, password } = req.body;
     const new_pw = password;
-    const current_pw = req.user[0].password;
-    //기존 비밀번호와 비교
-    const is_not_changeed = await bcrypt.compare(new_pw, current_pw);
-    if (is_not_changeed) {
-      return res.status(400).json({
-        success: false,
-        message: "기존 비밀번호와 동일합니다.",
+
+    const hashed_pw = await bcrypt.hash(new_pw, 12);
+    const result = User.changePw(login_id, hashed_pw);
+    if (result) {
+      //비밀번호 찾기 후 재설정이라면(hashed_login_id가 존재) change_pw_session에서 해당 세션을 제거
+      if (hashed_login_id) {
+        await User.deletePwFindSession(hashed_login_id);
+        console.log("hih");
+      }
+      return res.status(200).json({
+        success: true,
+        message: "비밀번호 변경이 완료되었습니다.",
       });
     } else {
-      const hashed_pw = await bcrypt.hash(new_pw, 12);
-      const result = User.changePw(login_id, hashed_pw);
-      if (result) {
-        return res.status(400).json({
-          success: true,
-          message: "비밀번호 변경이 완료되었습니다.",
-        });
-      }
+      return res.status(400).json({
+        success: false,
+        message: "changePw(controller)에서 문제가 발생했습니다.",
+      });
     }
   } catch (error) {
     console.log(error);
@@ -445,7 +446,7 @@ exports.signUpEmailCheck = async (req, res) => {
   }
 };
 
-exports.sessionValidation = async (req, res) => {
+exports.pwFindSessionCheck = async (req, res) => {
   try {
     const hashed_login_id = await req.body.hashed_login_id;
     const session = await User.checkPwChangeSession(hashed_login_id);
@@ -458,6 +459,7 @@ exports.sessionValidation = async (req, res) => {
       });
     } else {
       const user = await User.findById(session[0].user_id);
+      session[0].id = user[0].id;
       session[0].login_id = user[0].login_id;
       return res.status(200).json({
         success: true,

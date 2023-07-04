@@ -124,6 +124,7 @@ User.changePw = async (login_id, hashed_new_pw) => {
     hashed_new_pw,
     login_id,
   ]);
+  return true;
 };
 
 //회원가입 이메일 인증
@@ -162,6 +163,13 @@ User.checkPwChangeSession = async (hashed_login_id) => {
     [hashed_login_id]
   );
   return pw_session;
+};
+
+User.deletePwFindSession = async (hashed_login_id) => {
+  await pool.query(`DELETE FROM change_pw_session WHERE change_pw_token = ?`, [
+    hashed_login_id,
+  ]);
+  return true;
 };
 
 /* User.changePW = async (password, user_id, phone_number) => {

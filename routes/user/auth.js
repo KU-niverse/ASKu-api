@@ -12,7 +12,7 @@ const {
   findId,
   signUpEmailCheck,
   findPw,
-  sessionValidation,
+  pwFindSessionCheck,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -122,12 +122,12 @@ router.get("/issignedin", isSignedIn, (req, res) => {
 });
 
 //세션 유효성 확인
-router.post("/sessionvalidation", isNotSignedIn, sessionValidation);
+router.post("/pwchangesessioncheck", isNotSignedIn, pwFindSessionCheck);
 //아이디 찾기
 router.post("/findid", isNotSignedIn, findId);
 //비밀번호 찾기
 router.post("/findpw", isNotSignedIn, findPw);
 //비밀번호 변경
-router.put("/changepw", isSignedIn, changePw);
+router.put("/changepw", changePw);
 
 module.exports = router;
