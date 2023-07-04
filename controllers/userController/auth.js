@@ -459,7 +459,7 @@ exports.pwFindSessionCheck = async (req, res) => {
       });
     } else {
       const user = await User.findById(session[0].user_id);
-      session[0].id = user[0].id;
+
       session[0].login_id = user[0].login_id;
       return res.status(200).json({
         success: true,
