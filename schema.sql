@@ -67,6 +67,7 @@ CREATE TABLE `wiki_history` (
    `count`   int   NOT NULL, -- 글자수
    `diff`   int   NOT NULL, -- 이전 히스토리와의 변경 글자수
    `is_bad`   bool   NOT NULL   DEFAULT 0, -- [부적절한 히스토리인지 여부] 0: 적절, 1: 부적절
+   `is_rollback`   bool   NOT NULL   DEFAULT 0, -- [롤백 히스토리인지 여부] 0: 일반, 1: 롤백
     PRIMARY KEY(`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
@@ -165,8 +166,8 @@ CREATE TABLE `report_reason` (
 insert into `report_reason` (description) values ('문서 훼손');
 insert into `report_reason` (description) values ('욕설');
 
-CREATE TABLE `report` (
-   `id`   int   NOT NULL,
+CREATE TABLE `reports` (
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `type_id`   int   NOT NULL, -- [신고 종류] 1: 위키 히스토리 2: 질문 3: 토론방 4: 토론 메시지
    `target`   int   NOT NULL, -- [신고 대상] 1: wiki_history(id) 2: questions(id) 3: debates(id) 4: debate_history(id)
@@ -215,7 +216,7 @@ CREATE TABLE `user_attend` (
 );
 
 CREATE TABLE `notifications` (
-   `id`   int   NOT NULL ,
+   `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `type_id`   int   NOT NULL,
    `read_or_not`   bool   NOT NULL   DEFAULT 0, -- [읽음 여부]
@@ -239,6 +240,7 @@ CREATE TABLE `user_action` (
     PRIMARY KEY (`user_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
+
 
 CREATE TABLE `temp_users` (
    `login_id`   varchar(30)   NOT NULL UNIQUE, -- 로그인 시 사용되는 id
@@ -277,3 +279,4 @@ CREATE EVENT reset_change_pw_session
 ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
 DO
   DELETE FROM change_pw_session WHERE created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);
+
