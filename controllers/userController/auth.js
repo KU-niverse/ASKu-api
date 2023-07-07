@@ -423,6 +423,7 @@ exports.signUpEmailCheck = async (req, res) => {
   try {
     const auth_uuid = req.body.auth_uuid;
     const result = await User.register_auth(auth_uuid);
+
     if (result) {
       console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({

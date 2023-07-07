@@ -134,11 +134,11 @@ User.register_auth = async (auth_uuid) => {
     `SELECT * FROM temp_users WHERE auth_uuid = ?;`,
     [auth_uuid]
   );
-
-  console.log(temp_user.length);
   if (temp_user.length == 1) {
-    User.create(temp_user[0]);
-    await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [auth_uuid]);
+    await User.create(temp_user[0]);
+    await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [
+      auth_uuid,
+    ]);
     return true;
   } else {
     console.log("해당 회원가입의 세션이 만료되었습니다.");
