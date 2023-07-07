@@ -16,3 +16,8 @@ exports.wikiHistory = async (req, res) => {
   const wikiHistory = await User.getWikiHistory(req.user[0].id);
   return res.status(201).json({ success: true, message: wikiHistory });
 };
+
+exports.badgeHistory = async (req, res) => {
+  const badgeHistory = await User.getBadgeHistory(req.user[0].id);
+  return res.status(201).json({ success: true, message: badgeHistory });
+};

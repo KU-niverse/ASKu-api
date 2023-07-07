@@ -182,6 +182,14 @@ User.getWikiHistory = async (user_id) => {
   return user_wiki_history;
 };
 
+User.getBadgeHistory = async (user_id) => {
+  const [user_badge_history] = await pool.query(
+    `SELECT * FROM badge_history WHERE user_id = ?`,
+    [user_id]
+  );
+  return user_badge_history;
+};
+
 /* User.changePW = async (password, user_id, phone_number) => {
   const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
   return rows;
