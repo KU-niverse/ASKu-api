@@ -190,6 +190,19 @@ User.getBadgeHistory = async (user_id) => {
   return user_badge_history;
 };
 
+User.setRepBadge = async (rep_badge_id, user_id) => {
+  try {
+    await pool.query(`UPDATE users SET rep_badge = ? WHERE id = ?`, [
+      rep_badge_id,
+      user_id,
+    ]);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 /* User.changePW = async (password, user_id, phone_number) => {
   const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
   return rows;
