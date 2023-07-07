@@ -120,7 +120,7 @@ User.tempCreate = async (newUser) => {
 
 //비밀번호 변경
 User.changePw = async (login_id, hashed_new_pw) => {
-  pool.query(`UPDATE users SET password = ? WHERE login_id = ?;`, [
+  await pool.query(`UPDATE users SET password = ? WHERE login_id = ?;`, [
     hashed_new_pw,
     login_id,
   ]);
@@ -138,7 +138,7 @@ User.register_auth = async (auth_uuid) => {
   console.log(temp_user.length);
   if (temp_user.length == 1) {
     User.create(temp_user[0]);
-    pool.query(`DELETE FROM temp_user WHERE auth_uuid = ?;`, [auth_uuid]);
+    await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [auth_uuid]);
     return true;
   } else {
     console.log("해당 회원가입의 세션이 만료되었습니다.");
