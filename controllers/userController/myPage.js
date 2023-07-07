@@ -11,3 +11,8 @@ var appDir = path.dirname(require.main.filename);
 exports.info = async (req, res) => {
   return res.status(201).json({ success: true, message: req.user[0] });
 };
+
+exports.wikiHistory = async (req, res) => {
+  const wikiHistory = await User.getWikiHistory(req.user[0].id);
+  return res.status(201).json({ success: true, message: wikiHistory });
+};

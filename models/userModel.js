@@ -172,6 +172,16 @@ User.deletePwFindSession = async (hashed_login_id) => {
   return true;
 };
 
+//user mypage models
+
+User.getWikiHistory = async (user_id) => {
+  const [user_wiki_history] = await pool.query(
+    `SELECT * FROM wiki_history WHERE user_id = ?`,
+    [user_id]
+  );
+  return user_wiki_history;
+};
+
 /* User.changePW = async (password, user_id, phone_number) => {
   const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
   return rows;
