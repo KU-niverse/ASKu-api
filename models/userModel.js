@@ -172,6 +172,50 @@ User.deletePwFindSession = async (hashed_login_id) => {
   return true;
 };
 
+//user mypage models
+
+User.getWikiHistory = async (user_id) => {
+  const [user_wiki_history] = await pool.query(
+    `SELECT * FROM wiki_history WHERE user_id = ? ORDER BY created_at DESC`,
+    [user_id]
+  );
+  return user_wiki_history;
+};
+
+User.getBadgeHistory = async (user_id) => {
+  const [user_badge_history] = await pool.query(
+    `SELECT * FROM badge_history WHERE user_id = ?`,
+    [user_id]
+  );
+  return user_badge_history;
+};
+
+User.setRepBadge = async (rep_badge_id, user_id) => {
+  try {
+    await pool.query(`UPDATE users SET rep_badge = ? WHERE id = ?`, [
+      rep_badge_id,
+      user_id,
+    ]);
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
+User.editInfo = async (name, stu_id, nickname, user_id) => {
+  try {
+    await pool.query(
+      `UPDATE users SET name = ?, stu_id = ?, nickname = ? WHERE id = ?`,
+      [name, stu_id, nickname, user_id]
+    );
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+};
+
 /* User.changePW = async (password, user_id, phone_number) => {
   const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
   return rows;
