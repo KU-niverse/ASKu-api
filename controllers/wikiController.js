@@ -561,7 +561,7 @@ exports.wikiDeleteMid = async (req, res) => {
 exports.wikiSearchGetMid = async (req, res) => {
   try{
     const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(req.params.title);
-    res.status(200).send({ success: true, rows });
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 검색 중 오류" });
