@@ -36,3 +36,19 @@ exports.setRepBadge = async (req, res) => {
     });
   }
 };
+
+exports.editInfo = async (req, res) => {
+  const { name, stu_id, nickname } = req.body;
+  const result = await User.editInfo(name, stu_id, nickname, req.user[0].id);
+  if (!result) {
+    return res.status(500).json({
+      success: false,
+      message: `잘못된 접근입니다. 정보 수정에 실패하였습니다.`,
+    });
+  } else {
+    return res.status(201).json({
+      success: true,
+      message: `정보가 수정되었습니다.`,
+    });
+  }
+};

@@ -14,9 +14,7 @@ module.exports = () => {
       },
       async (login_id, password, done) => {
         try {
-          await console.log("실행됨");
           const exUser = await User.findByLoginId(login_id);
-          console.log(exUser);
           if (exUser.length != 0) {
             const result = await bcrypt.compare(password, exUser[0].password);
             if (result) {
