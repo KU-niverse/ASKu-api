@@ -15,6 +15,7 @@ const reportRoutes = require("./routes/report");
 
 dotenv.config();
 
+const wikiRoutes = require("./routes/wiki");
 const passportConfig = require("./passport");
 
 const app = express();
@@ -71,6 +72,11 @@ app.use("/question", questionRoutes);
 app.use("/debate", debateRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/report", reportRoutes);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+app.use("/wiki", wikiRoutes);
 
 app.listen(app.get("port"), () => {
   console.log(app.get("port"), "번 포트에서 대기 중");

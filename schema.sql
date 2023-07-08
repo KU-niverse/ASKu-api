@@ -76,6 +76,7 @@ CREATE TABLE `wiki_history` (
 CREATE TABLE `wiki_favorites` (
    `doc_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`doc_id`, `user_id`),
     FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
     FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
