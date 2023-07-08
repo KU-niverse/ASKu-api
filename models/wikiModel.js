@@ -23,9 +23,9 @@ class Wiki_docs {
   }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id) {
-    await pool.query(`UPDATE wiki_docs SET is_deleted = 1 WHERE id = ?`, [id]);
+    const [result] = await pool.query(`UPDATE wiki_docs SET is_deleted = 1 WHERE id = ?`, [id]);
 
-    return;
+    return result[0].changedRows;
   }
   // wiki_docs 테이블에서 title을 통해 문서의 id를 찾아주는 함수
   static async getWikiDocsIdByTitle(title) {
@@ -79,12 +79,12 @@ class Wiki_history {
 
   // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도도 재계산해준다.
   static async badHistoryById(id) {
-    await pool.query(`UPDATE wiki_history SET is_bad = 1 WHERE id = ?`, [id]);
+    const [result] = await pool.query(`UPDATE wiki_history SET is_bad = 1 WHERE id = ?`, [id]);
 
     const [rows] = await pool.query(`SELECT user_id FROM wiki_history WHERE id = ?`, [id]);
     await Wiki_point.recalculatePoint(rows[0].user_id);
 
-    return;
+    return result[0].changedRows;
   }
 
   // 답변 생성하는 함수, 질문 기반 수정일 때만 사용
@@ -118,16 +118,16 @@ class Wiki_point {
     if(is_q_based == 1){
       point = point * 5;
     }
-    await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point * 4, user_id]);
+    const [rows] = await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point * 4, user_id]);
 
-    return;
+    return rows[0].point;
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
+    const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
 
-    return;
+    return result[0].changedRows;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
@@ -163,19 +163,19 @@ class Wiki_favorite {
     const [rows] = await pool.query(`SELECT * FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [new_wiki_favorite.doc_id, new_wiki_favorite.user_id]);
     // 즐겨찾기에 추가되어 있지 않다면 
     if (rows.length == 0) {
-      await pool.query("INSERT INTO wiki_favorites SET ?", new_wiki_favorite);
+      const [result] = await pool.query("INSERT INTO wiki_favorites SET ?", new_wiki_favorite);
 
-      return ;
+      return result[0].insertId;
     } else {
-      return ;
+      return 0;
     }
   }
 
   // 위키 즐겨찾기 삭제
   static async deleteWikiFavorite(doc_id, user_id) {
-    await pool.query(`DELETE FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [doc_id, user_id]);
+    const [result] = await pool.query(`DELETE FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [doc_id, user_id]);
     
-    return;
+    return result[0].changedRows;
   }
 
   // user_id로 위키 즐겨찾기 조회
