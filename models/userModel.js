@@ -176,7 +176,7 @@ User.deletePwFindSession = async (hashed_login_id) => {
 
 User.getWikiHistory = async (user_id) => {
   const [user_wiki_history] = await pool.query(
-    `SELECT * FROM wiki_history WHERE user_id = ?`,
+    `SELECT * FROM wiki_history WHERE user_id = ? ORDER BY created_at DESC`,
     [user_id]
   );
   return user_wiki_history;
