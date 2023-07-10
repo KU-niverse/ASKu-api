@@ -54,7 +54,8 @@ exports.questionEditMid = async(req, res) => {
 // 질문 삭제하기 [답변이 달리기 전, 좋아요 눌리기 전까지만 가능]
 exports.questionDeleteMid = async(req, res) => {
   try {
-    const result = await Question.deleteQuestion(req.params.question);
+    const result = await Question.deleteQuestion(req.params.question, req.body.user_id);
+    console.log(result);
     if (!result) {
       res.status(400).send({message: "이미 답변 및 좋아요가 달렸거나, 다른 회원의 질문입니다."});
     } else {

@@ -4,7 +4,7 @@ const Report = require("../models/reportModel");
 exports.reportPostMid = async (req, res) => {
   try {
     const newReport = new Report({
-      user_id: req.body.user_id, // jwt token 적용 시 변경
+      user_id: req.user[0].id, // jwt token 적용 시 변경
       type_id: req.params.type,
       target: req.body.target,
       reason_id: req.body.reason_id,
