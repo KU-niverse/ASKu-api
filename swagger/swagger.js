@@ -1,22 +1,18 @@
-const swaggerUi = require("swagger-ui-express");
-const swaggereJsdoc = require("swagger-jsdoc");
+const swaggerAutogen = require("swagger-autogen")({openapi: "3.0.0"});
 
 const options = {
-  swaggerDefinition: {
-    openapi: "3.0.0",
-    info: {
-      version: "1.0.0",
-      title: "asku-api",
-      description: "교내 정보제공 웹사이트 asku의 API 문서입니다.",
-    },
-    servers: [
-      {
-        url: "http://localhost:8080", // 요청 URL
-      },
-    ],
+  info: {
+    title: "ASKu-api Docs",
+    description: "ASKu의 api 문서입니다."
   },
-  apis: ["./routes/*.js", "./routes/user/*.js"], //Swagger 파일 연동
+  servers: [
+    {
+      url: "http://localhost:8080",
+    },
+  ],
+  schemes: ["http"]
 };
-const specs = swaggereJsdoc(options);
 
-module.exports = { swaggerUi, specs };
+const outputFile = "./swagger_output.json";
+const endpointFiles = ["./app.js"];
+swaggerAutogen(outputFile, endpointFiles, options);
