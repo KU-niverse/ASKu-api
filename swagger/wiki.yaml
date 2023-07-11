@@ -1,0 +1,532 @@
+components:
+  schemas:
+    NeedLogin:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: "401"
+          example: "401"
+        success:
+          type: boolean
+          description: "false"
+          example: false
+        message:
+          type: string
+          description: "로그인이 필요한 서비스입니다."
+          example: "로그인이 필요한 서비스입니다."
+    Res500:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: "500"
+          example: "500"
+        success:
+          type: boolean
+          description: "false"
+          example: false
+        message:
+          type: string
+          description: "서버에서 예상치 못한 오류가 발생했습니다."
+          example: "서버에서 예상치 못한 오류가 발생했습니다."
+    ResNotLatest:
+      type: object
+      properties:
+        status:
+          type: integer
+          description: "426"
+          example: "426"
+        success:
+          type: boolean
+          description: "false"
+          example: false
+        message:
+          type: string
+          description: "위키 문서의 최신 버전이 아님"
+          example: "Version is not matched"
+        new_content:
+          type: string
+          description: "사용자가 입력했던 새로운 위키 문서 내용"
+          example: "사용자가 입력했던 새로운 위키 문서 내용"
+
+paths:
+  /wiki/contents/new/{title}:
+    post:
+      summary: "새 위키 문서 생성하기 및 기여도 지급"
+      description: "POST 방식으로 새 문서를 생성하고 기여도를 지급합니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "새로운 위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "새로운 위키 문서 제목"
+      requestBody:
+        description: "새 위키 문서 생성하기 위한 정보"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: "문서 내용"
+                type:
+                  type: string
+                  description: " 'doc' or 'list'"
+                  example: "doc"
+      responses:
+        200:
+          description: "새 위키 문서 생성 성공"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+        401:
+          description: "로그인이 필요한 서비스입니다."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeedLogin"
+                
+        409:
+          description: "이미 존재하는 문서"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "409"
+                    example: "409"
+                  success:
+                    type: boolean
+                    description: "false"
+                    example: false
+                  message:
+                    type: string
+                    description: "사용자에게 전달하는 메시지"
+                    example: "Already exist"
+                  content:
+                    type: string
+                    description: "사용자가 입력한 content"
+                    example: "사용자가 입력한 content"
+        500:
+          description: "위키 생성/히스토리 생성/기여도 부여 중 오류"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Res500"
+
+  /wiki/contents/{title}/section/{section}:
+    get:
+      summary: "위키 문서의 특정 섹션 정보 가져오기"
+      description: "GET 방식으로 위키 문서의 특정 섹션 정보를 가져옵니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "위키 문서 제목"
+        - name: section
+          in: path
+          description: "위키 문서 섹션 번호"
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: "위키 문서의 특정 섹션 정보 가져오기 성공"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+                  doc_id:
+                    type: integer
+                    description: "위키 문서 id"
+                    example: 1
+                  version:
+                    type: integer
+                    description: "가장 최근 버전"
+                    example: 1
+                  title:
+                    type: string
+                    description: "위키 문서 섹션 제목"
+                    example: "위키 문서 섹션 제목"
+                  content:
+                    type: string
+                    description: "위키 문서 섹션 내용"
+                    example: "위키 문서 섹션 내용"
+        401:
+          description: "로그인이 필요한 서비스입니다."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeedLogin"
+        422:
+          description: "잘못된 섹션 번호"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "422"
+                    example: "422"
+                  success:
+                    type: boolean
+                    description: "false"
+                    example: false
+                  message:
+                    type: string
+                    description: "사용자에게 전달하는 메시지"
+                    example: "잘못된 섹션 번호"
+    post:
+      summary: "위키 문서의 특정 섹션 수정하기 및 기여도 지급"
+      description: "POST 방식으로 위키 문서의 특정 섹션을 수정하고 기여도를 지급합니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "위키 문서 제목"
+        - name: section
+          in: path
+          description: "위키 문서 섹션 번호"
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: "위키 문서의 특정 섹션 수정하기 위한 정보"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                new_content:
+                  type: string
+                  description: "새로운 위키 문서 섹션 내용"
+                  example: "새로운 위키 문서 섹션 내용"
+                version:
+                  type: integer
+                  description: "get에서 전달 받은 버전(가장 최근 버전인지 체크하기 위함)"
+                  example: 1
+                summary:
+                  type: string
+                  description: "위키 문서 섹션 수정 사유"
+                  example: "위키 문서 섹션 수정 사유"
+                is_q_based:
+                  type: boolean
+                  description: "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)"
+                  example: false
+                qid:
+                  type: integer
+                  description: "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)"
+                  example: 1
+      responses:
+        200:
+          description: "위키 문서의 특정 섹션 수정하기 및 기여도 지급 성공"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+        401:
+          description: "로그인이 필요한 서비스입니다."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeedLogin"
+        426:
+          description: "위키 문서의 최신 버전이 아님"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResNotLatest"
+        500:
+          description: "위키 수정/히스토리 생성/기여도 부여 중 오류"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Res500"
+  
+  /wiki/contents/{title}:
+    get:
+      summary: "위키 문서 정보 가져오기"
+      description: "GET 방식으로 위키 문서 정보를 가져옵니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "위키 문서 제목"
+      responses:
+        200:
+          description: "위키 문서 정보 가져오기 성공"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+                  text:
+                    type: string
+                    description: "위키 전체 내용"
+                    example: "위키 전체 내용"
+                  version:
+                    type: integer
+                    description: "가장 최근 버전"
+                    example: 1
+                  contents:
+                    type: array
+                    description: "위키 문서 섹션 정보"
+                    items:
+                      type: object
+                      properties:
+                        section:
+                          type: integer
+                          description: "위키 문서 섹션 번호"
+                          example: 1
+                        index:
+                          type: string
+                          description: "위키 문서 섹션 목차"
+                          example: "2.3.1"
+                        title:
+                          type: string
+                          description: "위키 문서 섹션 제목"
+                          example: "위키 문서 섹션 제목"
+                        content:
+                          type: string
+                          description: "위키 문서 섹션 내용"
+                          example: "위키 문서 섹션 내용"
+        404:
+          description: "존재하지 않는 위키 문서"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "404"
+                    example: "404"
+                  success:
+                    type: boolean
+                    description: "false"
+                    example: false
+                  message:
+                    type: string
+                    description: "사용자에게 전달하는 메시지"
+                    example: "존재하지 않는 문서입니다."
+        410:
+          description: "삭제된 위키 문서"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "410"
+                    example: "410"
+                  success:
+                    type: boolean
+                    description: "false"
+                    example: false
+                  message:
+                    type: string
+                    description: "사용자에게 전달하는 메시지"
+                    example: "삭제된 문서입니다."
+        500:
+          description: "위키 문서 정보 가져오기 중 오류"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Res500"
+    post:
+      summary: "위키 문서 수정하기 및 기여도 지급"
+      description: "POST 방식으로 위키 문서를 수정하고 기여도를 지급합니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "위키 문서 제목"
+      requestBody:
+        description: "위키 문서 수정하기 위한 정보"
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                new_content:
+                  type: string
+                  description: "새로운 위키 문서 내용"
+                  example: "새로운 위키 문서 내용"
+                version:
+                  type: integer
+                  description: "get에서 전달 받은 버전(가장 최근 버전인지 체크하기 위함)"
+                  example: 1
+                summary:
+                  type: string
+                  description: "위키 문서 수정 사유"
+                  example: "위키 문서 수정 사유"
+                is_q_based:
+                  type: boolean
+                  description: "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)"
+                  example: false
+                qid:
+                  type: integer
+                  description: "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)"
+                  example: 1
+      responses:
+        200:
+          description: "위키 문서 수정하기 및 기여도 지급 성공"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+        401:
+          description: "로그인이 필요한 서비스입니다."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeedLogin"
+        426:
+          description: "위키 문서의 최신 버전이 아님"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResNotLatest"
+        500:
+          description: "위키 수정/히스토리 생성/기여도 부여 중 오류"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Res500"
+    delete:
+      summary: "위키 문서 삭제하기 및 기여도 회수"
+      description: "DELETE 방식으로 위키 문서를 삭제하고 기여도를 회수합니다."
+      tags: [wiki]
+      parameters:
+        - name: title
+          in: path
+          description: "위키 문서 제목"
+          required: true
+          schema:
+            type: string
+            example: "위키 문서 제목"
+      responses:
+        200:
+          description: "위키 문서 삭제하기"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "200"
+                    example: "200"
+                  success:
+                    type: boolean
+                    description: "true"
+                    example: true
+        401:
+          description: "로그인이 필요한 서비스입니다."
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NeedLogin"
+        403:
+          description: "관리자가 아닙니다."
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: integer
+                    description: "403"
+                    example: "403"
+                  success:
+                    type: boolean
+                    description: "false"
+                    example: false
+                  message:
+                    type: string
+                    description: "사용자에게 전달하는 메시지"
+                    example: "관리자가 아닙니다."
+        500:
+          description: "위키 삭제/히스토리 생성/기여도 회수 중 오류"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Res500"
+
+
+        

@@ -31,7 +31,7 @@ const getWikiContent = (res, title, version) => {
         console.log(err);
         res.status(404).send({ // 내부에서 404 에러 처리
           success: false,
-          err:err
+          message:err
         });
         return;
       }
@@ -127,6 +127,7 @@ exports.newWikiPostMid = async (req, res, next) => {
         res.status(409).send({
           success: false,
           message: "Already exist",
+          content: req.body.text,
         });
         return;
       }
@@ -165,7 +166,7 @@ exports.newWikiPostMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: err.content });
+    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: req.body.text });
   }
 };
 
@@ -175,6 +176,10 @@ exports.contentsGetMid = async (req, res) => {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
+    if(rows.length === 0) {
+      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+      return;
+    }
     const version = rows[0].version;
     let text = "";
     let jsonData = {};
@@ -343,7 +348,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
-    res.status(422).send({ success: false, error: "Invalid section number" });
+    res.status(422).send({ success: false, message: "Invalid section number" });
   }
 };
 
