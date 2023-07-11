@@ -27,7 +27,6 @@ exports.adminNoticeGetMid = async(req, res) => {
 exports.NoticeReadPostMid = async(req, res) => {
   try {
     const result = await Notice.readNotice(req.body.notification_id, req.user[0].id);
-    console.log(result);
     if (result[0].changedRows) {
       res.status(200).send({message: "알림을 읽음 표시하였습니다."});
     } else {

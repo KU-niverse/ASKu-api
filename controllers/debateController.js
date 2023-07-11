@@ -3,7 +3,6 @@ const {Debate, History, getIdByTitle} = require("../models/debateModel");
 // 토론 생성하기
 exports.debatePostMid = async (req, res) => {
   try {
-    console.log(req.user);
     if (!req.body.subject) {
       res.status(400).send({message: "토론 제목을 입력하세요."});
     } else {
@@ -14,7 +13,6 @@ exports.debatePostMid = async (req, res) => {
         subject: req.body.subject,
       });
       const result = await Debate.createDebate(newDebate);
-      console.log(result);
       res.status(200).send({result, message: "토론이 생성되었습니다."});
     }
   } catch (err) {
@@ -71,7 +69,6 @@ exports.historyGetMid = async (req, res) => {
 exports.debateEndPostMid = async (req, res) => {
   try {
     const result = await Debate.endDebate(req.params.debate);
-    console.log(result);
     if (!result) {
       res.status(400).send({message: "이미 종료된 토론방입니다."});
     } else {
