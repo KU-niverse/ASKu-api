@@ -26,7 +26,7 @@ exports.questionPostMid = async (req, res) => {
         content: req.body.content,
       });
       const result = await Question.createQuestion(newQuestion);
-      res.status(200).send({result, message: "질문을 등록했습니다."});
+      res.status(200).send(result);
     }
   } catch (err) {
     console.error(err);
