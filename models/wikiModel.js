@@ -174,7 +174,9 @@ class Wiki_favorite {
   // 위키 즐겨찾기 삭제
   static async deleteWikiFavorite(doc_id, user_id) {
     const [result] = await pool.query(`DELETE FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`, [doc_id, user_id]);
-    
+    if (result.affectedRows == 0) {
+      return 0;
+    }
     return result[0].changedRows;
   }
 

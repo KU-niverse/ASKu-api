@@ -31,7 +31,7 @@ const getWikiContent = (res, title, version) => {
         console.log(err);
         res.status(404).send({ // 내부에서 404 에러 처리
           success: false,
-          err:err
+          message:err
         });
         return;
       }
@@ -127,6 +127,7 @@ exports.newWikiPostMid = async (req, res, next) => {
         res.status(409).send({
           success: false,
           message: "Already exist",
+          content: req.body.text,
         });
         return;
       }
@@ -165,7 +166,7 @@ exports.newWikiPostMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: err.content });
+    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: req.body.text });
   }
 };
 
@@ -175,6 +176,10 @@ exports.contentsGetMid = async (req, res) => {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
+    if(rows.length === 0) {
+      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+      return;
+    }
     const version = rows[0].version;
     let text = "";
     let jsonData = {};
@@ -343,7 +348,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
-    res.status(422).send({ success: false, error: "Invalid section number" });
+    res.status(422).send({ success: false, message: "Invalid section number" });
   }
 };
 
@@ -432,7 +437,7 @@ exports.historyGetMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
-    res.status(200).send({success: true, rows});
+    res.status(200).send({success: true, historys: rows});
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -661,7 +666,7 @@ exports.contentsSectionGetMidByIndex = async (req, res) => {
 exports.wikiFavoriteGetMid = async (req, res) => {
   try{
     const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(req.user[0].id);
-    res.status(200).send({ success: true, rows });
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 즐겨찾기 조회 중 오류" });
@@ -688,8 +693,13 @@ exports.wikiFavoritePostMid = async (req, res) => {
 exports.wikiFavoriteDeleteMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
-    res.status(200).json({ success: true, message: "위키 즐겨찾기 삭제 성공" });
+    const result = await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
+    if(result == 0){
+      res.status(404).json({ success: false, message: "위키 즐겨찾기에 없는 문서입니다." });
+    }
+    else{
+      res.status(200).json({ success: true, message: "위키 즐겨찾기 삭제 성공" });
+    }
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 즐겨찾기 삭제 중 오류" });
@@ -701,7 +711,7 @@ exports.contributionGetMid = async (req, res) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_point.getContributors(doc_id);
-    res.status(200).send({ success: true, rows});
+    res.status(200).send({ success: true, message: rows});
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 기여도 리스트 조회 중 오류" });
