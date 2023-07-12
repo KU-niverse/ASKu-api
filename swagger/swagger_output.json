@@ -5,6 +5,115 @@
     "description": "ASKu의 api 문서입니다.",
     "version": "1.0.0"
   },
+  "components": {
+    "schemas": {
+      "NeedLogin": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "401",
+            "example": "401"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "로그인이 필요한 서비스입니다.",
+            "example": "로그인이 필요한 서비스입니다."
+          }
+        }
+      },
+      "Res500": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "500",
+            "example": "500"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "서버에서 예상치 못한 오류가 발생했습니다.",
+            "example": "서버에서 예상치 못한 오류가 발생했습니다."
+          }
+        }
+      },
+      "ResNotLatest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "426",
+            "example": "426"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "위키 문서의 최신 버전이 아님",
+            "example": "Version is not matched"
+          },
+          "new_content": {
+            "type": "string",
+            "description": "사용자가 입력했던 새로운 위키 문서 내용",
+            "example": "사용자가 입력했던 새로운 위키 문서 내용"
+          }
+        }
+      },
+      "ResWikiNotFound": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "404",
+            "example": "404"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "사용자에게 전달하는 메시지",
+            "example": "존재하지 않는 문서입니다."
+          }
+        }
+      },
+      "ResNotAdmin": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "403",
+            "example": "403"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "사용자에게 전달하는 메시지",
+            "example": "관리자가 아닙니다."
+          }
+        }
+      }
+    }
+  },
   "servers": [
     {
       "url": "http://localhost:8080"
@@ -1021,49 +1130,113 @@
     "/wiki/contents/new/{title(*)}": {
       "post": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "새 위키 문서 생성하기 및 기여도 지급",
+        "description": "POST 방식으로 새 문서를 생성하고 기여도를 지급합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "새로운 위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "새로운 위키 문서 제목"
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "409": {
-            "description": "Conflict"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
         "requestBody": {
+          "description": "새 위키 문서 생성하기 위한 정보",
+          "required": true,
           "content": {
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
                   "text": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "문서 내용"
                   },
                   "type": {
-                    "example": "any"
-                  },
-                  "is_q_based": {
-                    "example": "any"
-                  },
-                  "qid": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "'doc' or 'list'",
+                    "example": "doc"
                   }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "새 위키 문서 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "이미 존재하는 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "409",
+                      "example": "409"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "Already exist"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "사용자가 입력한 content",
+                      "example": "사용자가 입력한 content"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 생성/히스토리 생성/기여도 부여 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
                 }
               }
             }
@@ -1073,97 +1246,226 @@
     },
     "/wiki/contents/{title(*)}/section/{section}": {
       "get": {
+        "summary": "위키 문서의 특정 섹션 정보 가져오기",
+        "description": "GET 방식으로 위키 문서의 특정 섹션 정보를 가져옵니다.",
         "tags": ["wiki"],
-        "description": "",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           },
           {
             "name": "section",
             "in": "path",
+            "description": "위키 문서 섹션 번호",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서의 특정 섹션 정보 가져오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "doc_id": {
+                      "type": "integer",
+                      "description": "위키 문서 id",
+                      "example": 1
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "가장 최근 버전",
+                      "example": 1
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "위키 문서 섹션 제목",
+                      "example": "위키 문서 섹션 제목"
+                    },
+                    "content": {
+                      "type": "string",
+                      "description": "위키 문서 섹션 내용",
+                      "example": "위키 문서 섹션 내용"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "422": {
-            "description": "Unprocessable Entity"
+            "description": "잘못된 섹션 번호",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "422",
+                      "example": "422"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "잘못된 섹션 번호"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "summary": "위키 문서의 특정 섹션 수정하기 및 기여도 지급",
+        "description": "POST 방식으로 위키 문서의 특정 섹션을 수정하고 기여도를 지급합니다.",
         "tags": ["wiki"],
-        "description": "",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           },
           {
             "name": "section",
             "in": "path",
+            "description": "위키 문서 섹션 번호",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "example": 1
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "426": {
-            "description": "Upgrade Required"
-          },
-          "432": {
-            "description": ""
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
         "requestBody": {
+          "description": "위키 문서의 특정 섹션 수정하기 위한 정보",
+          "required": true,
           "content": {
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "version": {
-                    "example": "any"
-                  },
                   "new_content": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "새로운 위키 문서 섹션 내용",
+                    "example": "새로운 위키 문서 섹션 내용"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "description": "get에서 전달 받은 버전(가장 최근 버전인지 체크하기 위함)",
+                    "example": 1
                   },
                   "summary": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "위키 문서 섹션 수정 사유",
+                    "example": "위키 문서 섹션 수정 사유"
                   },
                   "is_q_based": {
-                    "example": "any"
+                    "type": "boolean",
+                    "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
+                    "example": false
                   },
                   "qid": {
-                    "example": "any"
+                    "type": "integer",
+                    "description": "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)",
+                    "example": 1
                   }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "위키 문서의 특정 섹션 수정하기 및 기여도 지급 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "위키 문서의 최신 버전이 아님",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResNotLatest"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 수정/히스토리 생성/기여도 부여 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
                 }
               }
             }
@@ -1174,104 +1476,357 @@
     "/wiki/contents/question/{qid}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "같은 목차가 존재하는지 확인",
+        "description": "GET 방식으로 같은 목차가 존재하는지 확인합니다. ex) based_on_section: true, section: 3",
         "parameters": [
           {
             "name": "qid",
             "in": "path",
             "required": true,
+            "description": "질문 id",
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "질문 id",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "같은 목차 정보 가져오기 성공(based_on_section: true면 찾은 거고 false면 없다는 뜻)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "위키 전체 내용",
+                      "example": "위키 전체 내용"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "가장 최근 버전",
+                      "example": 1
+                    },
+                    "based_on_section": {
+                      "type": "boolean",
+                      "description": "같은 목차가 존재하는지 여부",
+                      "example": true
+                    },
+                    "section": {
+                      "type": "integer",
+                      "description": "질문의 섹션 번호",
+                      "example": 1
+                    },
+                    "contents": {
+                      "type": "array",
+                      "description": "위키 문서 섹션 정보",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "section": {
+                            "type": "integer",
+                            "description": "위키 문서 섹션 번호",
+                            "example": 1
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 목차",
+                            "example": "2.3.1"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 제목",
+                            "example": "위키 문서 섹션 제목"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 내용",
+                            "example": "위키 문서 섹션 내용"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 문서 정보 가져오기 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
     },
     "/wiki/contents/{title(*)}": {
       "get": {
+        "summary": "위키 문서 정보 가져오기",
+        "description": "GET 방식으로 위키 문서 정보를 가져옵니다.",
         "tags": ["wiki"],
-        "description": "",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서 정보 가져오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "위키 전체 내용",
+                      "example": "위키 전체 내용"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "가장 최근 버전",
+                      "example": 1
+                    },
+                    "contents": {
+                      "type": "array",
+                      "description": "위키 문서 섹션 정보",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "section": {
+                            "type": "integer",
+                            "description": "위키 문서 섹션 번호",
+                            "example": 1
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 목차",
+                            "example": "2.3.1"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 제목",
+                            "example": "위키 문서 섹션 제목"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 내용",
+                            "example": "위키 문서 섹션 내용"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "410": {
-            "description": "Gone"
+            "description": "삭제된 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "410",
+                      "example": "410"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "삭제된 문서입니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 문서 정보 가져오기 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       },
       "post": {
+        "summary": "위키 문서 수정하기 및 기여도 지급",
+        "description": "POST 방식으로 위키 문서를 수정하고 기여도를 지급합니다.",
         "tags": ["wiki"],
-        "description": "",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           }
         ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "426": {
-            "description": "Upgrade Required"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
         "requestBody": {
+          "description": "위키 문서 수정하기 위한 정보",
+          "required": true,
           "content": {
-            "application/json": {
+            "application/x-www-form-urlencoded": {
               "schema": {
                 "type": "object",
                 "properties": {
-                  "version": {
-                    "example": "any"
-                  },
                   "new_content": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "새로운 위키 문서 내용",
+                    "example": "새로운 위키 문서 내용"
+                  },
+                  "version": {
+                    "type": "integer",
+                    "description": "get에서 전달 받은 버전(가장 최근 버전인지 체크하기 위함)",
+                    "example": 1
                   },
                   "summary": {
-                    "example": "any"
+                    "type": "string",
+                    "description": "위키 문서 수정 사유",
+                    "example": "위키 문서 수정 사유"
                   },
                   "is_q_based": {
-                    "example": "any"
+                    "type": "boolean",
+                    "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
+                    "example": false
                   },
                   "qid": {
-                    "example": "any"
+                    "type": "integer",
+                    "description": "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)",
+                    "example": 1
                   }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "위키 문서 수정하기 및 기여도 지급 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "426": {
+            "description": "위키 문서의 최신 버전이 아님",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResNotLatest"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 수정/히스토리 생성/기여도 부여 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
                 }
               }
             }
@@ -1279,30 +1834,73 @@
         }
       },
       "delete": {
+        "summary": "위키 문서 삭제하기",
+        "description": "DELETE 방식으로 위키 문서를 삭제합니다.",
         "tags": ["wiki"],
-        "description": "",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서 삭제하기",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "관리자가 아닙니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 삭제/히스토리 생성 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1310,10 +1908,70 @@
     "/wiki/image": {
       "post": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "이미지 업로드",
+        "description": "POST 방식으로 이미지를 업로드하고 이미지의 링크를 반환합니다.",
+        "requestBody":{
+          "content":{
+            "multipart/form-data":{
+              "schema":{
+                "type":"object",
+                "properties":{
+                  "image":{
+                    "type":"string",
+                    "format":"binary"
+                  }
+                }
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "이미지 업로드 성공",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "status":{
+                      "type":"integer",
+                      "description":"200",
+                      "example":"200"
+                    },
+                    "success":{
+                      "type":"boolean",
+                      "description":"true",
+                      "example":true
+                    },
+                    "url":{
+                      "type":"string",
+                      "description":"이미지 링크",
+                      "example":"https://image-bucket.kr.object.ncloudstorage.com/8ae0d3c0-35de-4801-9a3b-31d934b90e49.png"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401":{
+            "description":"로그인이 필요한 서비스입니다.",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "$ref":"#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "500":{
+            "description":"이미지 업로드 중 오류, File too large일 경우도 있음",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "$ref":"#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1321,78 +1979,174 @@
     "/wiki/historys/{title(*)}/version/{version}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "특정 버전의 위키 raw data 불러오기",
+        "description": "GET 방식으로 특정 버전의 위키 raw data를 불러옵니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           },
           {
             "name": "version",
             "in": "path",
+            "description": "위키 문서 버전",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "위키 문서 버전",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "특정 버전의 위키 raw data 불러오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "doc_id": {
+                      "type": "integer",
+                      "description": "1",
+                      "example": "1"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "1",
+                      "example": "1"
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "위키 문서 raw data",
+                      "example": "위키 문서 raw data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 문서 raw data 불러오기 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       },
       "post": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "특정 버전으로 문서 롤백하기",
+        "description": "POST 버전으로 문서를 롤백합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           },
           {
             "name": "version",
             "in": "path",
+            "description": "위키 문서 버전",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "위키 문서 버전",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 롤백 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "위키 롤백 성공"
+                    }
+                  }
+                }
+              }
+            }
           },
-          "401": {
-            "description": "Unauthorized"
+          "401":{
+            "description":"로그인이 필요한 서비스입니다.",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "$ref":"#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "is_q_based": {
-                    "example": "any"
-                  },
-                  "qid": {
-                    "example": "any"
-                  }
+            "description": "위키 롤백 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
                 }
               }
             }
@@ -1403,23 +2157,122 @@
     "/wiki/historys/{title(*)}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 히스토리 불러오기",
+        "description": "GET 방식으로 위키 히스토리를 불러옵니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 히스토리 불러오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "historys": {
+                      "type": "array",
+                      "description": "위키 히스토리 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "히스토리 고유 id",
+                            "example": "1"
+                          },
+                          "user_id": {
+                            "type": "integer",
+                            "description": "수정한 유저 id",
+                            "example": "1"
+                          },
+                          "doc_id": {
+                            "type": "integer",
+                            "description": "위키 문서 id",
+                            "example": "1"
+                          },
+                          "text_pointer": {
+                            "type": "string",
+                            "description": "위키 문서가 저장된 링크",
+                            "example": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki"
+                          },
+                          "version": {
+                            "type": "integer",
+                            "description": "위키 문서 버전",
+                            "example": "1"
+                          },
+                          "summary": {
+                            "type": "string",
+                            "description": "위키 문서 수정 사유",
+                            "example": "위키 문서 수정 사유"
+                          },
+                          "timestamp": {
+                            "type": "string",
+                            "description": "수정된 시각",
+                            "example": "2023-06-27T06:46:25.000Z"
+                          },
+                          "count": {
+                            "type": "integer",
+                            "description": "위키 문서 글자 수",
+                            "example": "1"
+                          },
+                          "diff": {
+                            "type": "integer",
+                            "description": "전 버전 위키 문서 글자 수와의 차이",
+                            "example": "1"
+                          },
+                          "is_bad": {
+                            "type": "boolean",
+                            "description": "나쁜 수정인지 여부(1이면 나쁜 수정)",
+                            "example": "0"
+                          },
+                          "is_q_based": {
+                            "type": "boolean",
+                            "description": "질문 기반 수정인지 여부",
+                            "example": "0"
+                          },
+                          "is_rollback": {
+                            "type": "boolean",
+                            "description": "롤백인지 여부",
+                            "example": "0"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 히스토리 불러오기 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1427,42 +2280,133 @@
     "/wiki/comparison/{title(*)}/rev/{rev}/oldrev/{oldrev}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 문서 비교하기",
+        "description": "GET 방식으로 두 버전의 위키 문서의 raw 파일을 전달합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           },
           {
             "name": "rev",
             "in": "path",
+            "description": "비교할 위키 문서 버전(oldrev보다 커야함-더 최신 버전)",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "비교할 위키 문서 버전(oldrev보다 커야함-더 최신 버전)",
+              "example": 1
             }
           },
           {
             "name": "oldrev",
             "in": "path",
+            "description": "비교할 위키 문서 버전(rev보다 작아야함-더 구버전)",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "비교할 위키 문서 버전(rev보다 작아야함-더 구버전)",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서 비교하기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "oldrev": {
+                      "type": "integer",
+                      "description": "oldrev",
+                      "example": 1
+                    },
+                    "rev": {
+                      "type": "integer",
+                      "description": "rev",
+                      "example": 2
+                    },
+                    "oldrev_text": {
+                      "type": "string",
+                      "description": "oldrev 위키 문서 raw data",
+                      "example": "위키 문서 raw data"
+                    },
+                    "rev_text": {
+                      "type": "string",
+                      "description": "rev 위키 문서 raw data",
+                      "example": "위키 문서 raw data"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서 혹은 버전",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "432": {
-            "description": ""
+            "description": "oldrev이 rev보다 크거나 같음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "432",
+                      "example": "432"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "oldrev이 rev보다 크거나 같음"
+                    }
+                  }
+                }
+              }
+            }
+
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "두 버전 비교 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1470,23 +2414,76 @@
     "/wiki/query/{title(*)}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 문서 검색",
+        "description": "GET 방식으로 위키 문서를 검색합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 검색 쿼리",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서 검색 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "description": "위키 문서 검색 결과",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "description": "위키 문서 id",
+                        "example": 1
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "위키 문서 제목",
+                        "example": "위키 문서 제목"
+                      },
+                      "text_pointer": {
+                        "type": "string",
+                        "description": "위키 문서가 저장된 링크(가장 최신 버전으로)",
+                        "example": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki"
+                      },
+                      "version": {
+                        "type": "integer",
+                        "description": "가장 최근 버전",
+                        "example": 14
+                      },
+                      "type": {
+                        "type": "string",
+                        "description": "'doc' or 'list'",
+                        "example": "doc"
+                      },
+                      "is_deleted": {
+                        "type": "boolean",
+                        "description": "위키 문서 삭제 여부",
+                        "example": false
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 문서 검색 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1494,16 +2491,89 @@
     "/wiki/favorite": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 즐겨찾기 조회",
+        "description": "GET 방식으로 위키 즐겨찾기를 조회합니다.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 즐겨찾기 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "array",
+                      "description": "위키 즐겨찾기 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "위키 문서 id",
+                            "example": 1
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "위키 문서 제목",
+                            "example": "위키 문서 제목"
+                          },
+                          "text_pointer": {
+                            "type": "string",
+                            "description": "위키 문서가 저장된 링크(가장 최신 버전으로)",
+                            "example": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki"
+                          },
+                          "version": {
+                            "type": "integer",
+                            "description": "가장 최근 버전",
+                            "example": 14
+                          },
+                          "type": {
+                            "type": "string",
+                            "description": "'doc' or 'list'",
+                            "example": "doc"
+                          },
+                          "is_deleted": {
+                            "type": "boolean",
+                            "description": "위키 문서 삭제 여부",
+                            "example": false
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
-          "401": {
-            "description": "Unauthorized"
+          "401":{
+            "description":"로그인이 필요한 서비스입니다.",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "$ref":"#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 즐겨찾기 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1511,51 +2581,145 @@
     "/wiki/favorite/{title(*)}": {
       "post": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 즐겨찾기 추가",
+        "description": "POST 방식으로 위키 즐겨찾기를 추가합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 즐겨찾기 추가 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "위키 즐겨찾기 추가 성공"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 즐겨찾기 추가 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       },
       "delete": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 즐겨찾기 삭제",
+        "description": "DELETE 방식으로 위키 즐겨찾기를 삭제합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 즐겨찾기 삭제 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "위키 즐겨찾기 삭제 성공"
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "즐겨찾기에 없는 위키 문서입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 즐겨찾기 삭제 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1563,23 +2727,83 @@
     "/wiki/contributions/{title(*)}": {
       "get": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "위키 문서 내 기여도 조회",
+        "description": "GET 방식으로 위키 문서 내 기여도를 조회합니다.",
         "parameters": [
           {
             "name": "title(*)",
             "in": "path",
+            "description": "위키 문서 제목",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "description": "위키 문서 제목",
+              "example": "위키 문서 제목"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "위키 문서 내 기여도 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "array",
+                      "description": "기여한 유저와 기여도 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "description": "기여한 유저 id",
+                            "example": 1
+                          },
+                          "point": {
+                            "type": "string",
+                            "description": "각 유저의 기여도",
+                            "example": "700"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
+          },
+          "404": {
+            "description": "위키 문서가 존재하지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 기여도 리스트 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
@@ -1587,26 +2811,78 @@
     "/wiki/badhis/{hisid}": {
       "put": {
         "tags": ["wiki"],
-        "description": "",
+        "summary": "특정 히스토리 bad로 변경",
+        "description": "PUT 방식으로 특정 히스토리를 bad로 변경합니다.",
         "parameters": [
           {
             "name": "hisid",
             "in": "path",
+            "description": "위키 히스토리 id",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "description": "위키 히스토리 id",
+              "example": 1
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "특정 히스토리 bad로 변경 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": 200
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "특정 히스토리 bad로 변경 성공"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인이 필요한 서비스입니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "403": {
-            "description": "Forbidden"
+            "description": "관리자가 아닙니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NeedLogin"
+                }
+              }
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "위키 삭제, 기여도 회수 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
           }
         }
       }
