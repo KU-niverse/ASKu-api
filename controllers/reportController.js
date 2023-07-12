@@ -11,9 +11,9 @@ exports.reportPostMid = async (req, res) => {
       comment: req.body.comment,
     });
     const result = await Report.createReport(newReport);
-    res.status(200).send({result, success: true, message: "신고했습니다."});
+    res.status(200).send(result);
   } catch (err) {
     console.error(err);
-    res.status(404).send({success: false, message: "오류가 발생했습니다."});
+    res.status(404).send({message: "오류가 발생했습니다."});
   }
 };
