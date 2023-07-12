@@ -21,12 +21,11 @@ exports.questionPostMid = async (req, res) => {
       const doc_id = await getIdByTitle(req.params.title);
       const newQuestion = new Question({
         doc_id: doc_id,
-        user_id: req.body.user_id, // jwt token 적용 시 변경
+        user_id: req.user[0].id, // jwt token 적용 시 변경
         index_title: req.body.index_title,
         content: req.body.content,
       });
       const result = await Question.createQuestion(newQuestion);
-      console.log(result);
       res.status(200).send({result, message: "질문을 등록했습니다."});
     }
   } catch (err) {
@@ -38,7 +37,7 @@ exports.questionPostMid = async (req, res) => {
 // 질문 수정하기 [답변이 달리기 전까지만 가능]
 exports.questionEditMid = async(req, res) => {
   try {
-    const result = await Question.updateQuestion(req.params.question, req.body.user_id, req.body.new_content);
+    const result = await Question.updateQuestion(req.params.question, req.user[0].id, req.body.new_content);
     if (!result) {
       res.status(400).send({messsage: "이미 답변이 달렸거나, 다른 회원의 질문입니다,"});
     } else {
@@ -54,7 +53,7 @@ exports.questionEditMid = async(req, res) => {
 // 질문 삭제하기 [답변이 달리기 전, 좋아요 눌리기 전까지만 가능]
 exports.questionDeleteMid = async(req, res) => {
   try {
-    const result = await Question.deleteQuestion(req.params.question);
+    const result = await Question.deleteQuestion(req.params.question, req.user[0].id);
     if (!result) {
       res.status(400).send({message: "이미 답변 및 좋아요가 달렸거나, 다른 회원의 질문입니다."});
     } else {
@@ -70,7 +69,7 @@ exports.questionDeleteMid = async(req, res) => {
 // 질문 좋아요 누르기
 exports.questionLikeMid = async (req, res) => {
   try {
-    const result = await Question.likeQuestion(req.params.question, req.body.user_id); // jwt token 추가 후 수정
+    const result = await Question.likeQuestion(req.params.question, req.user[0].id); // jwt token 추가 후 수정
     if (result == 0) {
       res.status(400).send({message: "이미 좋아요를 눌렀습니다."});
     } else if (result == -1) {
@@ -106,7 +105,6 @@ exports.questionSearchGetMid = async (req, res) => {
 exports.questionPopularGetMid = async (req, res) => {
   try {
     const questions = await Question.getQuestionsPopular();
-    console.log(questions);
     res.status(200).send(questions);
   } catch (err) {
     console.error(err);

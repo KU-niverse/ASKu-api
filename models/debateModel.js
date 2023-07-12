@@ -81,18 +81,22 @@ History.getAllHistory = async (debate_id) => {
   return result[0];
 };
 
-// debate를 종료시키는 함수 -> done_at 컬럼 적용 필요 (db 스키마에 on update 옵션)
+// debate를 종료시키는 함수
 Debate.endDebate = async (id) => {
-  const date = new Date();
-  date.setHours(date.getHours()+9);
-  const result = await pool.query(
-    `UPDATE debates SET done_or_not = 1, done_at = ? WHERE id = ?`,
-    [date.toISOString().slice(0, 19).replace('T', ' '), id]
+  const flag = await pool.query(
+    `SELECT done_or_not FROM debates WHERE id = ?`,
+    [id]
   );
-  if (!result[0].changedRows) {
+  if (flag[0][0].done_or_not) {
     return 0;
   } else {
-    return 1;
+    const date = new Date();
+    date.setHours(date.getHours()+9);
+    const result = await pool.query(
+      `UPDATE debates SET done_or_not = 1, done_at = ? WHERE id = ?`,
+      [date.toISOString().slice(0, 19).replace('T', ' '), id]
+    );
+    return result;
   }
 };
 

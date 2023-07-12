@@ -4,7 +4,7 @@ const Notice = require("../models/notificationModel");
 // 유저 알림 조회
 exports.userNoticeGetMid = async(req, res) => {
   try {
-    const notices = await Notice.getNoticeByRole(req.body.user_id, 0);
+    const notices = await Notice.getNoticeByRole(req.user[0].id, 0);
     res.status(200).send(notices[0]);
   } catch (err) {
     console.error(err);
@@ -15,7 +15,7 @@ exports.userNoticeGetMid = async(req, res) => {
 // 관리자 알림 조회
 exports.adminNoticeGetMid = async(req, res) => {
   try {
-    const notices = await Notice.getNoticeByRole(req.body.user_id, 1);
+    const notices = await Notice.getNoticeByRole(req.user[0].id, 1);
     res.status(200).send(notices[0]);
   } catch (err) {
     console.error(err);
@@ -26,8 +26,7 @@ exports.adminNoticeGetMid = async(req, res) => {
 // 알림 읽음 표시
 exports.NoticeReadPostMid = async(req, res) => {
   try {
-    const result = await Notice.readNotice(req.body.notification_id, req.body.user_id);
-    console.log(result);
+    const result = await Notice.readNotice(req.body.notification_id, req.user[0].id);
     if (result[0].changedRows) {
       res.status(200).send({message: "알림을 읽음 표시하였습니다."});
     } else {
