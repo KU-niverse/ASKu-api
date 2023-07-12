@@ -5,115 +5,6 @@
     "description": "ASKu의 api 문서입니다.",
     "version": "1.0.0"
   },
-  "components": {
-    "schemas": {
-      "NeedLogin": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "description": "401",
-            "example": "401"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "false",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "description": "로그인이 필요한 서비스입니다.",
-            "example": "로그인이 필요한 서비스입니다."
-          }
-        }
-      },
-      "Res500": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "description": "500",
-            "example": "500"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "false",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "description": "서버에서 예상치 못한 오류가 발생했습니다.",
-            "example": "서버에서 예상치 못한 오류가 발생했습니다."
-          }
-        }
-      },
-      "ResNotLatest": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "description": "426",
-            "example": "426"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "false",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "description": "위키 문서의 최신 버전이 아님",
-            "example": "Version is not matched"
-          },
-          "new_content": {
-            "type": "string",
-            "description": "사용자가 입력했던 새로운 위키 문서 내용",
-            "example": "사용자가 입력했던 새로운 위키 문서 내용"
-          }
-        }
-      },
-      "ResWikiNotFound": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "description": "404",
-            "example": "404"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "false",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "description": "사용자에게 전달하는 메시지",
-            "example": "존재하지 않는 문서입니다."
-          }
-        }
-      },
-      "ResNotAdmin": {
-        "type": "object",
-        "properties": {
-          "status": {
-            "type": "integer",
-            "description": "403",
-            "example": "403"
-          },
-          "success": {
-            "type": "boolean",
-            "description": "false",
-            "example": false
-          },
-          "message": {
-            "type": "string",
-            "description": "사용자에게 전달하는 메시지",
-            "example": "관리자가 아닙니다."
-          }
-        }
-      }
-    }
-  },
   "servers": [
     {
       "url": "http://localhost:8080"
@@ -404,6 +295,111 @@
           "message",
           "created_at"
         ]
+      },
+      "NeedLogin": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "401",
+            "example": "401"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "로그인이 필요한 서비스입니다.",
+            "example": "로그인이 필요한 서비스입니다."
+          }
+        }
+      },
+      "Res500": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "500",
+            "example": "500"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "서버에서 예상치 못한 오류가 발생했습니다.",
+            "example": "서버에서 예상치 못한 오류가 발생했습니다."
+          }
+        }
+      },
+      "ResNotLatest": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "426",
+            "example": "426"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "위키 문서의 최신 버전이 아님",
+            "example": "Version is not matched"
+          },
+          "new_content": {
+            "type": "string",
+            "description": "사용자가 입력했던 새로운 위키 문서 내용",
+            "example": "사용자가 입력했던 새로운 위키 문서 내용"
+          }
+        }
+      },
+      "ResWikiNotFound": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "404",
+            "example": "404"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "사용자에게 전달하는 메시지",
+            "example": "존재하지 않는 문서입니다."
+          }
+        }
+      },
+      "ResNotAdmin": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "description": "403",
+            "example": "403"
+          },
+          "success": {
+            "type": "boolean",
+            "description": "false",
+            "example": false
+          },
+          "message": {
+            "type": "string",
+            "description": "사용자에게 전달하는 메시지",
+            "example": "관리자가 아닙니다."
+          }
+        }
       }
     }
   },  
