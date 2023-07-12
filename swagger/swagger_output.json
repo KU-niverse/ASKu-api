@@ -160,6 +160,253 @@
   "schemes": [
     "http"
   ],
+  "components": {
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "example": "오류가 발생하였습니다."
+          }
+        }
+      },
+      "Question": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "index_title": {
+            "type": "string",
+            "example": "1. 목차"
+          },
+          "content": {
+            "type": "string",
+            "example": "고려대학교은 몇 년도에 창립되었나요?"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-26T05:05:08.000Z"
+          },
+          "answer_or_not": {
+            "type": "boolean",
+            "default": false,
+            "example": "0"
+          },
+          "is_bad": {
+            "type": "boolean",
+            "default": false,
+            "example": "0"
+          }
+        },
+        "required": [
+          "id",
+          "doc_id",
+          "user_id",
+          "index_title",
+          "content",
+          "created_at",
+          "answer_or_not",
+          "is_bad"
+        ]
+      },
+      "Debate": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "doc_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "subject": {
+            "type": "string",
+            "maxLength": 20,
+            "example": "학교 명칭 문제"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-26T05:05:08.000Z"
+          },
+          "recent_edited_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-28T01:05:08.000Z"
+          },
+          "done_or_not": {
+            "type": "boolean",
+            "default": false,
+            "example": "0"
+          },
+          "done_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "example": "2023-06-30T01:05:08.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "doc_id",
+          "user_id",
+          "subject",
+          "created_at",
+          "recent_edited_at",
+          "done_or_not"
+        ]
+      },
+      "DebateHistory": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "debate_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "content": {
+            "type": "string",
+            "example": "교려대학교가 아니라 고려대학교로 바꿔야 하지 않나요?"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-13T01:05:08.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "debate_id",
+          "user_id",
+          "content",
+          "created_at"
+        ]
+      },
+      "Report": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "type_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "target": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "reason_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "comment": {
+            "type": "string",
+            "example": "이상한 글이에요"
+          },
+          "is_checked": {
+            "type": "boolean",
+            "default": false,
+            "example": "0"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "type_id",
+          "target",
+          "reason_id",
+          "is_checked"
+        ]
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "user_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "type_id": {
+            "type": "integer",
+            "format": "int32",
+            "example": "1"
+          },
+          "read_or_not": {
+            "type": "boolean",
+            "default": false,
+            "example": "0"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 255,
+            "example": "알림 내용입니다."
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2023-06-13T01:05:08.000Z"
+          }
+        },
+        "required": [
+          "id",
+          "user_id",
+          "type_id",
+          "read_or_not",
+          "message",
+          "created_at"
+        ]
+      }
+    }
+  },  
   "paths": {
     "/user/auth/signup/emailcheck": {
       "post": {
@@ -607,21 +854,27 @@
             "name": "title",
             "description": "문서 제목",
             "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "required": true
           }
         ],
         "responses": {
           "200": {
-            "description": "조회 성공"
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
             },
           "404": {
             "description": "오류 발생",
-            "examples": {
+            "content": {
               "application/json": {
-                "message": "오류가 발생하였습니다."
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
               }
             }
           }
@@ -631,10 +884,11 @@
     "/question/new/{title}": {
       "post": {
         "tags": ["question"],
-        "description": "",
+        "summary": "질문 등록",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -644,13 +898,41 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "등록 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question",
+                  "message": "질문을 등록했습니다."
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "내용 작성 필요",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "내용을 작성해주세요."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -659,14 +941,11 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "content": {
-                    "example": "any"
-                  },
-                  "user_id": {
-                    "example": "any"
-                  },
                   "index_title": {
-                    "example": "any"
+                    "example": "1. 개요"
+                  },
+                  "content": {
+                    "example": "고려대학교은 몇 년도에 창립되었나요?"
                   }
                 }
               }
@@ -678,10 +957,11 @@
     "/question/edit/{question}": {
       "post": {
         "tags": ["question"],
-        "description": "",
+        "summary": "질문 수정 (답변이 달리기 전까지 가능)",
         "parameters": [
           {
             "name": "question",
+            "description": "질문 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -691,13 +971,46 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "수정 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "질문을 수정하였습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 답변이 달렸거나, 다른 회원의 질문입니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -706,11 +1019,8 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "user_id": {
-                    "example": "any"
-                  },
                   "new_content": {
-                    "example": "any"
+                    "example": "수정된 질문 내용"
                   }
                 }
               }
@@ -722,10 +1032,11 @@
     "/question/delete/{question}": {
       "delete": {
         "tags": ["question"],
-        "description": "",
+        "summary": "질문 삭제 (답변, 좋아요 달리기 전까지 가능)",
         "parameters": [
           {
             "name": "question",
+            "description": "질문 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -735,13 +1046,46 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "삭제 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "질문을 삭제하였습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 답변 및 좋아요가 달렸거나, 다른 회원의 질문입니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -749,10 +1093,11 @@
     "/question/like/{question}": {
       "post": {
         "tags": ["question"],
-        "description": "",
+        "summary": "질문 좋아요",
         "parameters": [
           {
             "name": "question",
+            "description": "질문 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -762,27 +1107,59 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "좋아요 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "좋아요를 등록했습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "중복된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 좋아요를 눌렀습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "401": {
-            "description": "Unauthorized"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "본인의 질문에는 좋아요를 누를 수 없습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "user_id": {
-                    "example": "any"
-                  }
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
@@ -793,10 +1170,11 @@
     "/question/query/{query(*)}": {
       "get": {
         "tags": ["question"],
-        "description": "",
+        "summary": "질문 제목 기반 검색",
         "parameters": [
           {
             "name": "query(*)",
+            "description": "검색어",
             "in": "path",
             "required": true,
             "schema": {
@@ -806,13 +1184,40 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "질문 검색 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "검색어를 입력해주세요."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -820,13 +1225,27 @@
     "/question/popular": {
       "get": {
         "tags": ["question"],
-        "description": "",
+        "summary": "인기 질문 조회",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Question"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -834,10 +1253,11 @@
     "/debate/new/{title}": {
       "post": {
         "tags": ["debate"],
-        "description": "",
+        "summary": "토론방 생성",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -847,13 +1267,40 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "토론방 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Debate"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "토론 제목을 입력하세요."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -863,10 +1310,7 @@
                 "type": "object",
                 "properties": {
                   "subject": {
-                    "example": "any"
-                  },
-                  "user_id": {
-                    "example": "any"
+                    "example": "학교 명칭 문제"
                   }
                 }
               }
@@ -878,10 +1322,11 @@
     "/debate/{title}/new/{debate}": {
       "post": {
         "tags": ["debate"],
-        "description": "",
+        "summary": "토론방에서 메시지 입력",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -890,6 +1335,7 @@
           },
           {
             "name": "debate",
+            "description": "토론방 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -899,13 +1345,40 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "토론 메시지 생성 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Debate"
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "잘못된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "메시지 내용을 입력하세요."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -915,10 +1388,7 @@
                 "type": "object",
                 "properties": {
                   "content": {
-                    "example": "any"
-                  },
-                  "user_id": {
-                    "example": "any"
+                    "example": "교려대학교가 아니라 고려대학교로 바꿔야 하지 않나요?"
                   }
                 }
               }
@@ -930,10 +1400,11 @@
     "/debate/list/{title}": {
       "get": {
         "tags": ["debate"],
-        "description": "",
+        "summary": "토론방 목록 조회",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -943,10 +1414,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "토론방 목록 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Debate"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -954,10 +1439,11 @@
     "/debate/view/{title}/{debate}": {
       "get": {
         "tags": ["debate"],
-        "description": "",
+        "summary": "토론방 메시지 조회",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -966,6 +1452,7 @@
           },
           {
             "name": "debate",
+            "description": "토론방 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -975,10 +1462,24 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "토론방 메시지 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Debate"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -986,10 +1487,11 @@
     "/debate/end/{title}/{debate}": {
       "post": {
         "tags": ["debate"],
-        "description": "",
+        "summary": "토론방 종료",
         "parameters": [
           {
             "name": "title",
+            "description": "문서 제목",
             "in": "path",
             "required": true,
             "schema": {
@@ -998,6 +1500,7 @@
           },
           {
             "name": "debate",
+            "description": "토론방 id",
             "in": "path",
             "required": true,
             "schema": {
@@ -1007,13 +1510,46 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "토론방 종료 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "토론방을 종료하였습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "중복된 입력",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 종료된 토론방입니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1021,13 +1557,27 @@
     "/notification/user": {
       "get": {
         "tags": ["notification"],
-        "description": "",
+        "summary": "유저 알림 조회",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "유저 알림 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1035,13 +1585,27 @@
     "/notification/admin": {
       "get": {
         "tags": ["notification"],
-        "description": "",
+        "summary": "관리자 알림 조회",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Notification"
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         }
       }
@@ -1049,16 +1613,49 @@
     "/notification/read": {
       "post": {
         "tags": ["notification"],
-        "description": "",
+        "summary": "알림 읽음 처리",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "알림 읽음 처리 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "알림을 읽음 표시하였습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "중복 알림 읽음 처리",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 읽음 표시한 알림입니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1068,10 +1665,7 @@
                 "type": "object",
                 "properties": {
                   "notification_id": {
-                    "example": "any"
-                  },
-                  "user_id": {
-                    "example": "any"
+                    "example": "1"
                   }
                 }
               }
@@ -1083,10 +1677,11 @@
     "/report/{type}": {
       "post": {
         "tags": ["report"],
-        "description": "",
+        "summary": "신고",
         "parameters": [
           {
             "name": "type",
+            "description": "신고 type id",
             "in": "path",
             "required": true,
             "schema": {
@@ -1096,10 +1691,44 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "신고 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "신고했습니다."
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example":"오류가 발생했습니다."
+                    }
+                  }
+                }
+              }
+            }
           }
         },
         "requestBody": {
@@ -1108,17 +1737,14 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "user_id": {
-                    "example": "any"
-                  },
                   "target": {
-                    "example": "any"
+                    "example": "1"
                   },
                   "reason_id": {
-                    "example": "any"
+                    "example": "1"
                   },
                   "comment": {
-                    "example": "any"
+                    "example": "스팸 링크 의심됨"
                   }
                 }
               }

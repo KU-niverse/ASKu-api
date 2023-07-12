@@ -13,7 +13,7 @@ exports.debatePostMid = async (req, res) => {
         subject: req.body.subject,
       });
       const result = await Debate.createDebate(newDebate);
-      res.status(200).send({result, message: "토론이 생성되었습니다."});
+      res.status(200).send(result);
     }
   } catch (err) {
     console.error(err);
@@ -33,7 +33,7 @@ exports.historyPostMid = async (req, res) => {
         content: req.body.content,
       });
       const result = await History.createHistory(newHistory);
-      res.status(200).send({result, message: "토론 메시지가 생성되었습니다."});
+      res.status(200).send(result);
     }
   } catch (err) {
     console.error(err);
