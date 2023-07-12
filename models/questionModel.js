@@ -67,14 +67,14 @@ Question.deleteQuestion = async (question_id, user_id) => {
     `SELECT id FROM question_like WHERE id = ?`,
     [question_id]
   );
-  if (!flag[0][0] && !flag_like[0][0] && flag[0][0].user_id == user_id) {
+  if (!flag[0][0].answer_or_not && !flag_like[0][0] && flag[0][0].user_id == user_id) {
     const result = await pool.query(
       `DELETE FROM questions WHERE id = ?`,
       [question_id]
     );
     return result;
   } else {
-    return 0;
+    return flag;
   }
 };
 
