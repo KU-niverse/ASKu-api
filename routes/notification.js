@@ -9,9 +9,9 @@ const router = express.Router();
 router.get("/user", isSignedIn, notificationMid.userNoticeGetMid);
 
 // GET notification/admin
-router.get("/admin", isAdmin, notificationMid.adminNoticeGetMid);
+router.get("/admin", isSignedIn, isAdmin, notificationMid.adminNoticeGetMid);
 
 // POST notification/read
-router.post("/read", isAdmin, notificationMid.NoticeReadPostMid);
+router.post("/read", isSignedIn, isAdmin, notificationMid.NoticeReadPostMid);
 
 module.exports = router;
