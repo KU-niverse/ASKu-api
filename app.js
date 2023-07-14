@@ -18,8 +18,8 @@ dotenv.config();
 const wikiRoutes = require("./routes/wiki");
 const passportConfig = require("./passport");
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerFile = require('./swagger/swagger_output.json');
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger/swagger_output.json");
 
 const app = express();
 passportConfig(); // 패스포트 설정
@@ -53,7 +53,11 @@ app.set("port", process.env.PORT || 3000);
 
 /* 스웨거 코드  */
 
-app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerFile, {explorer: true}));
+app.use(
+  "/api-docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerFile, { explorer: true })
+);
 
 /**
  * 파라미터 변수 뜻
