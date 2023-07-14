@@ -160,7 +160,13 @@ CREATE TABLE `feedback` {
    FOREIGN KEY (`qna_id`) REFERENCES `ai_history` (`id`)
 };
 
-
+CREATE TABLE `feedback_content` {
+   `id`  int   NOT NULL AUTO_INCREMENT,
+   `feedback_id`  int   NOT NULL,
+   `content`  text   NOT NULL,
+   PRIMARY KEY(`id`),
+   FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`)
+};
 
 
 insert into `report_type` (description) values ('질문');
