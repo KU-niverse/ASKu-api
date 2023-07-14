@@ -137,8 +137,8 @@ CREATE TABLE `debate_history` (
 CREATE TABLE `ai_history` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `session_id`   int   NOT NULL,
-   `content`   text   NOT NULL,
-   `type`   bool   NOT NULL, -- [질문 답변 종류] 0: 질문, 1: 답변
+   `q_content`   text   NOT NULL,
+   `a_content`   text   NOT NULL,
    `reference`   text   NULL, -- 출처 텍스트
    `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    `review`   tinyint   NOT NULL   DEFAULT 0, -- [평가] 0: 평가 없음, 1: 좋아요, -1: 싫어요,
