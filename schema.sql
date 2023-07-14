@@ -153,6 +153,16 @@ CREATE TABLE `report_type` (
     PRIMARY KEY(`id`)
 );
 
+CREATE TABLE `feedback` {
+   `id`  int   NOT NULL AUTO_INCREMENT,
+   `qna_id`  int   NOT NULL,
+   PRIMARY KEY(`id`),
+   FOREIGN KEY (`qna_id`) REFERENCES `ai_history` (`id`)
+};
+
+
+
+
 insert into `report_type` (description) values ('질문');
 insert into `report_type` (description) values ('토론방');
 insert into `report_type` (description) values ('토론 메시지');
