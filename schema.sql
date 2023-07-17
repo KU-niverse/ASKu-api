@@ -177,7 +177,7 @@ insert into `report_type` (description) values ('토론 메시지');
 CREATE TABLE `report_reason` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `description`   varchar(20)   NOT NULL,
-    PRIMARY KEY(`id`)
+   PRIMARY KEY(`id`)
 );
 
 insert into `report_reason` (description) values ('상업적 광고 및 판매');
