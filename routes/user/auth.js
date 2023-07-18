@@ -74,46 +74,18 @@ router.post("/signin", isNotSignedIn, signIn);
 //로그아웃
 router.get("/signout", isSignedIn, signOut);
 
-/**
- * @swagger
- * /user/auth/iddupcheck/{loginid}:
- *   get:
- *    summary: "로그인 아이디 중복검사"
- *    description: "회원가입시 로그인 아이디 중복검사"
- *    tags: [User]
- *    parameters:
- *      - in: path
- *        name: loginid
- *        required: true
- *        description: 유저 로그인 아이디
- *        schema:
- *          type: string
- *    responses:
- *      "201":
- *        description: 성공시 결과값 (유저 수정)
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                success:
- *                  type: boolean
- *                message:
- *                  type: string
- *                  example: "사용가능한 아이디입니다."
-
- */
-
 //중복체크
 //아이디 중복체크
 router.get("/iddupcheck/:loginid", isNotSignedIn, idDupCheck);
 //닉네임 중복체크
-router.get("/nickdupcheck/:nick", isNotSignedIn, nickDupCheck);
+router.get("/nickdupcheck/:nick", nickDupCheck);
 //이메일 중복체크
 router.get("/emaildupcheck/:email", isNotSignedIn, emailDupCheck);
 
 //상태확인
+
 //로그인여부 확인
+//TODO: 서버 에러 처리
 router.get("/issignedin", isSignedIn, (req, res) => {
   console.log("로그인한 상태입니다.");
   return res
