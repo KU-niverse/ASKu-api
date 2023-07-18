@@ -71,11 +71,13 @@ exports.setRepBadge = async (req, res) => {
 exports.editInfo = async (req, res) => {
   try {
     const { name, stu_id, nickname } = req.body;
+
+    //변경될 정보의 중복체크는 프론트에서 진행
     const result = await User.editInfo(name, stu_id, nickname, req.user[0].id);
     if (!result) {
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
-        message: `잘못된 접근입니다. 정보 수정에 실패하였습니다.`,
+        message: `해당 유저가 존재하지 않거나 중복된 항목이 있습니다.`,
       });
     } else {
       return res.status(201).json({
@@ -86,7 +88,7 @@ exports.editInfo = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "badgeHistory-controller에서 오류가 발생했습니다.",
+      message: "editInfo-controller에서 오류가 발생했습니다.",
     });
   }
 };
