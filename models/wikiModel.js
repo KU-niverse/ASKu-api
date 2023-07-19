@@ -104,7 +104,7 @@ class Wiki_history {
     await pool.query("UPDATE wiki_docs SET text_pointer = ?, latest_ver = ? WHERE id = ?", [new_wiki_history.text_pointer, new_wiki_history.version, new_wiki_history.doc_id]);
     const wiki_history_id = result.insertId;
 
-    return Wiki_history.getWikiHistorysById(wiki_history_id);
+    return wiki_history_id;
   }
 }
 

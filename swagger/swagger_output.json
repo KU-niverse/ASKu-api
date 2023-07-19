@@ -3333,7 +3333,7 @@
                   "is_q_based": {
                     "type": "boolean",
                     "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
-                    "example": false
+                    "example": 0
                   },
                   "qid": {
                     "type": "integer",
@@ -3694,7 +3694,7 @@
                   "is_q_based": {
                     "type": "boolean",
                     "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
-                    "example": false
+                    "example": 0
                   },
                   "qid": {
                     "type": "integer",

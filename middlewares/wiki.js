@@ -19,13 +19,12 @@ exports.createHistoryMid = async (req, res, next) => {
       is_rollback: is_rollback,
     });
 
-    const rows_history = await Wiki.Wiki_history.create(new_wiki_history);
-    console.log(rows_history);
+    const wiki_history_id = await Wiki.Wiki_history.create(new_wiki_history);
     
     req.is_q_based = is_q_based;
     if (is_q_based) {
       // 답변 생성
-      Wiki.Wiki_history.createAnswer(rows_history.id, req.body.qid);
+      Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
     }
     // 기여도 -> 알림
     next();
