@@ -141,7 +141,6 @@ CREATE TABLE `ai_history` (
    `a_content`   text   NOT NULL,
    `reference`   text   NULL, -- 출처 텍스트
    `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
-   `review`   tinyint   NOT NULL   DEFAULT 0, -- [평가] 0: 평가 없음, 1: 좋아요, -1: 싫어요,
     `is_deleted` bool NOT NULL DEFAULT 0, -- [히스토리 초기화 여부] 0: 존재 1: 삭제(초기화)된 히스토리
     PRIMARY KEY (`id`),
     FOREIGN KEY (`session_id`) REFERENCES `ai_session` (`id`)
