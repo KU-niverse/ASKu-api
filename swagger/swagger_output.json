@@ -62,6 +62,89 @@
           }
         }
       },
+      "User": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "login_id": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "stu_id": {
+            "type": "string",
+            "maxLength": 10
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 255,
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "nickname": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "rep_badge": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "point": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "is_admin": {
+            "type": "boolean",
+            "default": false
+          },
+          "restrict_period": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "restrict_count": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "uuid": {
+            "type": "string",
+            "maxLength": 255
+          },
+          "is_deleted": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "login_id",
+          "name",
+          "stu_id",
+          "email",
+          "password",
+          "nickname",
+          "created_at",
+          "point",
+          "is_admin",
+          "restrict_count",
+          "uuid",
+          "is_deleted"
+        ]
+      },
       "Question": {
         "type": "object",
         "properties": {
@@ -407,440 +490,1663 @@
     "/user/auth/signup/emailcheck": {
       "post": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary":"유저 회원가입 이메일 인증",
+
+        "description": "유저 회원가입 시도 후 이메일 인증",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "auth_uuid": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "auth_uuid": {
+                                "type": "string",
+                                "example": " 550e8400-e29b-41d4-a716-446655440000"
+                            }
+                        },
+                        "required": ["auth_uuid"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "200": {
+                "description": "이메일 인증 완료, 유저 등록",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "회원가입을 성공적으로 완료하였습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "회원가입 세션이 만료",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "회원가입 세션이 만료되었습니다. 처음부터 다시 회원가입을 진행해주세요."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    },
+    }
+},
     "/user/auth/signup": {
-      "post": {
+    "post": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        },
+        "summary": "유저 회원가입",
+        "description": "유저 회원가입을 시도하고 인증 이메일을 전송합니다. 해당 api로 회원가입이 완료되지 않습니다.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "login_id": {
-                    "example": "any"
-                  },
-                  "name": {
-                    "example": "any"
-                  },
-                  "stu_id": {
-                    "example": "any"
-                  },
-                  "email": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  },
-                  "nickname": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "login_id": {
+                                "type": "string",
+                                "example": "sup1214"
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "최영섭"
+                            },
+                            "stu_id": {
+                                "type": "string",
+                                "example": "2019190530"
+                            },
+                            "email": {
+                                "type": "string",
+                                "example": "sup1214@korea.ac.kr"
+                            },
+                            "password": {
+                                "type": "string",
+                                "example": "qwer1234!"
+                            },
+                            "nickname": {
+                                "type": "string",
+                                "example": "키키"
+                            }
+                        },
+                        "required": ["login_id", "name", "stu_id", "email", "password", "nickname"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "201": {
+                "description": "임시 유저 생성, 이메일 인증을 마치면 유저로 등록",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "임시 회원가입을 하였습니다. 04:00까지 이메일인증을 완료해주세요."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 회원가입 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "401": {
+                "description": "중복된 내용이 있을 때 발생하는 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "회원가입에 실패하였습니다. 중복된 항목이 있습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    },
+    }
+},
+
     "/user/auth/signin": {
       "post": {
         "tags": ["user"],
-        "description": "",
+        "summary": "유저 로그인",
+        "description": "유저 로그인을 진행합니다.",
+        "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "login_id": {
+                                "type": "string",
+                                "example": "sup1214"
+                            },
+                            "password": {
+                                "type": "string",
+                                "example": "qwer1234!"
+                            }
+                        },
+                        "required": ["login_id", "password"]
+                    }
+                }
+            }
+        },
         "responses": {
-          "201": {
-            "description": "Created"
+            "201": {
+                "description": "유저 로그인 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "로그인에 성공하였습니다!"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 로그인 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "401": {
-            "description": "Unauthorized"
-          }
+            
+            "401": {
+              "description": "비밀번호 불일치",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "비밀번호가 일치하지 않습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          "402": {
+            "description": "존재하지 않는 회원",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "가입되지 않은 회원입니다."
+                            }
+                        }
+                    }
+                }
+            }
+        },
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    }
     },
     "/user/auth/signout": {
       "get": {
         "tags": ["user"],
-        "description": "",
+        "summary": "유저 로그아웃",
+        "description": "유저 로그아웃을 진행합니다.",
+
         "responses": {
-          "200": {
-            "description": "OK"
+            "200": {
+                "description": "유저 로그아웃",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "로그아웃 되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            "401": {
+              "description": "로그인 되어있지 않은 상태에서 로그아웃 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "400": {
-            "description": "Bad Request"
-          },
-          "401": {
-            "description": "Unauthorized"
+          
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    },
+    "/user/auth/nickdupcheck/{nick}": {
+      "get": {
+        "tags": ["user"],
+        "summary": "닉네임 중복확인",
+        "description": "회원가입시, 닉네임 변경시에 닉네임 중복확인을 진행합니다.",
+        "parameters": [
+          {
+            "name": "nick",
+            "description": "닉네임",
+            "in": "path",
+            "required": true
           }
+        ],
+        "responses": {
+          "201": {
+            "description": "사용가능한 닉네임",
+            "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "success": {
+                              "type": "boolean",
+                              "example": true
+                          },
+                          "message": {
+                              "type": "string",
+                              "example": "사용 가능한 닉네임입니다."
+                          }
+                      }
+                  }
+              }
+            }
+          },
+
+          "401": {
+            "description": "닉네임 중복",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "이미 존재하는 닉네임입니다."
+                            }
+                        }
+                    }
+                }
+            }
+        },  
+          "500": {
+              "description": "서버 에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
       }
     },
     "/user/auth/iddupcheck/{loginid}": {
       "get": {
         "tags": ["user"],
-        "description": "",
+        "summary": "아이디 중복확인",
+        "description": "회원가입시 아이디 중복확인을 진행합니다.",
+
         "parameters": [
           {
             "name": "loginid",
+            "description": "로그인에 활용되는 아이디",
             "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "required": true
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          }
-        }
-      }
-    },
-    "/user/auth/nickdupcheck/{nick}": {
-      "get": {
-        "tags": ["user"],
-        "description": "",
-        "parameters": [
-          {
-            "name": "nick",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+            "description": "사용가능한 아이디",
+            "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "success": {
+                              "type": "boolean",
+                              "example": true
+                          },
+                          "message": {
+                              "type": "string",
+                              "example": "사용 가능한 아이디입니다."
+                          }
+                      }
+                  }
+              }
             }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Created"
           },
           "400": {
-            "description": "Bad Request"
-          }
+            "description": "로그인 되어있는 상태에서 아이디 중복체크 api가 호출됨",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "로그인된 상태입니다."
+                            }
+                        }
+                    }
+                }
+            }
+        },
+
+          "401": {
+            "description": "아이디 중복",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "이미 존재하는 아이디입니다."
+                            }
+                        }
+                    }
+                }
+            }
+        },  
+          "500": {
+              "description": "서버 에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
       }
     },
+
     "/user/auth/emaildupcheck/{email}": {
       "get": {
         "tags": ["user"],
-        "description": "",
+        "summary": "이메일 중복 확인",
+        "description": "회원가입시 이메일 중복확인을 진행합니다.",
         "parameters": [
           {
             "name": "email",
+            "description": "이메일",
             "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
+            "required": true
           }
         ],
         "responses": {
           "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
+            "description": "사용가능한 이메일",
+            "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "success": {
+                              "type": "boolean",
+                              "example": true
+                          },
+                          "message": {
+                              "type": "string",
+                              "example": "사용 가능한 이메일입니다."
+                          }
+                      }
+                  }
+              }
           }
+
+            },
+
+
+            "400": {
+              "description": "로그인 되어있는 상태에서 이메일 중복체크 api가 호출됨",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          "401": {
+            "description": "이메일 중복",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "이미 존재하는 이메일입니다."
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "402": {
+          "description": "이메일 형식 오류",
+          "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "success": {
+                              "type": "boolean",
+                              "example": false
+                          },
+                          "message": {
+                              "type": "string",
+                              "example": "이메일은 '{email_id}@korea.ac.kr' 형식이어야 합니다."
+                          }
+                      }
+                }
+              }
+            }
+          },          
+          "500": {
+              "description": "서버 에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
       }
     },
     "/user/auth/issignedin": {
       "get": {
         "tags": ["user"],
-        "description": "",
+        "summary": "유저 로그인 여부 확인",
+        "description": "유저 로그인 여부 확인",
+
         "responses": {
-          "201": {
-            "description": "Created"
+            "201": {
+                "description": "유저 로그인 되어있는 상태",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "로그인한 상태입니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "401": {
-            "description": "Unauthorized"
-          }
+          
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    }
     },
     "/user/auth/pwchangesessioncheck": {
       "post": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary": "비밀번호 찾기 세션 확인",
+        "description": "비밀번호 찾기 api를 호출한 뒤 이메일 링크로 접속했을 때 세션 확인, 해당 결과를 통해 비밀번호 변경 페이지를 사용불가능하게 막아야 함, success가 날아온다면 세션이 생성된지 2시간이 지났는지 확인",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "hashed_login_id": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "hashed_login_id": {
+                                "type": "string",
+                                "example": "DJFODdjksfojeo323oafosjkld"
+                            }
+                        },
+                        "required": ["hashed_login_id"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "200": {
+                "description": "비밀번호 변경 세션 존재, 세션 생성 시간을 확인하고 2시간이 지나지않았다면 비밀번호 변경을 허용",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": {
+                                      "user_id": "sup1214",
+                                      "change_pw_token":"DJFODdjksfojeo323oafosjkld",
+                                      "created_at":"2021-05-20T14:48:00.000Z"
+                          
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 해당 api호출 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "401": {
+              "description": "만료되었거나 존재하지 않는 세션 접근",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "만료되었거나 존재하지 않는 세션 접근입니다. 다시 한 번 비밀번호 찾기를 진행해주세요."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+       
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "sessionValidation-controller에서 문제가 발생했습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    }
     },
     "/user/auth/findid": {
       "post": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "201": {
-            "description": "Created"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary": "유저 아이디 찾기",
+        "description": "유저 아이디 찾기를 진행합니다.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "email": {
+                                "type": "string",
+                                "example": "sup1214@korea.ac.kr"
+                            }
+                        },
+                        "required": ["email"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "200": {
+                "description": "아이디 찾기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "아이디를 성공적으로 찾았습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 아이디 찾기를 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "401": {
+              "description": "해당 이메일과 일치하는 유저가 존재하지 않음, 아이디 찾기 실패",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "이메일과 일치하는 유저가 없습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "서버 에러"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    }
     },
     "/user/auth/findpw": {
       "post": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary": "유저 비밀번호 찾기",
+        "description": "유저 비밀번호 찾기를 진행합니다. 유저에게 비밀번호 변경 링크를 이메일로 전송합니다.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "login_id": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "login_id": {
+                                "type": "string",
+                                "example": "sup1214"
+                            }
+                        },
+                        "required": ["login_id"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "201": {
+                "description": "비밀번호 변경 이메일 전송 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "비밀번호 변경 이메일을 전송하였습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 비밀번호 찾기를 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "401": {
+              "description": "해당 아이디와 일치하는 유저가 존재하지 않음, 비밀번호 찾기",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "존재하지 않는 유저 아이디입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+          
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "findPw-controller에서 문제가 발생했습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    }
     },
+    
     "/user/auth/changepw": {
       "put": {
         "tags": ["user"],
-        "description": "",
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary": "유저 비밀번호 변경",
+        "description": "유저 비밀번호 변경을 진행합니다. 유저 비밀번호 변경은 비밀번호 찾기, 마이페이지에서 이루어집니다. 만약 마이페이지에서 진행한 비밀번호 변경이라면 hashed_login_id없이 전송하면 됩니다.",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "login_id": {
-                    "example": "any"
-                  },
-                  "hashed_login_id": {
-                    "example": "any"
-                  },
-                  "password": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "login_id": {
+                                "type": "string",
+                                "example": "sup1214"
+                            },
+                            "hashed_login_id": {
+                              "type": "string",
+                              "example": "sudhfiaeoijfoisdjfklsjfie"
+                          },
+                          "password": {
+                            "type": "string",
+                            "example": "qwer1234!"
+                        }
+                        },
+                        "required": ["login_id", "password"]
+                    }
                 }
-              }
             }
+        },
+        "responses": {
+            "200": {
+                "description": "비밀번호 변경 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "비밀번호 변경이 완료되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "해당 오류는 서버오류일 가능성이 높습니다. 관리자에게 문의해주세요.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "500": {
+              "description": "서버에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                              }
+                          }
+                      }
+                  }
+              }
           }
         }
-      }
+    }
     },
     "/user/mypage/info": {
       "get": {
         "tags": ["mypage"],
-        "description": "",
+        "summary": "유저 정보",
+        "description": "로그인된 유저의 정보를 get합니다.",
+
         "responses": {
-          "201": {
-            "description": "Created"
+            "201": {
+                "description": "유저 정보를 불러오는데 성공했습니다.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": {
+                                      "id": 13,
+                                      "login_id": "sup1214",
+                                      "name": "최영섭",
+                                      "stu_id": "2019190530",
+                                      "email": "sup1214@naver.com",
+                                      "password": "afdsfjeioj@#io13dsiofija",
+                                      "nickname": "키키",
+                                      "created_at":  "2021-05-20T14:48:00.000Z",
+                                      "point": 300,
+                                      "is_admin": false,
+                                      "restrict_count": 0,
+                                      "uuid": "124dfs0d8f9uDf-dfus93fo9ds",
+                                      "is_deleted": 0
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "401": {
-            "description": "Unauthorized"
-          }
+          
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "info-controller에서 오류가 발생했습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
       }
     },
+
+
     "/user/mypage/wikihistory": {
       "get": {
         "tags": ["mypage"],
-        "description": "",
+        "summary": "유저 위키 히스토리",
+        "description": "유저의 위키 히스토리를 조회합니다.",
+
         "responses": {
-          "201": {
-            "description": "Created"
+            "201": {
+                "description": "위키 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 1,
+                                      "title": "위키 문서 제목",
+                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki",
+                                      "version": 14,
+                                      "type": "doc",
+                                      "is_deleted": false
+                                    },
+                                    {
+                                      "id": 2,
+                                      "title": "위키 문서 제목2",
+                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r15.wiki",
+                                      "version": 1,
+                                      "type": "doc",
+                                      "is_deleted": false
+                                    }
+  
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "401": {
-            "description": "Unauthorized"
-          }
+          
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "wikiHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
         }
       }
     },
+
     "/user/mypage/badgehistory": {
       "get": {
         "tags": ["mypage"],
-        "description": "",
+        "summary": "유저 뱃지 히스토리",
+        "description": "유저의 배지 획득 내역을 조회합니다.",
+
         "responses": {
-          "201": {
-            "description": "Created"
+            "201": {
+                "description": "배지 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 1,
+                                      "user_id": 1,
+                                      "badge_id": 1,
+                                      "created_at":"2021-05-20T14:48:00.000Z"
+                                    },
+                                    {
+                                      "id": 2,
+                                      "user_id": 1,
+                                      "badge_id": 2,
+                                      "created_at":"2021-05-20T14:48:00.000Z"
+                                    }
+  
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            
+            "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
           },
-          "401": {
-            "description": "Unauthorized"
-          }
+          
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "badgeHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
         }
       }
     },
     "/user/mypage/setrepbadge": {
       "put": {
         "tags": ["mypage"],
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary":"유저 대표 배지 설정",
+        "description": "유저의 대표배지를 변경",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "rep_badge_id": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "rep_badge_id": {
+                              "type": "integer",
+                              "example": 3
+                            }
+                            
+                        },
+                        "required": ["rep_badge_id"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "200": {
+                "description": "대표 배지 변경 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "대표뱃지가 3으로 변경되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "잘못된 접근 해당 유저가 존재하지 않거나 존재하지 않는 대표뱃지 값을 입력",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "잘못된 접근입니다. 대표 배지 변경에 실패하였습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "badgeHistory-controller에서 오류가 발생했습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    },
+    }
+},
     "/user/mypage/editinfo": {
       "put": {
         "tags": ["mypage"],
-        "description": "",
-        "responses": {
-          "201": {
-            "description": "Created"
-          },
-          "401": {
-            "description": "Unauthorized"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        },
+        "summary":"유저 정보 수정",
+
+        "description": "유저의 대표배지를 변경",
         "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "example": "any"
-                  },
-                  "stu_id": {
-                    "example": "any"
-                  },
-                  "nickname": {
-                    "example": "any"
-                  }
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "영섭2"
+                          },
+                          "stu_id": {
+                            "type": "string",
+                            "example": "2019190530"
+                          },
+                          "nickname": {
+                            "type": "string",
+                            "example": "키키2"
+                          }
+                        },
+                        "required": ["stu_id", "nick_name"]
+                    }
                 }
-              }
             }
-          }
+        },
+        "responses": {
+            "200": {
+                "description": "유저 정보 수정 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "정보가 수정되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "존재하지 않는 유저의 정보를 수정하려 했거나 중복된 항목이 존재",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "해당 유저가 존재하지 않거나 중복된 항목이 있습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+
+            "500": {
+                "description": "서버 에러",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": false
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "editInfo-controller에서 오류가 발생했습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
-    },
+    }
+},
     "/question/view/{title}": {
       "get": {
         "tags": ["question"],
