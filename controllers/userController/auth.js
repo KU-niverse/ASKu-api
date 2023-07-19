@@ -257,7 +257,7 @@ exports.signIn = async (req, res, next) => {
     console.error(error);
     return res.status(500).json({
       success: false,
-      message: "서버에러",
+      message: "서버 에러",
     });
   }
 };

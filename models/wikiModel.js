@@ -84,7 +84,7 @@ class Wiki_history {
     const [rows] = await pool.query(`SELECT user_id FROM wiki_history WHERE id = ?`, [id]);
     await Wiki_point.recalculatePoint(rows[0].user_id);
 
-    return result[0].changedRows;
+    return result.changedRows;
   }
 
   // 답변 생성하는 함수, 질문 기반 수정일 때만 사용
@@ -120,14 +120,14 @@ class Wiki_point {
     }
     const [rows] = await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point * 4, user_id]);
 
-    return rows[0].point;
+    return rows.affectedRows;
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
     const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
 
-    return result[0].changedRows;
+    return result.changedRows;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
@@ -165,7 +165,7 @@ class Wiki_favorite {
     if (rows.length == 0) {
       const [result] = await pool.query("INSERT INTO wiki_favorites SET ?", new_wiki_favorite);
 
-      return result[0].insertId;
+      return result.insertId;
     } else {
       return 0;
     }
@@ -177,7 +177,7 @@ class Wiki_favorite {
     if (result.affectedRows == 0) {
       return 0;
     }
-    return result[0].changedRows;
+    return result.changedRows;
   }
 
   // user_id로 위키 즐겨찾기 조회
