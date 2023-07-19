@@ -11,8 +11,7 @@ exports.reportPostMid = async (req, res, next) => {
       comment: req.body.comment,
     });
     await Report.createReport(newReport);
-    req.body.notice_id = 6;
-    req.body.condition_id = 0;
+    req.body.types_and_conditions = [[7, -1]];
     next();
   } catch (err) {
     console.error(err);

@@ -13,7 +13,7 @@ exports.questionGetMid = async (req, res) => {
 };
 
 // 질문 등록하기
-exports.questionPostMid = async (req, res) => {
+exports.questionPostMid = async (req, res, next) => {
   try {
     if (!req.body.content) {
       res.status(400).send({message: "내용을 작성해주세요."});
@@ -25,8 +25,10 @@ exports.questionPostMid = async (req, res) => {
         index_title: req.body.index_title,
         content: req.body.content,
       });
-      const result = await Question.createQuestion(newQuestion);
-      res.status(200).send(result);
+      await Question.createQuestion(newQuestion);
+      req.body.user_id = req.user[0].id;
+      req.body.types_and_conditions = [[1, doc_id]];
+      next();
     }
   } catch (err) {
     console.error(err);
