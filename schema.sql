@@ -156,6 +156,7 @@ CREATE TABLE `report_type` (
 CREATE TABLE `feedback` (
    `id`  int   NOT NULL AUTO_INCREMENT,
    `qna_id`  int   NOT NULL,
+   `feedback` bool NoT NULL,
    PRIMARY KEY(`id`),
    FOREIGN KEY (`qna_id`) REFERENCES `ai_history` (`id`)
 );
