@@ -35,7 +35,7 @@
 const {getUsers, getInfo, Notice} = require("../models/notificationModel");
 
 // 알림 생성
-exports.newNotice = async(req, res) => {
+exports.newNotice = async(req, res, next) => {
   try {
     const typesAndConditions = req.body.types_and_conditions; // [[type_id, condition_id], ...]
     const result = []; // 알림 생성 결과
@@ -103,10 +103,13 @@ exports.newNotice = async(req, res) => {
           const user_result = await Notice.createNotice(newNotice);
           result.push(user_result); // 각 user마다 결과 추가
         }
-        
       }
     }
-    res.status(200).send(result);
+    if (req.is_rollback) {
+      next();
+    } else {
+      res.status(200).send(result);
+    }
   } catch (err) {
     console.error(err);
     res.status(404).send({message: "알림 오류가 발생하였습니다."});
