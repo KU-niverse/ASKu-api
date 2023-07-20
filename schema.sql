@@ -92,6 +92,7 @@ CREATE TABLE `debates` (
    `recent_edited_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP, -- 가장 마지막으로 토론한 시각
    `done_or_not`   bool   NOT NULL DEFAULT 0, -- [토론 종료 여부] 0: 진행 중, 1: 종료됨
    `done_at`   timestamp   NULL,
+   `is_bad`   bool   NOT NULL   DEFAULT 0,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
@@ -101,6 +102,7 @@ CREATE TABLE `badge_history` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `user_id`   int   NOT NULL,
    `badge_id`   int   NOT NULL,
+   `is_bad`   bool   NOT NULL   DEFAULT 0,
    `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
@@ -129,6 +131,7 @@ CREATE TABLE `debate_history` (
    `debate_id`   int   NOT NULL,
    `user_id`   int   NOT NULL,
    `content`   text   NOT NULL,
+   `is_bad`   bool   NOT NULL   DEFAULT 0,
    `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`debate_id`) REFERENCES `debates` (`id`),
@@ -197,7 +200,7 @@ CREATE TABLE `reports` (
    `target`   int   NOT NULL, -- [신고 대상] 1: wiki_history(id) 2: questions(id) 3: debates(id) 4: debate_history(id)
    `reason_id`   int   NOT NULL, -- [신고 사유] 문서 훼손, 욕설 등등...
    `comment`   text   NULL, -- [신고 추가 정보] 유저가 작성한 추가 정보
-   `is_checked`   bool   NOT NULL   DEFAULT 0, -- [확인 여부] 0: 미확인 1: 확인됨
+   `is_checked`   tinyint   NOT NULL   DEFAULT 0, -- [승인 여부] 0: 미확인 1: 승인됨 -1: 반려됨
    PRIMARY KEY (`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
    FOREIGN KEY (`type_id`) REFERENCES `report_type` (`id`),
