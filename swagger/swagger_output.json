@@ -4652,6 +4652,153 @@
         }
       }
     },
+    "/wiki/contributions": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "로그인한 유저 기여도 순위 조회",
+        "description": "GET 로그인한 유저 기여도 순위 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "로그인한 유저 기여도 순위 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "description": "로그인한 유저 기여도 순위 정보",
+                      "application/json": {
+                        "schema": {
+                          "type": "object",
+                          "properties": {
+                            "count": {
+                              "type": "integer",
+                              "description": "전체 유저 수",
+                              "example": "120"
+                            },
+                            "ranking": {
+                              "type": "integer",
+                              "description": "내 기여 순위",
+                              "example": "1"
+                            },
+                            "point": {
+                              "type": "integer",
+                              "description": "내 기여도",
+                              "example": 30012
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }            
+          },
+          "500": {
+            "description": "유저 기여도 순위 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/contributions/total": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "전체 기여도 리스트 조회",
+        "description": "GET 방식으로 전체 기여도 리스트 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "전체 기여도 리스트 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "array",
+                      "description": "기여한 유저와 기여도 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "description": "기여한 유저 id",
+                            "example": 1
+                          },
+                          "login_id": {
+                            "type": "string",
+                            "description": "기여한 유저 login id",
+                            "example": "jaemin8852"
+                          },
+                          "nickname": {
+                            "type": "string",
+                            "description": "기여한 유저 닉네임",
+                            "example": "jaemin"
+                          },
+                          "point": {
+                            "type": "integer",
+                            "description": "각 유저의 기여도",
+                            "example": 700
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
+          },
+          "404": {
+            "description": "위키 문서가 존재하지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 기여도 리스트 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wiki/contributions/{title(*)}": {
       "get": {
         "tags": ["wiki"],
@@ -4700,9 +4847,9 @@
                             "example": 1
                           },
                           "point": {
-                            "type": "string",
+                            "type": "integer",
                             "description": "각 유저의 기여도",
-                            "example": "700"
+                            "example": 700
                           }
                         }
                       }
@@ -4711,7 +4858,6 @@
                 }
               }
             }
-            
           },
           "404": {
             "description": "위키 문서가 존재하지 않음",

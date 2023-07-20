@@ -709,10 +709,36 @@ exports.wikiFavoriteDeleteMid = async (req, res) => {
   }
 };
 
+// 로그인한 유저 기여도 순위 조회
+exports.userContributionGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
+    res.status(200).send({ success: true, message: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "유저 기여도 순위 조회 중 오류" });
+  }
+};
+
+// 전체 기여도 리스트 조회
+exports.totalContributionGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_point.getRanking();
+    res.status(200).send({ success: true, message: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "전체 기여도 리스트 조회 중 오류" });
+  }
+};
+
 // 문서 내 기여도 리스트 조회
 exports.contributionGetMid = async (req, res) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    if(doc_id == null) {
+      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+      return;
+    }
     const rows = await Wiki.Wiki_point.getContributors(doc_id);
     res.status(200).send({ success: true, message: rows});
   } catch (err) {
