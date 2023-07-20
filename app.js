@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
@@ -22,6 +23,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger/swagger_output.json");
 
 const app = express();
+app.use(cors()); 
+
 passportConfig(); // 패스포트 설정
 
 app.use(bodyParser.json());
