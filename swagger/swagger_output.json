@@ -3331,8 +3331,8 @@
                     "example": "위키 문서 섹션 수정 사유"
                   },
                   "is_q_based": {
-                    "type": "boolean",
-                    "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
+                    "type": "integer",
+                    "description": "질문에 대한 답변인지 여부(1: 질문에 대한 답변, 0: 일반적인 위키 문서 수정)",
                     "example": 0
                   },
                   "qid": {
@@ -3692,8 +3692,8 @@
                     "example": "위키 문서 수정 사유"
                   },
                   "is_q_based": {
-                    "type": "boolean",
-                    "description": "질문에 대한 답변인지 여부(true: 질문에 대한 답변, false: 일반적인 위키 문서 수정)",
+                    "type": "integer",
+                    "description": "질문에 대한 답변인지 여부(1: 질문에 대한 답변, 0: 일반적인 위키 문서 수정)",
                     "example": 0
                   },
                   "qid": {
