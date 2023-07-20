@@ -163,6 +163,9 @@ exports.newWikiPostMid = async (req, res, next) => {
     req.diff = count;
 
     // 히스토리 생성 -> 기여도 -> 알림
+    // 알림 변수 선언
+    req.body.types_and_conditions = [[6, -1]];
+    
     next();
   } catch (err) {
     console.log(err);
