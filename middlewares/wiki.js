@@ -19,8 +19,7 @@ exports.createHistoryMid = async (req, res, next) => {
       is_rollback: is_rollback,
     });
 
-    const rows_history = await Wiki.Wiki_history.create(new_wiki_history);
-    
+    const wiki_history_id = await Wiki.Wiki_history.create(new_wiki_history);
     req.is_q_based = is_q_based;
     
     /* 알림 변수 정의*/
@@ -31,7 +30,7 @@ exports.createHistoryMid = async (req, res, next) => {
     // 질문 기반 수정 -> type_id: 2, 3
     if (is_q_based) {
       // 답변 생성
-      Wiki.Wiki_history.createAnswer(rows_history.id, req.body.qid);
+      Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
       req.body.types_and_conditions.push([2, req.body.qid]);
       req.body.types_and_conditions.push([3, req.body.qid]);
     }
