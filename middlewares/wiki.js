@@ -4,7 +4,7 @@ const Wiki = require("../models/wikiModel.js");
 exports.createHistoryMid = async (req, res, next) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
-    const is_q_based = req.body.is_q_based !== undefined ? req.body.is_q_based : 0;
+    const is_q_based = (req.body.is_q_based !== undefined && req.body.is_q_based != '') ? req.body.is_q_based : 0;
     const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
 
     const new_wiki_history = new Wiki.Wiki_history({
@@ -28,7 +28,7 @@ exports.createHistoryMid = async (req, res, next) => {
     }
     
     // 질문 기반 수정 -> type_id: 2, 3
-    if (is_q_based) {
+    if (is_q_based==true) {
       // 답변 생성
       Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
       req.body.types_and_conditions.push([2, req.body.qid]);
