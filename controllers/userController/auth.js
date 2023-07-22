@@ -127,6 +127,7 @@ exports.signUp = async (req, res) => {
 
     //메일 전송
     //FIXME: 메일 전송시 전달되는 url 프론트완성 후 수정 필요
+    //FIXME: 사진 파일 s3에 저장
     const transporter = nodemailer.createTransport({
       service: "gmail",
       host: "smtp.gmail.com",
