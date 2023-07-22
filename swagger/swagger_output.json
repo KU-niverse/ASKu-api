@@ -3055,6 +3055,100 @@
         }
       }
     },
+    "/report/check": {
+      "put": {
+        "tags": ["report"],
+        "summary": "신고 내역 확인(관리자만 가능)",
+        "requestBody": {
+          "description": "신고 내역 확인을 위한 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "report_id": {
+                    "type": "string",
+                    "example": "1"
+                  },
+                  "is_checked": {
+                    "type": "integer",
+                    "description": "1: 신고 승인, -1: 신고 반려",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "신고 확인 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "신고를 확인했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "중복 신고 확인",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "이미 확인한 신고입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "잘못된 확인값 (1, -1외의 다른 값)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "잘못된 확인값입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example":"오류가 발생했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },    
     "/wiki/contents/new/{title(*)}": {
       "post": {
         "tags": ["wiki"],
