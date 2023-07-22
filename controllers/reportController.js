@@ -33,7 +33,6 @@ exports.reportCheckPostMid = async (req, res) => {
         res.status(400).send({message: "이미 확인한 신고입니다."});
       }
     }
-    
   } catch (err) {
     console.error(err);
     res.status(404).send({message: "오류가 발생했습니다."});
