@@ -247,8 +247,6 @@ User.markAttend = async (user_id) => {
   return false;
 };
 
-
-/* 
 User.setConstraint = async (user_id) => {
   const [rows] = await pool.query("SELECT * FROM USERS WHERE user_id = ?", [
     user_id,
@@ -259,7 +257,17 @@ User.setConstraint = async (user_id) => {
       "UPDATE users SET bad = 1 WHERE user_id = ?",
       [user_id]
     );
-
+    return true;
+  }
+  // 유저가 bad라면 bad를 0으로 변경후 false 반환
+  else {
+    const [rows] = await pool.query(
+      "UPDATE users SET bad = 0 WHERE user_id = ?",
+      [user_id]
+    );
+    return false;
+  }
+};
 User.deactivate = async (user_id) => {
   try {
     await pool.query(`UPDATE users SET is_deleted = 1 WHERE id = ?`, [user_id]);
