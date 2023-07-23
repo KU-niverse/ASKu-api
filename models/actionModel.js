@@ -94,3 +94,5 @@ Action.updateAction = async (user_id, count_type, diff) => {
   }
   return result;
 };
+
+// FIXME: Action을 취소하는 함수 (question)
