@@ -7,11 +7,11 @@ assignees: ''
 
 ---
 
-**Description**
+**Description**
 A clear and concise description of what the bug is.
 
 **Todo**
-[ ]todo
-[ ]todo
+- [ ] todo
+- [ ] todo
 
 **Etc**
