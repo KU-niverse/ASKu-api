@@ -26,4 +26,12 @@ Report.createReport = async (newReport) => {
   return getReport(id);
 };
 
+Report.checkReport = async (report_id, is_checked) => {
+  const result = await pool.query(
+    `UPDATE reports SET is_checked = ? WHERE id = ?`,
+    [is_checked, report_id]
+  );
+  return result;
+};
+
 module.exports = Report;
