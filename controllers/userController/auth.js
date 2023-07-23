@@ -471,3 +471,30 @@ exports.pwFindSessionCheck = async (req, res) => {
     });
   }
 };
+
+exports.deactivate = async (req, res) => {
+  try {
+    const result = await User.deactivate(req.user[0].id);
+    if (result) {
+      //로그아웃 처리
+      req.logout(() => {
+        console.log("로그아웃 되었습니다.");
+      });
+      return res.status(200).json({
+        success: true,
+        message: "회원탈퇴가 완료되었습니다.",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "잘못된 접근입니다.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "서버 내부 오류가 발생했습니다.",
+    });
+  }
+};
