@@ -3089,6 +3089,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
                     "message": {
                       "type": "string",
                       "example": "신고를 확인했습니다."
@@ -3105,6 +3109,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "message": {
                       "type": "string",
                       "example": "이미 확인한 신고입니다."
@@ -3121,6 +3129,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "message": {
                       "type": "string",
                       "example": "잘못된 확인값입니다."
@@ -3137,6 +3149,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
                     "message": {
                       "type": "string",
                       "example":"오류가 발생했습니다."
