@@ -102,6 +102,9 @@ exports.emailDupCheck = async (req, res) => {
 //FIXME: auth_uuid를 더짧고 효율적인 방식의 것으로 수정 요함
 //FIXME: 중복된 값이 있을때 적절한 메세지 띄우도록 수정 요함
 //FIXME: 트랜잭션이 보장되지 않음
+//FIXME: 유저 회원가입시 user_attend 테이블에 항목 생성
+//FIXME: 유저 회원가입시 ai_session 테이블에 항목 생성
+//FIXME: 유저 회원가입시 생성되어야하는 데이터 다시 정리
 //회원가입 후 인증 이메일 전송
 exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
@@ -234,12 +237,16 @@ exports.signIn = async (req, res, next) => {
         }
       }
 
-      return req.login(user, (loginError) => {
+      return req.login(user, async (loginError) => {
         if (loginError) {
           console.error(loginError);
           return next(loginError);
         }
+        // 출석체크
 
+        //const attend_info = await User.checkAttend(user[0].id);
+
+        //로그인 성공
         return res
           .status(201)
           .json({ success: true, message: "로그인에 성공하였습니다!" });
