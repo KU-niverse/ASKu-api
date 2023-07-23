@@ -244,7 +244,7 @@ exports.signIn = async (req, res, next) => {
         }
         // 출석체크
 
-        //const attend_info = await User.checkAttend(user[0].id);
+        await User.markAttend(user[0].id);
 
         //로그인 성공
         return res
