@@ -237,7 +237,7 @@ CREATE TABLE `user_attend` (
    `today_attend`   bool   NOT NULL   DEFAULT 0, -- [일일 출석 여부] 0: 오늘  출석 안 함 1: 오늘 출석함
    `cont_attend`   int   NOT NULL   DEFAULT 0, -- [연속 출석 일수]
    `total_attend`   int   NOT NULL   DEFAULT 0, -- [총 출석 일수]
-   `max_attend`   int   NOT NULL   DEFAULT 0, -- [최대 출석 일수]
+   `max_attend`   int   NOT NULL   DEFAULT 0, -- [최대 연속 출석 일수]
    PRIMARY KEY (`user_id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );

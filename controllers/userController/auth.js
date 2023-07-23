@@ -100,6 +100,8 @@ exports.emailDupCheck = async (req, res) => {
 //TODO: 회원가입이 각 시도마다 12시간의 유효기간을 가지도록 수정요함
 //FIXME: 회원가입시 이메일을 잘못 입력했을때 로직 추가요함
 //FIXME: auth_uuid를 더짧고 효율적인 방식의 것으로 수정 요함
+//FIXME: 중복된 값이 있을때 적절한 메세지 띄우도록 수정 요함
+//FIXME: 트랜잭션이 보장되지 않음
 //회원가입 후 인증 이메일 전송
 exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
@@ -140,7 +142,7 @@ exports.signUp = async (req, res) => {
     });
 
     const mailOptions = {
-      to: user[0].email,
+      to: email,
       subject: "ASKu 회원가입",
       attachments: [
         {
@@ -212,6 +214,7 @@ exports.signUp = async (req, res) => {
 };
 
 //로그인
+//FIXME: signIn 과정에서 isbad, isdeleted를 고려한 로직이 반영되어야함
 exports.signIn = async (req, res, next) => {
   try {
     passport.authenticate("local", (authError, user, info) => {
