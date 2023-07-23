@@ -17,59 +17,12 @@ const {
 
 const router = express.Router();
 
-/**
- * @swagger
- * /user/auth/signup:
- *   post:
- *    summary: "회원가입"
- *    description: "회원가입"
- *    tags: [User]
- *    requestBody:
- *      description: 회원가입 정보
- *      required: true
- *      content:
- *        application/x-www-form-urlencoded:
- *          schema:
- *            type: object
- *            properties:
- *              name:
- *                type: string
- *                description: "유저 이름"
- *              login_id:
- *                type: string
- *                description: "유저 로그인 아이디"
- *              stu_id:
- *                type: string
- *                description: "유저 학번"
- *              email:
- *                type: string
- *                description: "유저 이메일"
- *              password:
- *                type: string
- *                description: "유저 비밀번호"
- *              nickname:
- *                type: string
- *                escription: "유저 닉네임"
- *    responses:
- *      "201":
- *        description: 성공시 결과값 (회원가입)
- *        content:
- *          application/json:
- *            schema:
- *              type: object
- *              properties:
- *                success:
- *                  type: boolean
- *                message:
- *                  type: string
- *                  example: "사용가능한 아이디입니다."
- */
-
 //회원가입 이메일 인증
 router.post("/signup/emailcheck", signUpEmailCheck);
 //회원가입
 router.post("/signup", isNotSignedIn, signUp);
 //로그인
+//TODO: 로그인시 bad인지 체크
 router.post("/signin", isNotSignedIn, signIn);
 //로그아웃
 router.get("/signout", isSignedIn, signOut);
