@@ -476,6 +476,10 @@ exports.deactivate = async (req, res) => {
   try {
     const result = await User.deactivate(req.user[0].id);
     if (result) {
+      //로그아웃 처리
+      req.logout(() => {
+        console.log("로그아웃 되었습니다.");
+      });
       return res.status(200).json({
         success: true,
         message: "회원탈퇴가 완료되었습니다.",
