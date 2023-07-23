@@ -428,9 +428,12 @@ exports.findPw = async (req, res) => {
 exports.signUpEmailCheck = async (req, res) => {
   try {
     const auth_uuid = req.body.auth_uuid;
-    const result = await User.register_auth(auth_uuid);
+    const user_id = await User.register_auth(auth_uuid);
 
-    if (result) {
+    if (user_id) {
+      //user attend_check 데이터 생성
+      await User.initAttend(user_id);
+
       console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({
         success: true,
