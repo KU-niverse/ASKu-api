@@ -226,9 +226,21 @@ exports.signIn = async (req, res, next) => {
             .json({ success: false, message: "비밀번호가 일치하지 않습니다." });
         } else {
           return res
-            .status(402)
+            .status(404)
             .json({ success: false, message: "가입되지 않은 회원입니다." });
         }
+      }
+
+      const today = new Date();
+      //탈퇴한 회원이거나 이용이 제한된 회원이라면 로그인 불가
+      if (user[0].is_deleted == true) {
+        return res
+          .status(410)
+          .json({ success: false, message: "탈퇴한 회원입니다." });
+      } else if (new Date(user[0].restrict_period) > today) {
+        return res
+          .status(403)
+          .json({ success: false, message: "이용이 제한된 회원입니다." });
       }
 
       return req.login(user, (loginError) => {
@@ -236,9 +248,8 @@ exports.signIn = async (req, res, next) => {
           console.error(loginError);
           return next(loginError);
         }
-
         return res
-          .status(201)
+          .status(200)
           .json({ success: true, message: "로그인에 성공하였습니다!" });
       });
     })(req, res, next);
