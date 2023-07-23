@@ -100,6 +100,11 @@ exports.emailDupCheck = async (req, res) => {
 //TODO: 회원가입이 각 시도마다 12시간의 유효기간을 가지도록 수정요함
 //FIXME: 회원가입시 이메일을 잘못 입력했을때 로직 추가요함
 //FIXME: auth_uuid를 더짧고 효율적인 방식의 것으로 수정 요함
+//FIXME: 중복된 값이 있을때 적절한 메세지 띄우도록 수정 요함
+//FIXME: 트랜잭션이 보장되지 않음
+//FIXME: 유저 회원가입시 user_attend 테이블에 항목 생성
+//FIXME: 유저 회원가입시 ai_session 테이블에 항목 생성
+//FIXME: 유저 회원가입시 생성되어야하는 데이터 다시 정리
 //회원가입 후 인증 이메일 전송
 exports.signUp = async (req, res) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
@@ -140,7 +145,7 @@ exports.signUp = async (req, res) => {
     });
 
     const mailOptions = {
-      to: user[0].email,
+      to: email,
       subject: "ASKu 회원가입",
       attachments: [
         {
@@ -212,6 +217,7 @@ exports.signUp = async (req, res) => {
 };
 
 //로그인
+//FIXME: signIn 과정에서 isbad, isdeleted를 고려한 로직이 반영되어야함
 exports.signIn = async (req, res, next) => {
   try {
     passport.authenticate("local", (authError, user, info) => {
@@ -231,6 +237,7 @@ exports.signIn = async (req, res, next) => {
         }
       }
 
+
       const today = new Date();
       //탈퇴한 회원이거나 이용이 제한된 회원이라면 로그인 불가
       if (user[0].is_deleted == true) {
@@ -248,6 +255,12 @@ exports.signIn = async (req, res, next) => {
           console.error(loginError);
           return next(loginError);
         }
+
+        // 출석체크
+
+        await User.markAttend(user[0].id);
+
+        //로그인 성공
         return res
           .status(200)
           .json({ success: true, message: "로그인에 성공하였습니다!" });
@@ -429,9 +442,12 @@ exports.findPw = async (req, res) => {
 exports.signUpEmailCheck = async (req, res) => {
   try {
     const auth_uuid = req.body.auth_uuid;
-    const result = await User.register_auth(auth_uuid);
+    const user_id = await User.register_auth(auth_uuid);
 
-    if (result) {
+    if (user_id) {
+      //user attend_check 데이터 생성
+      await User.initAttend(user_id);
+
       console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({
         success: true,

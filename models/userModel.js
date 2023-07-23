@@ -77,7 +77,7 @@ User.findByEmail = async (email) => {
 
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
 User.create = async (newUser) => {
-  const [rows] = await pool.query(
+  await pool.query(
     `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?);`,
     [
       newUser.login_id,
@@ -89,8 +89,11 @@ User.create = async (newUser) => {
       newUser.uuid,
     ]
   );
+  const [user] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
+    newUser.login_id,
+  ]);
 
-  return rows;
+  return user;
 };
 //이메일 인증 전 임시 유저 생성
 User.tempCreate = async (newUser) => {
@@ -135,14 +138,14 @@ User.register_auth = async (auth_uuid) => {
     [auth_uuid]
   );
   if (temp_user.length == 1) {
-    await User.create(temp_user[0]);
+    const [user] = await User.create(temp_user[0]);
     await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [
       auth_uuid,
     ]);
-    return true;
+    return user.id;
   } else {
     console.log("해당 회원가입의 세션이 만료되었습니다.");
-    return false;
+    return null;
   }
 };
 
@@ -216,9 +219,51 @@ User.editInfo = async (name, stu_id, nickname, user_id) => {
   }
 };
 
+User.initAttend = async (user_id) => {
+  await pool.query(`INSERT INTO user_attend (user_id) VALUES (?)`, [user_id]);
+  return true;
+};
+
+User.markAttend = async (user_id) => {
+  const [[attend_info]] = await pool.query(
+    `SELECT * FROM user_attend WHERE user_id = ?`,
+    [user_id]
+  );
+
+  //오늘 첫 출석이라면
+  if (!attend_info.today_attend) {
+    //연속 출석일수가 최대 연속 출석일수보다 크다면 최대 연속 출석일수를 업데이트
+    const max_attend =
+      attend_info.max_attend < attend_info.cont_attend + 1
+        ? attend_info.cont_attend + 1
+        : attend_info.max_attend;
+
+    await pool.query(
+      `UPDATE user_attend SET today_attend = true, cont_attend = cont_attend + 1, total_attend = total_attend + 1, max_attend = ? WHERE user_id = ? `,
+      [max_attend, user_id]
+    );
+    return true;
+  }
+  return false;
+};
+
+
+/* 
+User.setConstraint = async (user_id) => {
+  const [rows] = await pool.query("SELECT * FROM USERS WHERE user_id = ?", [
+    user_id,
+  ]);
+  //유저가 bad가 아니라면 bad를 1로 변경후 true를 반환
+  if (rows[0].bad == 0) {
+    const [rows] = await pool.query(
+      "UPDATE users SET bad = 1 WHERE user_id = ?",
+      [user_id]
+    );
+
 User.deactivate = async (user_id) => {
   try {
     await pool.query(`UPDATE users SET is_deleted = 1 WHERE id = ?`, [user_id]);
+
     return true;
   } catch (err) {
     console.log(err);
