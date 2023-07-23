@@ -13,6 +13,7 @@ const {
   signUpEmailCheck,
   findPw,
   pwFindSessionCheck,
+  deactivate,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -26,6 +27,8 @@ router.post("/signup", isNotSignedIn, signUp);
 router.post("/signin", isNotSignedIn, signIn);
 //로그아웃
 router.get("/signout", isSignedIn, signOut);
+
+router.put("/deactivate", isSignedIn, deactivate);
 
 //중복체크
 //아이디 중복체크

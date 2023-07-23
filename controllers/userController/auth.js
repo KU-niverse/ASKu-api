@@ -232,23 +232,37 @@ exports.signIn = async (req, res, next) => {
             .json({ success: false, message: "비밀번호가 일치하지 않습니다." });
         } else {
           return res
-            .status(402)
+            .status(404)
             .json({ success: false, message: "가입되지 않은 회원입니다." });
         }
       }
 
-      return req.login(user, async (loginError) => {
+
+      const today = new Date();
+      //탈퇴한 회원이거나 이용이 제한된 회원이라면 로그인 불가
+      if (user[0].is_deleted == true) {
+        return res
+          .status(410)
+          .json({ success: false, message: "탈퇴한 회원입니다." });
+      } else if (new Date(user[0].restrict_period) > today) {
+        return res
+          .status(403)
+          .json({ success: false, message: "이용이 제한된 회원입니다." });
+      }
+
+      return req.login(user, (loginError) => {
         if (loginError) {
           console.error(loginError);
           return next(loginError);
         }
+
         // 출석체크
 
         await User.markAttend(user[0].id);
 
         //로그인 성공
         return res
-          .status(201)
+          .status(200)
           .json({ success: true, message: "로그인에 성공하였습니다!" });
       });
     })(req, res, next);
@@ -481,6 +495,33 @@ exports.pwFindSessionCheck = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "sessionValidation-controller에서 문제가 발생했습니다.",
+    });
+  }
+};
+
+exports.deactivate = async (req, res) => {
+  try {
+    const result = await User.deactivate(req.user[0].id);
+    if (result) {
+      //로그아웃 처리
+      req.logout(() => {
+        console.log("로그아웃 되었습니다.");
+      });
+      return res.status(200).json({
+        success: true,
+        message: "회원탈퇴가 완료되었습니다.",
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "잘못된 접근입니다.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "서버 내부 오류가 발생했습니다.",
     });
   }
 };

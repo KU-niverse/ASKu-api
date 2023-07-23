@@ -247,20 +247,6 @@ User.markAttend = async (user_id) => {
   return false;
 };
 
-/* User.changePW = async (password, user_id, phone_number) => {
-  const [rows] = await pool.query(`UPDATE users SET password = ? WHERE login_id = ?`, [password, login_id]);
-  return rows;
-}
- */
-
-/* User.wikiHistory = async (user_id) => {
-  const [rows] = await pool.query(
-    "SELECT * FROM wiki_history WHERE editor_id = ?",
-    [user_id]
-  );
-
-  return rows;
-}; */
 
 /* 
 User.setConstraint = async (user_id) => {
@@ -273,16 +259,16 @@ User.setConstraint = async (user_id) => {
       "UPDATE users SET bad = 1 WHERE user_id = ?",
       [user_id]
     );
+
+User.deactivate = async (user_id) => {
+  try {
+    await pool.query(`UPDATE users SET is_deleted = 1 WHERE id = ?`, [user_id]);
+
     return true;
-  }
-  // 유저가 bad라면 bad를 0으로 변경후 false 반환
-  else {
-    const [rows] = await pool.query(
-      "UPDATE users SET bad = 0 WHERE user_id = ?",
-      [user_id]
-    );
+  } catch (err) {
+    console.log(err);
     return false;
   }
-}; */
+};
 
 module.exports = User;
