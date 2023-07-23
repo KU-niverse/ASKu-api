@@ -905,6 +905,9 @@
         }
     }
     },
+
+
+
     "/user/auth/nickdupcheck/{nick}": {
       "get": {
         "tags": ["user"],
