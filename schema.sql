@@ -306,3 +306,19 @@ CREATE EVENT reset_change_pw_session
 ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
 DO
   DELETE FROM change_pw_session WHERE created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);
+
+
+-- 매일 오전 0시에 출석여부를 확인하여 연속 출석을 0으로 만들고, 모든 사용자의 오늘 출석을 false로 재설정
+CREATE EVENT reset_daily_attendance
+ON SCHEDULE EVERY 1 DAY STARTS '2023-07-24 00:00:00'
+DO
+BEGIN
+    -- 출석하지 않은 유저의 연속 출석을 0으로 만드는 작업
+    UPDATE `user_attend`
+    SET `cont_attend` = 0
+    WHERE `today_attend` = 0;
+
+    -- 모든 사용자의 오늘 출석을 false로 만드는 작업
+    UPDATE `user_attend`
+    SET `today_attend` = 0;
+END
