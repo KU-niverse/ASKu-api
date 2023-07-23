@@ -237,7 +237,6 @@ exports.signIn = async (req, res, next) => {
         }
       }
 
-
       const today = new Date();
       //탈퇴한 회원이거나 이용이 제한된 회원이라면 로그인 불가
       if (user[0].is_deleted == true) {
@@ -250,7 +249,7 @@ exports.signIn = async (req, res, next) => {
           .json({ success: false, message: "이용이 제한된 회원입니다." });
       }
 
-      return req.login(user, (loginError) => {
+      return req.login(user, async (loginError) => {
         if (loginError) {
           console.error(loginError);
           return next(loginError);
