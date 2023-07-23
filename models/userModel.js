@@ -77,7 +77,7 @@ User.findByEmail = async (email) => {
 
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
 User.create = async (newUser) => {
-  const [rows] = await pool.query(
+  await pool.query(
     `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?);`,
     [
       newUser.login_id,
