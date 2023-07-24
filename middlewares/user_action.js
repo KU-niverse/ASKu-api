@@ -32,10 +32,10 @@ exports.newActionReport = async (req, res) => {
   }
 };
 
-exports.newActionDebate = async (req, res, next) => {
+exports.newActionDebate = async (req, res) => {
   try {
     await Action.updateAction(req.user[0].id, 4, 0);
-    next();
+    res.status(200).send({success: true, message: "토론 메시지 생성 및 action update를 완료하였습니다."});
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "토론 action 오류가 발생했습니다."});
@@ -52,10 +52,10 @@ exports.newActionQuestion = async (req, res, next) => {
   }
 };
 
-exports.newActionLike = async (req, res, next) => {
+exports.newActionLike = async (req, res) => {
   try {
     await Action.updateAction(req.user[0].id, 6, 0);
-    next();
+    res.status(200).send({message: "좋아요를 등록했습니다."});
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "좋아요 action 오류가 발생했습니다."});
@@ -72,10 +72,10 @@ exports.newActionAnswer = async (req, res, next) => {
   }
 };
 
-exports.cancelActionQuestion = async (req, res, next) => {
+exports.cancelActionQuestion = async (req, res) => {
   try {
-    await Action.deleteAction(req.user[0].id, 5);
-    next();
+    await Action.cancelAction(req.user[0].id, 5);
+    res.status(200).send({message: "질문을 삭제하였습니다."});
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "질문 취소 action 오류가 발생했습니다."});

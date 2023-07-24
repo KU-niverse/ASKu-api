@@ -22,7 +22,7 @@ exports.debatePostMid = async (req, res) => {
 };
 
 // 토론방에서 메시지 입력
-exports.historyPostMid = async (req, res) => {
+exports.historyPostMid = async (req, res, next) => {
   try {
     if (!req.body.content) {
       res.status(400).send({message: "메시지 내용을 입력하세요."});
@@ -32,8 +32,8 @@ exports.historyPostMid = async (req, res) => {
         user_id: req.user[0].id, // jwt token 수정하면 수정
         content: req.body.content,
       });
-      const result = await History.createHistory(newHistory);
-      res.status(200).send(result);
+      await History.createHistory(newHistory);
+      next();
     }
   } catch (err) {
     console.error(err);

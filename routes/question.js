@@ -2,7 +2,7 @@ const express = require("express");
 const questionMid = require("../controllers/questionController");
 const { isSignedIn } = require('../middlewares/sign_in');
 const { newNotice } = require("../middlewares/notification");
-const { newActionQuestion } = require("../middlewares/user_action");
+const { newActionQuestion, cancelActionQuestion, newActionLike } = require("../middlewares/user_action");
 
 const router = express.Router();
 
@@ -16,10 +16,10 @@ router.post("/new/:title", isSignedIn, questionMid.questionPostMid, newActionQue
 router.post("/edit/:question", isSignedIn, questionMid.questionEditMid);
 
 // DELETE question/delete/:question
-router.delete("/delete/:question", isSignedIn, questionMid.questionDeleteMid);
+router.delete("/delete/:question", isSignedIn, questionMid.questionDeleteMid, cancelActionQuestion);
 
 // POST question/like
-router.post("/like/:question", isSignedIn, questionMid.questionLikeMid);
+router.post("/like/:question", isSignedIn, questionMid.questionLikeMid, newActionLike);
 
 // GET question/query/:query(*)
 router.get("/query/:query(*)", questionMid.questionSearchGetMid);
