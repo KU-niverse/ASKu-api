@@ -39,6 +39,7 @@ CREATE TABLE `wiki_docs` (
    `latest_ver`   int   NOT NULL,
    `type`   enum('doc', 'list')   NOT NULL, -- [문서 타입] doc: 목차형, list: 나열형
    `is_deleted`   bool   NOT NULL   DEFAULT 0, -- [문서 삭제 여부] 0: 존재하는 문서 1: 삭제한 문서
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY(`id`)
 );
 
