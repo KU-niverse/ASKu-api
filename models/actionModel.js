@@ -95,4 +95,19 @@ Action.updateAction = async (user_id, count_type, diff) => {
   return result;
 };
 
-// FIXME: Action을 취소하는 함수 (question)
+// count_type에 따라 action을 취소하는 함수
+Action.cancelAction = async (user_id, count_type) => {
+  let result;
+  switch (count_type) {
+  case 5:
+    [result] = await pool.query(
+      `UPDATE user_action SET question_count = question_count - 1 WHERE user_id = ?`,
+      [user_id]
+    );
+    break;
+  default:
+    result = -1;
+    break;
+  }
+  return result;
+};

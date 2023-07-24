@@ -72,6 +72,15 @@ exports.newActionAnswer = async (req, res, next) => {
   }
 };
 
+exports.cancelActionQuestion = async (req, res, next) => {
+  try {
+    await Action.deleteAction(req.user[0].id, 5);
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(404).send({success: false, message: "질문 취소 action 오류가 발생했습니다."});
+  }
+};
 
 // 기본 양식 -> action 추가될 경우 사용
 // exports.newActionDefault = async (req, res, next) => {
