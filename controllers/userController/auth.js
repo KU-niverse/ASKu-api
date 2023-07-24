@@ -150,12 +150,12 @@ exports.signUp = async (req, res) => {
       attachments: [
         {
           filename: "email_auth_cut.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/email_auth_cut.png",
+          path: "./email_auth_cut.png",
           cid: "unique@cid",
         },
         {
           filename: "email_auth_cut2.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/email_auth_cut2.png",
+          path: "./email_auth_cut2.png",
           cid: "unique@cid2",
         },
       ],

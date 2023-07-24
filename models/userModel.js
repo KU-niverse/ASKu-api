@@ -225,7 +225,7 @@ User.initAttend = async (user_id) => {
 };
 
 User.markAttend = async (user_id) => {
-  const [[attend_info]] = await pool.query(
+  const [attend_info] = await pool.query(
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
   );
@@ -233,10 +233,14 @@ User.markAttend = async (user_id) => {
   //오늘 첫 출석이라면
   if (!attend_info.today_attend) {
     //연속 출석일수가 최대 연속 출석일수보다 크다면 최대 연속 출석일수를 업데이트
-    const max_attend =
+    let max_attend = 0;
+    if (attend_info.max_attend) {
+      max_attend =
       attend_info.max_attend < attend_info.cont_attend + 1
         ? attend_info.cont_attend + 1
         : attend_info.max_attend;
+    }
+    
 
     await pool.query(
       `UPDATE user_attend SET today_attend = true, cont_attend = cont_attend + 1, total_attend = total_attend + 1, max_attend = ? WHERE user_id = ? `,
