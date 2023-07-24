@@ -2,6 +2,7 @@ const express = require("express");
 const questionMid = require("../controllers/questionController");
 const { isSignedIn } = require('../middlewares/sign_in');
 const { newNotice } = require("../middlewares/notification");
+const { newActionQuestion } = require("../middlewares/user_action");
 
 const router = express.Router();
 
@@ -9,7 +10,7 @@ const router = express.Router();
 router.get("/view/:title", questionMid.questionGetMid);
 
 // POST question/new/:title
-router.post("/new/:title", isSignedIn, questionMid.questionPostMid, newNotice);
+router.post("/new/:title", isSignedIn, questionMid.questionPostMid, newActionQuestion, newNotice);
 
 // POST question/edit/:question
 router.post("/edit/:question", isSignedIn, questionMid.questionEditMid);
