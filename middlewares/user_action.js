@@ -2,16 +2,6 @@
 
 const Action = require("../models/actionModel");
 
-exports.initAction = async (req, res, next) => { // TODO: auth.js 어디에 추가할지 고민 필요
-  try {
-    await Action.initAction(req.user[0].id);
-    next();
-  } catch (err) {
-    console.error(err);
-    res.status(404).send({success: false, message: "action 최초 생성 오류가 발생했습니다."});
-  }
-};
-
 exports.newActionRecord = async (req, res, next) => {
   try {
     await Action.updateAction(req.user[0].id, 1, req.diff);
@@ -34,7 +24,7 @@ exports.newActionRevise = async (req, res, next) => {
 
 exports.newActionReport = async (req, res, next) => {
   try {
-    await Action.updateAction(req.user[0].id, 3, 0);
+    await Action.updateAction(req.user[0].id, 3, 0); //FIXME: req.user[0].id가 아니라 req.body.report_id의 user_id
     next();
   } catch (err) {
     console.error(err);

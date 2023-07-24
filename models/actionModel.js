@@ -24,9 +24,21 @@ async function getAction(user_id) {
 
 // Action을 생성하는 함수
 Action.initAction = async (user_id) => {
+  const data = {
+    user_id: user_id,
+    record_count: 0,
+    revise_count: 0,
+    report_count: 0,
+    debate_count: 0,
+    question_count: 0,
+    like_count: 0,
+    answer_count: 0,
+    event_begin: 0
+  };
+  
   const [result] = await pool.query(
     `INSERT INTO user_action SET ?`,
-    [user_id, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    data
   );
   const id = result.insertId;
   return await getAction(id);
@@ -111,3 +123,5 @@ Action.cancelAction = async (user_id, count_type) => {
   }
   return result;
 };
+
+module.exports = Action;
