@@ -22,10 +22,10 @@ exports.newActionRevise = async (req, res, next) => {
   }
 };
 
-exports.newActionReport = async (req, res, next) => {
+exports.newActionReport = async (req, res) => {
   try {
-    await Action.updateAction(req.user[0].id, 3, 0); //FIXME: req.user[0].id가 아니라 req.body.report_id의 user_id
-    next();
+    await Action.updateAction(req.report_user, 3, 0);
+    res.status(200).send({success: true, message: "신고 확인 및 action update를 완료했습니다."});
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "신고 action 오류가 발생했습니다."});
