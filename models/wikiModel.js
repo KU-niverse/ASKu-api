@@ -56,6 +56,14 @@ class Wiki_docs {
 
     return rows;
   }
+
+  // admin-wiki_docs 테이블에서 최근에 생긴 wiki_docs부터 반환해주는 함수
+  static async getAllDoc() {
+    const [rows] = await pool.query(
+      `SELECT * FROM wiki_docs WHERE is_deleted = 0 ORDER BY created_at DESC`
+    );
+    return rows;
+  }
 }
 
 // wiki_history 테이블의 column을 가지는 객체
@@ -153,7 +161,7 @@ class Wiki_history {
   //admin 위키 히스토리 조회
   static async getAllWikiHistory() {
     const [rows] = await pool.query(
-      `SELECT * FROM wiki_history WHERE ORDER BY created_at DESC`
+      `SELECT * FROM wiki_history ORDER BY created_at DESC`
     );
     return rows;
   }
