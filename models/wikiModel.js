@@ -138,15 +138,17 @@ class Wiki_point {
 
   // 유저 기여도 전체 순위를 반환해주는 함수
   static async getRanking() {
-    const [rows] = await pool.query("SELECT id, login_id, nickname, point FROM users WHERE is_deleted = 0 ORDER BY point DESC");
+    const [rows] = await pool.query("SELECT id as user_id, login_id, nickname, point FROM users WHERE is_deleted = 0 ORDER BY point DESC");
     return rows;
   }
   
   // 유저 id 넣어주면 전체 유저의 수와 해당 유저의 기여도 순위를 반환해주는 함수
   static async getRankingById(user_id) {
     const [rows] = await pool.query("SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0");
-    const [rows2] = await pool.query("SELECT COUNT(*) AS rank FROM users WHERE point > (SELECT point FROM users WHERE id = ?)", [user_id]);
-    return { count: rows[0].count, rank: rows2[0].rank + 1 };
+    const [rows2] = await pool.query(`SELECT
+      (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
+      (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
+    return { count: rows[0].count, ranking: rows2[0].ranking + 1, point: rows2[0].user_point };
   }
 }
 

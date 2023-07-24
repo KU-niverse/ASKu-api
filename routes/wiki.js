@@ -66,6 +66,12 @@ router.post('/favorite/:title(*)', isSignedIn, wikiCont.wikiFavoritePostMid);
 // 위키 즐겨찾기 삭제
 router.delete('/favorite/:title(*)', isSignedIn, wikiCont.wikiFavoriteDeleteMid);
 
+// 로그인한 유저 기여도 순위 조회
+router.get('/contributions', isSignedIn, wikiCont.userContributionGetMid);
+
+// 전체 기여도 조회
+router.get('/contributions/total', wikiCont.totalContributionGetMid);
+
 // 문서 내 기여도 리스트 조회
 router.get('/contributions/:title(*)', wikiCont.contributionGetMid);
 
