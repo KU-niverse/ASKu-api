@@ -53,13 +53,13 @@ exports.questionEditMid = async(req, res) => {
 
 
 // 질문 삭제하기 [답변이 달리기 전, 좋아요 눌리기 전까지만 가능]
-exports.questionDeleteMid = async(req, res) => {
+exports.questionDeleteMid = async(req, res, next) => {
   try {
     const result = await Question.deleteQuestion(req.params.question, req.user[0].id);
     if (!result) {
       res.status(400).send({message: "이미 답변 및 좋아요가 달렸거나, 다른 회원의 질문입니다."});
     } else {
-      res.status(200).send({message: "질문을 삭제하였습니다."});
+      next();
     }
   } catch (err) {
     console.error(err);
@@ -69,7 +69,7 @@ exports.questionDeleteMid = async(req, res) => {
 
 
 // 질문 좋아요 누르기
-exports.questionLikeMid = async (req, res) => {
+exports.questionLikeMid = async (req, res, next) => {
   try {
     const result = await Question.likeQuestion(req.params.question, req.user[0].id); // jwt token 추가 후 수정
     if (result == 0) {
@@ -77,7 +77,7 @@ exports.questionLikeMid = async (req, res) => {
     } else if (result == -1) {
       res.status(401).send({message: "본인의 질문에는 좋아요를 누를 수 없습니다."});
     } else {
-      res.status(200).send({message: "좋아요를 등록했습니다."});
+      next();
     }
   } catch (err) {
     console.error(err);

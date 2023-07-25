@@ -34,4 +34,4 @@ Report.checkReport = async (report_id, is_checked) => {
   return result;
 };
 
-module.exports = Report;
+module.exports = {Report, getReport};

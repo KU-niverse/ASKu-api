@@ -1,4 +1,4 @@
-const Report = require("../models/reportModel");
+const {Report, getReport} = require("../models/reportModel");
 
 // 신고하기
 exports.reportPostMid = async (req, res, next) => {
@@ -20,15 +20,16 @@ exports.reportPostMid = async (req, res, next) => {
 };
 
 // 신고 확인하기
-exports.reportCheckPostMid = async (req, res) => {
+exports.reportCheckPostMid = async (req, res, next) => {
   try {
     if (!req.body.is_checked) {
       res.status(406).send({success: false, message: "잘못된 확인값입니다."});
     } else {
       const result = await Report.checkReport(req.body.report_id, req.body.is_checked);
       if (result[0].changedRows) {
-        res.status(200).send({success: true, message: "신고를 확인했습니다."}); // 이후 배지 취소 미들웨어 필요
-        // next();
+        const report = await getReport(req.body.report_id);
+        req.report_user = report[0].user_id;
+        next();
       } else {
         res.status(400).send({success: false, message: "이미 확인한 신고입니다."});
       }

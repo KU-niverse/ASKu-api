@@ -1,6 +1,7 @@
 /* const express = require("express"); */
 const bcrypt = require("bcrypt");
 const User = require("../../models/userModel");
+const Action = require("../../models/actionModel");
 const { v4: uuidv4 } = require("uuid");
 const passport = require("passport");
 
@@ -150,12 +151,12 @@ exports.signUp = async (req, res) => {
       attachments: [
         {
           filename: "email_auth_cut.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/email_auth_cut.png",
+          path: "./email_auth_cut.png",
           cid: "unique@cid",
         },
         {
           filename: "email_auth_cut2.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/email_auth_cut2.png",
+          path: "./email_auth_cut2.png",
           cid: "unique@cid2",
         },
       ],
@@ -446,7 +447,10 @@ exports.signUpEmailCheck = async (req, res) => {
     if (user_id) {
       //user attend_check 데이터 생성
       await User.initAttend(user_id);
-
+      
+      //user_action 데이터 생성
+      await Action.initAction(user_id);
+        
       console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({
         success: true,
