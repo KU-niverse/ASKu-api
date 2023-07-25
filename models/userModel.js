@@ -282,9 +282,25 @@ User.deactivate = async (user_id) => {
   }
 };
 
-User.commentHistory = async (user_id) => {
+User.debatetHistory = async (user_id) => {
   const [rows] = await pool.query(
-    `SELECT * FROM comments WHERE user_id = ? ORDER BY created_at DESC`,
+    `SELECT 
+      debates.id AS debate_id,
+      debates.subject AS debate_subject,
+      debate_history.content AS debate_content,
+      debate_history.created_at AS debate_content_time,
+      debate_history.is_bad AS is_bad,
+      wiki_docs.title AS doc_title
+      FROM 
+          debates
+      JOIN 
+          debate_history ON debates.id = debate_history.debate_id
+      JOIN
+          wiki_docs ON debates.doc_id = wiki_docs.id
+      WHERE 
+          debates.user_id = ? 
+      ORDER BY
+          debate_history.created_at DESC;`,
     [user_id]
   );
   return rows;

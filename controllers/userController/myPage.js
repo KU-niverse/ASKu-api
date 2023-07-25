@@ -93,15 +93,15 @@ exports.editInfo = async (req, res) => {
   }
 };
 
-exports.commentHistory = async (req, res) => {
+exports.debatetHistory = async (req, res) => {
   try {
-    const commentHistory = await User.commentHistory(req.user[0].id);
+    const commentHistory = await User.debatetHistory(req.user[0].id);
     return res.status(201).json({ success: true, message: commentHistory });
   } catch (error) {
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "commentHistory-controller에서 오류가 발생했습니다.",
+      message: "debatetHistory-controller에서 오류가 발생했습니다.",
     });
   }
 };

@@ -7,7 +7,7 @@ const {
   badgeHistory,
   setRepBadge,
   editInfo,
-  commentHistory,
+  debatetHistory,
   questionHistory,
 } = require("../../controllers/userController/myPage");
 
@@ -19,6 +19,6 @@ router.get("/badgehistory", isSignedIn, badgeHistory);
 router.put("/setrepbadge", isSignedIn, setRepBadge);
 router.put("/editinfo", isSignedIn, editInfo);
 
-router.get("/commenthistory", isSignedIn, commentHistory);
+router.get("/debatehistory", isSignedIn, debatetHistory);
 router.get("/questionhistory", isSignedIn, questionHistory);
 module.exports = router;
