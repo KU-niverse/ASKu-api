@@ -5,18 +5,18 @@ const imageMid = require('../middlewares/image');
 const { isSignedIn } = require('../middlewares/sign_in');
 const { isAdmin } = require('../middlewares/admin');
 const { newNotice } = require("../middlewares/notification");
-const { newActionRevise, newActionRecord } = require('../middlewares/user_action');
+const { newActionRevise, newActionRecord, newActionAnswer } = require('../middlewares/user_action');
 
 const router = express.Router();
 
 // 새 위키 문서 생성하기 [기여도 지급]
-router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
+router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionAnswer, newNotice);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
 
-// 특정 섹션의 글 수정하기 #FIXME: 미들웨어 두 번 요청하는 비효율
-router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newNotice);
+// 특정 섹션의 글 수정하기
+router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
 // 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
 router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
@@ -24,8 +24,8 @@ router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMid
 // 전체 글 불러오기 / 전체 글 수정시 사용
 router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
-// 전체 글 수정하기 #FIXME: 미들웨어 두 번 요청하는 비효율
-router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newNotice);
+// 전체 글 수정하기
+router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {

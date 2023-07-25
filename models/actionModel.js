@@ -59,6 +59,9 @@ Action.updateAction = async (user_id, count_type, diff) => {
   let result;
   switch(count_type) {
   case 1:
+    if (diff < 0) {
+      diff = 0;
+    }
     [result] = await pool.query(
       `UPDATE user_action SET record_count = record_count + ? WHERE user_id = ?`,
       [diff, user_id]
