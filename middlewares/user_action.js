@@ -1,5 +1,4 @@
 // user_action 미들웨어
-// TODO: Record, Revise, Answer 미들웨어 테스트
 // TODO: 신고 승인 시 해당하는 action 회수하는 로직 필요 -> 위키 히스토리, 질문, 토론 메시지
 
 const Action = require("../models/actionModel");
