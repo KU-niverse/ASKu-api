@@ -10,7 +10,7 @@ const { newActionRevise, newActionRecord, newActionAnswer } = require('../middle
 const router = express.Router();
 
 // 새 위키 문서 생성하기 [기여도 지급]
-router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionAnswer, newNotice);
+router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);

@@ -65,7 +65,7 @@ exports.newActionLike = async (req, res) => {
 
 exports.newActionAnswer = async (req, res, next) => {
   try {
-    if (req.body.is_q_based) {
+    if (req.is_q_based == true) {
       await Action.updateAction(req.user[0].id, 7, 0);
     }
     next();
