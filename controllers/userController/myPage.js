@@ -92,3 +92,29 @@ exports.editInfo = async (req, res) => {
     });
   }
 };
+
+exports.commentHistory = async (req, res) => {
+  try {
+    const commentHistory = await User.commentHistory(req.user[0].id);
+    return res.status(201).json({ success: true, message: commentHistory });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "commentHistory-controller에서 오류가 발생했습니다.",
+    });
+  }
+};
+
+exports.questionHistory = async (req, res) => {
+  try {
+    const questionHistory = await User.questionHistory(req.user[0].id);
+    return res.status(201).json({ success: true, message: questionHistory });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "questionHistory-controller에서 오류가 발생했습니다.",
+    });
+  }
+};

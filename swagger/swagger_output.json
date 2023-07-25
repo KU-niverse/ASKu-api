@@ -1993,6 +1993,84 @@
       }
     },
 
+
+    "/user/mypage/questionhistory": {
+      "get": {
+        "tags": ["mypage"],
+        "summary": "유저 질문 히스토리",
+        "description": "유저의 질문 히스토리를 조회합니다.",
+
+        "responses": {
+            "201": {
+                "description": "질문 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 1,
+                                      "doc_id": 1,
+                                      "user_id": 1,
+                                      "index_title" : "수강 신청 어캐하나여",
+                                      "content": "수강신청 어캐하는지 모르겠어요",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이(위키 문서 제목)"
+                                    },
+                                    {
+                                      "id": 2,
+                                      "doc_id": 2,
+                                      "user_id": 2,
+                                      "index_title" : "수강 신청 어캐하나여2",
+                                      "content": "수강신청 어캐하는지 모르겠어요2",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이2(위키 문서 제목)"
+                                    }
+                                    
+  
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "commentHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      }
+    },
+
+
     "/user/mypage/badgehistory": {
       "get": {
         "tags": ["mypage"],
