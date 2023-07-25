@@ -26,7 +26,7 @@ exports.newActionRevise = async (req, res, next) => {
 exports.newActionReport = async (req, res) => {
   try {
     await Action.updateAction(req.report_user, 3, 0);
-    res.status(200).send({success: true, message: "신고 확인 및 action update를 완료했습니다."});
+    res.status(200).send({success: true, message: "신고를 확인했습니다."});
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "신고 action 오류가 발생했습니다."});
@@ -36,7 +36,7 @@ exports.newActionReport = async (req, res) => {
 exports.newActionDebate = async (req, res) => {
   try {
     await Action.updateAction(req.user[0].id, 4, 0);
-    res.status(200).send({success: true, message: "토론 메시지 생성 및 action update를 완료하였습니다."});
+    res.status(200).send(req.debate_message);
   } catch (err) {
     console.error(err);
     res.status(404).send({success: false, message: "토론 action 오류가 발생했습니다."});

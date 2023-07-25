@@ -32,7 +32,7 @@ exports.historyPostMid = async (req, res, next) => {
         user_id: req.user[0].id, // jwt token 수정하면 수정
         content: req.body.content,
       });
-      await History.createHistory(newHistory);
+      req.debate_message = await History.createHistory(newHistory);
       next();
     }
   } catch (err) {
