@@ -1993,6 +1993,163 @@
       }
     },
 
+
+    "/user/mypage/questionhistory": {
+      "get": {
+        "tags": ["mypage"],
+        "summary": "유저 질문 히스토리",
+        "description": "유저의 질문 히스토리를 조회합니다.",
+
+        "responses": {
+            "201": {
+                "description": "질문 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 1,
+                                      "doc_id": 1,
+                                      "user_id": 1,
+                                      "index_title" : "수강 신청 어캐하나여",
+                                      "content": "수강신청 어캐하는지 모르겠어요",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이(위키 문서 제목)"
+                                    },
+                                    {
+                                      "id": 2,
+                                      "doc_id": 2,
+                                      "user_id": 2,
+                                      "index_title" : "수강 신청 어캐하나여2",
+                                      "content": "수강신청 어캐하는지 모르겠어요2",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이2(위키 문서 제목)"
+                                    }
+                                    
+  
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "commentHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      }
+    },
+
+    "/user/mypage/debatehistory": {
+      "get": {
+        "tags": ["mypage"],
+        "summary": "유저 토론 히스토리",
+        "description": "유저의 토론 히스토리를 조회합니다.",
+
+        "responses": {
+            "201": {
+                "description": "토론 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [
+                                      {
+                                          "debate_id": 101,
+                                          "debate_subject": "인공지능의 장단점",
+                                          "debate_content": "인공지능은 많은 분야에서 유용하게 사용될 수 있지만, 동시에 그것이 가져오는 부정적인 측면에 대해서도 고민해야 합니다.",
+                                          "debate_content_time": "2023-07-25T10:23:14Z",
+                                          "is_bad": false,
+                                          "doc_title": "인공지능"
+                                      },
+                                      {
+                                          "debate_id": 98,
+                                          "debate_subject": "과학 기술의 발전에 대한 책임",
+                                          "debate_content": "과학 기술의 발전은 인류에게 이롭지만, 이를 악용하는 경우도 발생합니다. 따라서 과학 기술의 발전에는 책임이 수반되어야 합니다.",
+                                          "debate_content_time": "2023-07-24T18:15:22Z",
+                                          "is_bad": false,
+                                          "doc_title": "과학과 기술"
+                                      },
+                                      {
+                                          "debate_id": 93,
+                                          "debate_subject": "프라이버시 보호",
+                                          "debate_content": "기술의 발전으로 인해 프라이버시 보호가 점점 더 어려워지고 있습니다. 이에 대한 해결 방안은 무엇일까요?",
+                                          "debate_content_time": "2023-07-23T12:30:45Z",
+                                          "is_bad": true,
+                                          "doc_title": "개인정보 보호"
+                                      }
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "debateHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      }
+    },
+
+
+
+
     "/user/mypage/badgehistory": {
       "get": {
         "tags": ["mypage"],
