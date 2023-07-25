@@ -4902,26 +4902,22 @@
                     },
                     "message": {
                       "description": "로그인한 유저 기여도 순위 정보",
-                      "application/json": {
-                        "schema": {
-                          "type": "object",
-                          "properties": {
-                            "count": {
-                              "type": "integer",
-                              "description": "전체 유저 수",
-                              "example": "120"
-                            },
-                            "ranking": {
-                              "type": "integer",
-                              "description": "내 기여 순위",
-                              "example": "1"
-                            },
-                            "point": {
-                              "type": "integer",
-                              "description": "내 기여도",
-                              "example": 30012
-                            }
-                          }
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "integer",
+                          "description": "전체 유저 수",
+                          "example": "120"
+                        },
+                        "ranking": {
+                          "type": "integer",
+                          "description": "내 기여 순위",
+                          "example": "1"
+                        },
+                        "point": {
+                          "type": "integer",
+                          "description": "내 기여도",
+                          "example": 30012
                         }
                       }
                     }

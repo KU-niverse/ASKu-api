@@ -77,7 +77,7 @@ class Wiki_history {
     return rows[0];
   }
 
-  // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도도 재계산해준다.
+  // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도와 action record_count도 재계산해준다.
   static async badHistoryById(id) {
     const [result] = await pool.query(`UPDATE wiki_history SET is_bad = 1 WHERE id = ?`, [id]);
 
@@ -118,21 +118,27 @@ class Wiki_point {
     if(is_q_based == 1){
       point = point * 5;
     }
-    const [rows] = await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point * 4, user_id]);
+    else{
+      point = point * 4;
+    }
+    const [rows] = await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point, user_id]);
 
     return rows.affectedRows;
   }
 
-  // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
+  // 기여도와 action record_count를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
+    // 기여도 재계산
+    const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
+    // action record_count 재계산
+    await pool.query("UPDATE users_action SET record_count = (SELECT SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE user_id = ?", [user_id, user_id]);
 
-    return result.changedRows;
+    return result.affectedRows;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
+    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
     return rows;
   }
 
@@ -148,7 +154,7 @@ class Wiki_point {
     const [rows2] = await pool.query(`SELECT
       (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
       (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
-    return { count: rows[0].count, ranking: rows2[0].ranking + 1, point: rows2[0].user_point };
+    return { count: rows[0].count, ranking: rows2[0].ranking, point: rows2[0].user_point };
   }
 }
 
