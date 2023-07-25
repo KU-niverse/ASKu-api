@@ -23,8 +23,12 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger/swagger_output.json");
 
 const app = express();
-app.use(cors()); 
-
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 passportConfig(); // 패스포트 설정
 
 app.use(bodyParser.json());
