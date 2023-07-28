@@ -36,7 +36,10 @@ Question.createQuestion = async (newQuestion) => {
 
 Question.getQuestionsAll = async (id) => {
   const rows = await pool.query(
-    `SELECT * FROM questions WHERE doc_id = ?`,
+    `SELECT questions.*, users.nickname 
+    FROM questions INNER JOIN users
+    ON questions.user_id = users.id 
+    WHERE questions.doc_id = ?`,
     [id]
   );
   return rows[0];
