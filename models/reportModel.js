@@ -27,6 +27,39 @@ Report.createReport = async (newReport) => {
 };
 
 Report.checkReport = async (report_id, is_checked) => {
+  if (is_checked == 1) {
+    const report = await getReport(report_id);
+    const type_id = report[0].type_id;
+    const target = report[0].target;
+    switch (type_id) {
+    case 1:
+      await pool.query(
+        `UPDATE wiki_history SET is_bad = 1 WHERE id = ?`,
+        [target]
+      );
+      break;
+    case 2:
+      await pool.query(
+        `UPDATE questions SET is_bad = 1 WHERE id = ?`,
+        [target]
+      );
+      break;
+    case 3:
+      await pool.query(
+        `UPDATE debates SET is_bad = 1 WHERE id = ?`,
+        [target]
+      );
+      break;
+    case 4:
+      await pool.query(
+        `UPDATE debate_history SET is_bad = 1 WHERE id = ?`,
+        [target]
+      );
+      break;
+    default:
+      break;
+    }
+  } 
   const result = await pool.query(
     `UPDATE reports SET is_checked = ? WHERE id = ?`,
     [is_checked, report_id]
