@@ -8,10 +8,10 @@ const router = express.Router();
 router.get("/wikihistory", isSignedIn, isAdmin, admin.wikiHistory);
 
 //admin 최근 생성된 문서 조회
-router.get("/newdoc", isSignedIn, isAdmin, admin.newDoc);
+router.get("/newdoc", admin.newDoc);
 
 //admin 모든 신고 조회
-router.get("/report", isSignedIn, isAdmin, admin.report);
+router.get("/report", admin.report);
 
 //admin 특정 타입의 신고 조회
 //router.get("/report/:type", debateMid.historyGetMid);

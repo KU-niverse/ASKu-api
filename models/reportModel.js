@@ -10,18 +10,18 @@ const Report = function (report) {
 };
 
 async function getReport(id) {
-  const [rows] = await pool.query(
-    `SELECT * FROM reports WHERE id = ?`,
-    [id]
-  );
+  const [rows] = await pool.query(`SELECT * FROM reports WHERE id = ?`, [id]);
   return rows;
 }
 
+Report.getAllReport = async () => {
+  const [rows] = await pool.query(`SELECT * FROM reports`);
+  console.log(rows);
+  return rows;
+};
+
 Report.createReport = async (newReport) => {
-  const result = await pool.query(
-    `INSERT INTO reports SET ?`,
-    newReport
-  );
+  const result = await pool.query(`INSERT INTO reports SET ?`, newReport);
   const id = result[0].insertId;
   return getReport(id);
 };
