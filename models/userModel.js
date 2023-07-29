@@ -247,27 +247,33 @@ User.markAttend = async (user_id) => {
   return false;
 };
 
-User.setConstraint = async (user_id) => {
-  const [rows] = await pool.query("SELECT * FROM USERS WHERE user_id = ?", [
+//user_id와 restrict_period(제한 하고 싶은 일수)를 받아서 제약을 설정
+User.setConstraint = async (user_id, restrict_period) => {
+  let date = new Date();
+  let formattedDate;
+
+  //restrict_period가 0이라면 제약을 해제한다.
+  if (restrict_period == 0) {
+    date.setDate(date.getDate() - 1);
+  }
+  //restrict_period가 0이 아니라면 제약을 설정한다.
+  else {
+    date.setDate(date.getDate() + restrict_period);
+  }
+
+  // MySQL DATE 형식에 맞게 날짜를 변환: YYYY-MM-DD
+  formattedDate = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")}`;
+
+  //정해진 날짜로 제약을 설정
+  await pool.query(`UPDATE users SET restrict_period = ? WHERE id = ?`, [
+    formattedDate,
     user_id,
   ]);
-  //유저가 bad가 아니라면 bad를 1로 변경후 true를 반환
-  if (rows[0].bad == 0) {
-    const [rows] = await pool.query(
-      "UPDATE users SET bad = 1 WHERE user_id = ?",
-      [user_id]
-    );
-    return true;
-  }
-  // 유저가 bad라면 bad를 0으로 변경후 false 반환
-  else {
-    const [rows] = await pool.query(
-      "UPDATE users SET bad = 0 WHERE user_id = ?",
-      [user_id]
-    );
-    return false;
-  }
+  return true;
 };
+
 User.deactivate = async (user_id) => {
   try {
     await pool.query(`UPDATE users SET is_deleted = 1 WHERE id = ?`, [user_id]);

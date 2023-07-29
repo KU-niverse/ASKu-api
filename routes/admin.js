@@ -8,12 +8,11 @@ const router = express.Router();
 router.get("/wikihistory", isSignedIn, isAdmin, admin.wikiHistory);
 
 //admin 최근 생성된 문서 조회
-router.get("/newdoc", admin.newDoc);
+router.get("/newdoc", isSignedIn, isAdmin, admin.newDoc);
 
 //admin 모든 신고 조회
-router.get("/report", admin.report);
+router.get("/report", isSignedIn, isAdmin, admin.report);
 
-//admin 특정 타입의 신고 조회
-//router.get("/report/:type", debateMid.historyGetMid);
-
+//특정 유저를 제한
+router.post("/setconstraint", admin.setConstraint);
 module.exports = router;
