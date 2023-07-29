@@ -13,6 +13,6 @@ router.get("/newdoc", isSignedIn, isAdmin, admin.newDoc);
 //admin 모든 신고 조회
 router.get("/report", isSignedIn, isAdmin, admin.report);
 
-//특정 유저를 제한
-router.post("/setconstraint", admin.setConstraint);
+//admin 악성 유저 제한
+router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
 module.exports = router;
