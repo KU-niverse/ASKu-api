@@ -4851,6 +4851,98 @@
         }
       }
     },
+
+    "/user/admin/constraint": {
+      "post": {
+        "tags": ["admin"],
+        "summary": "유저 이용제한",
+        "description": "특정 일 만큼 해당 유저 이용제한, restrict_period가 0이면 제한 해제",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "target_user_id": {
+                    "type": "string",
+                    "example": "sup1214"
+                  },
+                  "restrict_period": {
+                    "type": "integer",
+                    "example": 3
+                  }
+                },
+                "required": ["target_user_id", "restrict_period"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "유저 제한 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "성공적으로 3일 제한을 설정했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "해당 유저를 찾을 수 없음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "해당 유저를 찾을 수 없습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "서버 에러"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    
     "/wiki/badhis/{hisid}": {
       "put": {
         "tags": ["wiki"],
@@ -4869,6 +4961,8 @@
             }
           }
         ],
+
+        
         "responses": {
           "200": {
             "description": "특정 히스토리 bad로 변경 성공",
@@ -4932,3 +5026,5 @@
     }
   }
 }
+
+
