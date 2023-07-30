@@ -59,3 +59,21 @@ exports.setConstraint = async (req, res) => {
     });
   }
 };
+
+exports.getConstraint = async (req, res) => {
+  try {
+    const result = await User.getConstraint();
+    return res.status(200).send({
+      success: true,
+      data: result,
+      message: "성공적으로 제한중인 유저 목록을 가져왔습니다.",
+    });
+  } catch (error) {
+    console.error(error);
+    console.log("adminContoller-getConstraint에서 에러 발생");
+    res.status(500).send({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};

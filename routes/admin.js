@@ -15,4 +15,8 @@ router.get("/report", isSignedIn, isAdmin, admin.report);
 
 //admin 악성 유저 제한
 router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
+
+//제한중인 유저 목록
+router.get("/constraint", admin.getConstraint);
+
 module.exports = router;

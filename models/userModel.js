@@ -285,4 +285,11 @@ User.deactivate = async (user_id) => {
   }
 };
 
+User.getConstraint = async () => {
+  const [constraint] = await pool.query(
+    `SELECT * FROM users WHERE restrict_period >= CURDATE();`
+  );
+  return constraint;
+};
+
 module.exports = User;
