@@ -40,20 +40,33 @@ exports.report = async (req, res) => {
 exports.setConstraint = async (req, res) => {
   try {
     const { target_user_id, restrict_period } = req.body;
-    await User.setConstraint(target_user_id, restrict_period);
-    if (restrict_period === 0) {
-      return res
-        .status(200)
-        .send({ success: true, message: `성공적으로 제한을 해제했습니다.` });
+    const user = await User.findById(target_user_id);
+
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "해당 유저를 찾을 수 없습니다.",
+      });
     }
+
+    await User.setConstraint(target_user_id, restrict_period);
+
+    if (restrict_period === 0) {
+      return res.status(200).send({
+        success: true,
+        message: "성공적으로 제한을 해제했습니다.",
+      });
+    }
+
     return res.status(200).send({
       success: true,
-      message: `성공적으로 ${restrict_period}일 제한을 설정습니다.`,
+      message: `성공적으로 ${restrict_period}일 제한을 설정했습니다.`,
     });
   } catch (err) {
     console.error(err);
     console.log("adminContoller-setConstraint에서 에러 발생");
-    res.status(500).send({
+
+    return res.status(500).send({
       success: false,
       message: "서버 에러",
     });
