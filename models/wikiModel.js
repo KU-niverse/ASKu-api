@@ -158,57 +158,21 @@ class Wiki_point {
   }
 
   static async getDocsContributions(user_id) {
-    const [rows] = await pool.query(`SELECT
-        wd.title AS doc_title,
-        wd.id AS doc_id,
-        SUM(points) AS docs_points,
-        (SUM(points) / (SELECT SUM(points) FROM (
-          SELECT
-            doc_id,
-            SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) AS points
-          FROM wiki_history
-          WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0
-          GROUP BY doc_id
-        ) AS subquery)) * 100 AS percentage
-      FROM (
-        SELECT
-          doc_id,
-          SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) AS points
-        FROM wiki_history
-        WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0
-        GROUP BY doc_id
-      ) AS main_query
-      JOIN wiki_docs wd ON main_query.doc_id = wd.id
-      GROUP BY doc_id, doc_title
-      HAVING percentage >= 15
-      
-      UNION ALL
-      
-      SELECT
-        '기타' AS doc_title,
-        '기타' AS doc_id,
-        SUM(points) AS docs_points,
-        (SUM(points) / (SELECT SUM(points) FROM (
-          SELECT
-            doc_id,
-            SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) AS points
-          FROM wiki_history
-          WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0
-          GROUP BY doc_id
-        ) AS subquery)) * 100 AS percentage
-      FROM (
-        SELECT
-          doc_id,
-          SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) AS points
-        FROM wiki_history
-        WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0
-        GROUP BY doc_id
-      ) AS main_query
-      GROUP BY doc_id
-      HAVING percentage < 15
-      ORDER BY 
-        CASE WHEN doc_id = '기타' THEN 1 ELSE 0 END,
-        docs_points DESC;`, [user_id, user_id, user_id, user_id]);
+    const [rows] = await pool.query(`
+    SELECT
+      wh.doc_id,
+      wd.title AS doc_title,
+      SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) AS doc_point,
+      (SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) / 
+        (SELECT SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) 
+        FROM wiki_history 
+        WHERE is_bad = 0 AND is_rollback = 0)
+      ) * 100 AS percentage
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wd.id = wh.doc_id
+    WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
+    GROUP BY wh.doc_id
+    ORDER BY percentage DESC;`, [user_id]);
 
     return rows;
   }

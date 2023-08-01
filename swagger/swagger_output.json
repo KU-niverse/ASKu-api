@@ -5146,7 +5146,7 @@
                                 "description": "문서 id",
                                 "example": "3"
                               },
-                              "docs_points": {
+                              "doc_point": {
                                 "type": "string",
                                 "description": "문서별 기여도",
                                 "example": "172"
