@@ -5118,17 +5118,17 @@
                         "count": {
                           "type": "integer",
                           "description": "전체 유저 수",
-                          "example": "30"
+                          "example": 30
                         },
                         "ranking": {
                           "type": "integer",
                           "description": "내 기여 순위",
-                          "example": "1"
+                          "example": 1
                         },
                         "ranking_percentage": {
                           "type": "string",
                           "description": "내 기여 순위 비율",
-                          "example": "3.333333"
+                          "example": 3.333333
                         },
                         "point": {
                           "type": "integer",
@@ -5147,9 +5147,9 @@
                                 "example": "newnewdocs"
                               },
                               "doc_id": {
-                                "type": "string",
+                                "type": "integer",
                                 "description": "문서 id",
-                                "example": "3"
+                                "example": 3
                               },
                               "doc_point": {
                                 "type": "string",
