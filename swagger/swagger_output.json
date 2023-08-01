@@ -5118,12 +5118,17 @@
                         "count": {
                           "type": "integer",
                           "description": "전체 유저 수",
-                          "example": "120"
+                          "example": "30"
                         },
                         "ranking": {
                           "type": "integer",
                           "description": "내 기여 순위",
                           "example": "1"
+                        },
+                        "ranking_percentage": {
+                          "type": "string",
+                          "description": "내 기여 순위 비율",
+                          "example": "3.333333"
                         },
                         "point": {
                           "type": "integer",

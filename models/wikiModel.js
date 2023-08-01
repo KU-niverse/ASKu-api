@@ -152,9 +152,16 @@ class Wiki_point {
   static async getRankingById(user_id) {
     const [rows] = await pool.query("SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0");
     const [rows2] = await pool.query(`SELECT
-      (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
-      (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
-    return { count: rows[0].count, ranking: rows2[0].ranking, point: rows2[0].user_point };
+        (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
+        (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
+
+    const totalUsers = rows[0].count;
+    const userRanking = rows2[0].ranking;
+    const userPoint = rows2[0].user_point;
+
+    const ranking_percentage = (userRanking / totalUsers) * 100;
+
+    return { count: totalUsers, ranking: userRanking, point: userPoint, ranking_percentage: ranking_percentage };
   }
 
   static async getDocsContributions(user_id) {
