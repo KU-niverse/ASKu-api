@@ -6,6 +6,7 @@ const { isSignedIn } = require('../middlewares/sign_in');
 const { isAdmin } = require('../middlewares/admin');
 const { newNotice } = require("../middlewares/notification");
 const { newActionRevise, newActionRecord, newActionAnswer } = require('../middlewares/user_action');
+const { recordSearch } = require("../middlewares/search.js");
 
 const router = express.Router();
 
@@ -56,7 +57,7 @@ router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonG
 router.delete('/contents/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 
 // 위키 제목 기반으로 문서 검색하기
-router.get('/query/:title(*)', wikiCont.wikiSearchGetMid);
+router.get('/query/:title(*)', recordSearch, wikiCont.wikiSearchGetMid);
 
 // 위키 즐겨찾기 조회
 router.get('/favorite', isSignedIn, wikiCont.wikiFavoriteGetMid);
