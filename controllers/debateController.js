@@ -25,7 +25,7 @@ exports.debatePostMid = async (req, res) => {
 exports.historyPostMid = async (req, res, next) => {
   try {
     if (!req.body.content) {
-      res.status(500).send({message: "메시지 내용을 입력하세요."});
+      res.status(400).send({message: "메시지 내용을 입력하세요."});
     } else {
       const newHistory = new History({
         debate_id: req.params.debate,
