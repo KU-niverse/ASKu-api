@@ -2496,7 +2496,7 @@
                 }
               }
             },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2552,7 +2552,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2630,7 +2630,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2705,7 +2705,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2782,7 +2782,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2837,7 +2837,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2865,7 +2865,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2920,7 +2920,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2998,7 +2998,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3051,7 +3051,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3099,7 +3099,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3169,7 +3169,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3197,7 +3197,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3225,7 +3225,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3275,7 +3275,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3338,7 +3338,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3468,7 +3468,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {

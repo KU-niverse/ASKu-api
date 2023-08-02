@@ -15,7 +15,7 @@ exports.reportPostMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생했습니다."});
+    res.status(500).send({message: "오류가 발생했습니다."});
   }
 };
 
@@ -36,6 +36,6 @@ exports.reportCheckPostMid = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({success: false, message: "오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "오류가 발생했습니다."});
   }
 };

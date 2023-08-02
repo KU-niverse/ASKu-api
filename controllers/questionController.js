@@ -8,7 +8,7 @@ exports.questionGetMid = async (req, res) => {
     res.status(200).send(questions);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -32,7 +32,7 @@ exports.questionPostMid = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -47,7 +47,7 @@ exports.questionEditMid = async(req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -63,7 +63,7 @@ exports.questionDeleteMid = async(req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -81,7 +81,7 @@ exports.questionLikeMid = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -98,7 +98,7 @@ exports.questionSearchGetMid = async (req, res) => {
 
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -110,6 +110,6 @@ exports.questionPopularGetMid = async (req, res) => {
     res.status(200).send(questions);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."}); 
+    res.status(500).send({message: "오류가 발생하였습니다."}); 
   }
 };
