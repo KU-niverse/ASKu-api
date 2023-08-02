@@ -450,7 +450,8 @@ exports.historyGetMid = async (req, res) => {
 // 최근 변경된 위키 히스토리 불러오기
 exports.recentHistoryGetMid = async (req, res) => {
   try{
-    const rows = await Wiki.Wiki_history.getRecentWikiHistorys();
+    const type = req.query.type ? req.query.type : "";
+    const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
     res.status(200).send({success: true, message: rows});
   } catch (err) {
     console.log(err);

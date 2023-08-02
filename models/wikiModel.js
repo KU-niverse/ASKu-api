@@ -70,23 +70,28 @@ class Wiki_history {
   }
 
   // 최근에 수정된 wiki_history들을 반환해주는 함수
-  static async getRecentWikiHistorys() {
+  static async getRecentWikiHistorys(type) {
     const [rows] = await pool.query(`
-      SELECT
-        wh.user_id,
-        wh.doc_id,
-        wh.version,
-        wh.summary,
-        wh.created_at,
-        wh.diff,
-        wh.is_bad,
-        wh.is_rollback,
-        wd.title AS doc_title
-      FROM wiki_history wh
-      JOIN wiki_docs wd ON wh.doc_id = wd.id
-      ORDER BY wh.created_at DESC
-      LIMIT 30`);
-    console.log(rows);
+    SELECT
+      wh.user_id,
+      wh.doc_id,
+      wh.version,
+      wh.summary,
+      wh.created_at,
+      wh.diff,
+      wh.is_rollback,
+      wd.title AS doc_title
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wh.doc_id = wd.id
+    WHERE
+      (CASE
+        WHEN ? = 'create' THEN wh.version = 1
+        WHEN ? = 'rollback' THEN wh.is_rollback = 1
+        ELSE true
+      END)
+    ORDER BY wh.created_at DESC
+    LIMIT 30` , [type, type]);
+
     return rows;
   }
  

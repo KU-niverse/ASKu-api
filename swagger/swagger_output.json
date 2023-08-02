@@ -4641,11 +4641,24 @@
         }
       }
     },
-    "/wiki/historys": {
+    "/wiki/historys?type={type}": {
       "get": {
         "tags": ["wiki"],
         "summary": "최근 변경된 위키 히스토리 불러오기",
         "description": "GET 방식으로 최근 변경된 위키 히스토리를 불러옵니다.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "최근 변경된 위키 히스토리 타입(all: 전체, create: 새 문서, rollback: 롤백)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "최근 변경된 위키 히스토리 타입(all: 전체, create: 새 문서, rollback: 롤백)",
+              "example": "all"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "최근 변경된 위키 히스토리 불러오기 성공",
