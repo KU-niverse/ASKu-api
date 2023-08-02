@@ -27,6 +27,9 @@ router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
+// 모든 글 제목 조회
+router.get('/titles', wikiCont.titlesGetMid);
+
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
   try{

@@ -21,6 +21,12 @@ class Wiki_docs {
 
     return rows[0];
   }
+  // is_deleted가 0인 모든 문서 제목 가져오기
+  static async getAllWikiDocs() {
+    const [rows] = await pool.query(`SELECT title FROM wiki_docs WHERE is_deleted = 0`);
+
+    return rows.map(rows => rows.title);
+  }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id) {
     const [result] = await pool.query(`UPDATE wiki_docs SET is_deleted = 1 WHERE id = ?`, [id]);
