@@ -447,6 +447,18 @@ exports.historyGetMid = async (req, res) => {
   }
 };
 
+// 최근 변경된 위키 히스토리 불러오기
+exports.recentHistoryGetMid = async (req, res) => {
+  try{
+    const type = req.query.type ? req.query.type : "";
+    const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
+    res.status(200).send({success: true, message: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
+  }
+};
+
 // 특정 위키 히스토리의 raw 파일 불러오기
 exports.historyRawGetMid = async (req, res) => {
   let jsonData = {};
