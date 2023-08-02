@@ -13,6 +13,7 @@ const questionRoutes = require("./routes/question");
 const debateRoutes = require("./routes/debate");
 const notificationRoutes = require("./routes/notification");
 const reportRoutes = require("./routes/report");
+const searchRoutes = require("./routes/search");
 
 dotenv.config();
 
@@ -84,6 +85,7 @@ app.use("/question", questionRoutes);
 app.use("/debate", debateRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/report", reportRoutes);
+app.use("/search", searchRoutes);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

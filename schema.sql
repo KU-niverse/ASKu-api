@@ -118,6 +118,15 @@ CREATE TABLE `wiki_favorites` (
    FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
 );
 
+CREATE TABLE search_history (
+   `id` int AUTO_INCREMENT NOT NULL,
+   `user_id` int NOT NULL, -- 검색한 유저(로그인)
+   `keyword` varchar(255) NOT NULL, -- 검색어
+   `search_time` timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 검색한 시간
+   PRIMARY KEY (`id`),
+   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+);
+
 CREATE TABLE `debates` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `doc_id`   int   NOT NULL,

@@ -46,6 +46,10 @@
     {
       "name": "notification",
       "description": "알림"
+    },
+    {
+      "name": "search",
+      "description": "검색"
     }
   ],
   "schemes": [
@@ -5528,6 +5532,45 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/popular": {
+      "get": {
+        "tags": ["search"],
+        "summary": "인기 검색어 조회 (최근 24시간 기준)",
+        "description": "GET 방식으로 최근 24시간 기준 인기 검색어를 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "검색어 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "keyword": {
+                      "type": "string",
+                      "example": "검색어"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": "30"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "검색어 조회 중 오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }
