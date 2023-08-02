@@ -73,7 +73,7 @@ Report.checkReport = async (report_id, is_checked) => {
     // report_type에 대응하는 user_action 테이블의 컬럼 재계산
     switch (type_id) {
     case 1:
-      sql = 'UPDATE user_action SET record_count = (SELECT SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 ), revise_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_bad = 0), answer_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_q_based = 1 AND is_bad = 0) WHERE user_id = ?';
+      sql = 'UPDATE user_action SET record_count = (SELECT SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0), revise_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_bad = 0), answer_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_q_based = 1 AND is_bad = 0) WHERE user_id = ?';
       await pool.query(sql, [user_id, user_id, user_id, user_id]);
       break;
     case 2:
