@@ -8,7 +8,7 @@ const { newActionReport } = require("../middlewares/user_action");
 const router = express.Router();
 
 // PUT /report/check
-router.put("/check", isSignedIn, isAdmin, reportMid.reportCheckPostMid, newActionReport); // 배지 회수 미들웨어 붙이기
+router.put("/check", isSignedIn, isAdmin, reportMid.reportCheckPostMid, newActionReport);
 
 // POST /report/:type
 router.post("/:type", isSignedIn, reportMid.reportPostMid, newNotice);
