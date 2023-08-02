@@ -713,6 +713,9 @@ exports.wikiFavoriteDeleteMid = async (req, res) => {
 exports.userContributionGetMid = async (req, res) => {
   try {
     const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
+    const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
+    rows.docs = rows2;
+    
     res.status(200).send({ success: true, message: rows});
   } catch (err) {
     console.log(err);

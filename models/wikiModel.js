@@ -152,9 +152,36 @@ class Wiki_point {
   static async getRankingById(user_id) {
     const [rows] = await pool.query("SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0");
     const [rows2] = await pool.query(`SELECT
-      (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
-      (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
-    return { count: rows[0].count, ranking: rows2[0].ranking, point: rows2[0].user_point };
+        (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
+        (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
+
+    const totalUsers = rows[0].count;
+    const userRanking = rows2[0].ranking;
+    const userPoint = rows2[0].user_point;
+
+    const ranking_percentage = (userRanking / totalUsers) * 100;
+
+    return { count: totalUsers, ranking: userRanking, point: userPoint, ranking_percentage: ranking_percentage };
+  }
+
+  static async getDocsContributions(user_id) {
+    const [rows] = await pool.query(`
+    SELECT
+      wh.doc_id,
+      wd.title AS doc_title,
+      SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) AS doc_point,
+      (SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) / 
+        (SELECT SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) 
+        FROM wiki_history 
+        WHERE is_bad = 0 AND is_rollback = 0)
+      ) * 100 AS percentage
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wd.id = wh.doc_id
+    WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
+    GROUP BY wh.doc_id
+    ORDER BY percentage DESC;`, [user_id]);
+
+    return rows;
   }
 }
 

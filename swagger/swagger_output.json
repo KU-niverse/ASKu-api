@@ -5091,11 +5091,11 @@
     "/wiki/contributions": {
       "get": {
         "tags": ["wiki"],
-        "summary": "로그인한 유저 기여도 순위 조회",
-        "description": "GET 로그인한 유저 기여도 순위 조회합니다.",
+        "summary": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 조회",
+        "description": "GET 로그인한 유저 기여도 순위 및 문서별 기여도 비율을 조회합니다.",
         "responses": {
           "200": {
-            "description": "로그인한 유저 기여도 순위 조회 성공",
+            "description": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 조회 성공",
             "content": {
               "application/json": {
                 "schema": {
@@ -5112,23 +5112,57 @@
                       "example": true
                     },
                     "message": {
-                      "description": "로그인한 유저 기여도 순위 정보",
+                      "description": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 정보",
                       "type": "object",
                       "properties": {
                         "count": {
                           "type": "integer",
                           "description": "전체 유저 수",
-                          "example": "120"
+                          "example": 30
                         },
                         "ranking": {
                           "type": "integer",
                           "description": "내 기여 순위",
-                          "example": "1"
+                          "example": 1
+                        },
+                        "ranking_percentage": {
+                          "type": "string",
+                          "description": "내 기여 순위 비율",
+                          "example": 3.333333
                         },
                         "point": {
                           "type": "integer",
                           "description": "내 기여도",
                           "example": 30012
+                        },
+                        "docs": {
+                          "type": "array",
+                          "description": "문서별 기여도 비율",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "doc_title": {
+                                "type": "string",
+                                "description": "문서 제목",
+                                "example": "newnewdocs"
+                              },
+                              "doc_id": {
+                                "type": "integer",
+                                "description": "문서 id",
+                                "example": 3
+                              },
+                              "doc_point": {
+                                "type": "string",
+                                "description": "문서별 기여도",
+                                "example": "172"
+                              },
+                              "percentage": {
+                                "type": "string",
+                                "description": "문서별 기여도 비율",
+                                "example": "58.1081"
+                              }
+                            }
+                          }
                         }
                       }
                     }
