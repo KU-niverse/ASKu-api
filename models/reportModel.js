@@ -1,4 +1,5 @@
 const pool = require("../config/db.js");
+const { Wiki_point } = require("../models/wikiModel.js");
 
 // reports 테이블의 column을 가지는 객체
 const Report = function (report) {
@@ -35,30 +36,36 @@ Report.checkReport = async (report_id, is_checked) => {
     let sql, result;
 
     switch (type_id) {
-    case 1:
+    case 1: {
       await pool.query(
         `UPDATE wiki_history SET is_bad = 1 WHERE id = ?`,
         [target]
       );
+      const [rows] = await pool.query(`SELECT user_id FROM wiki_history WHERE id = ?`, [user_id]);
+      await Wiki_point.recalculatePoint(rows[0].user_id);
       break;
-    case 2:
+    }
+    case 2: {
       await pool.query(
         `UPDATE questions SET is_bad = 1 WHERE id = ?`,
         [target]
       );
       break;
-    case 3:
+    }
+    case 3: {
       await pool.query(
         `UPDATE debates SET is_bad = 1 WHERE id = ?`,
         [target]
       );
       break;
-    case 4:
+    }
+    case 4: {
       await pool.query(
         `UPDATE debate_history SET is_bad = 1 WHERE id = ?`,
         [target]
       );
       break;
+    }
     default:
       break;
     }
@@ -66,7 +73,7 @@ Report.checkReport = async (report_id, is_checked) => {
     // report_type에 대응하는 user_action 테이블의 컬럼 재계산
     switch (type_id) {
     case 1:
-      sql = 'UPDATE user_action SET record_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_bad = 0), revise_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_bad = 0), answer_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_q_based = 1) WHERE user_id = ?';
+      sql = 'UPDATE user_action SET record_count = (SELECT SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 ), revise_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_bad = 0), answer_count = (SELECT COUNT(*) FROM wiki_history WHERE user_id = ? AND is_q_based = 1 AND is_bad = 0) WHERE user_id = ?';
       await pool.query(sql, [user_id, user_id, user_id, user_id]);
       break;
     case 2:

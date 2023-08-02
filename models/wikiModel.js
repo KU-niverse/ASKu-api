@@ -126,13 +126,10 @@ class Wiki_point {
     return rows.affectedRows;
   }
 
-  // 기여도와 action record_count를 user의 wiki_history 기반으로 재계산 해주는 함수
+  // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
     // 기여도 재계산
     const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
-    // action record_count 재계산
-    await pool.query("UPDATE users_action SET record_count = (SELECT SUM(CASE WHEN diff > 0 THEN diff ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE user_id = ?", [user_id, user_id]);
-
     return result.affectedRows;
   }
 
