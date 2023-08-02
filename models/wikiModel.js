@@ -68,6 +68,27 @@ class Wiki_history {
     const [rows] = await pool.query("SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC LIMIT 1", [doc_id]);
     return rows;
   }
+
+  // 최근에 수정된 wiki_history들을 반환해주는 함수
+  static async getRecentWikiHistorys() {
+    const [rows] = await pool.query(`
+      SELECT
+        wh.user_id,
+        wh.doc_id,
+        wh.version,
+        wh.summary,
+        wh.created_at,
+        wh.diff,
+        wh.is_bad,
+        wh.is_rollback,
+        wd.title AS doc_title
+      FROM wiki_history wh
+      JOIN wiki_docs wd ON wh.doc_id = wd.id
+      ORDER BY wh.created_at DESC
+      LIMIT 30`);
+    console.log(rows);
+    return rows;
+  }
  
   // doc id, history version 넣어주면 해당 wiki_history를 반환해주는 함수
   // 사용 안 되면 삭제 예정
@@ -176,7 +197,7 @@ class Wiki_point {
     JOIN wiki_docs wd ON wd.id = wh.doc_id
     WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
     GROUP BY wh.doc_id
-    ORDER BY percentage DESC;`, [user_id]);
+    ORDER BY percentage DESC`, [user_id]);
 
     return rows;
   }

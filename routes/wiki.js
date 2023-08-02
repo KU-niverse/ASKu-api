@@ -49,6 +49,9 @@ router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.history
 // 위키 히스토리 불러오기
 router.get('/historys/:title(*)', wikiCont.historyGetMid);
 
+// 최근 변경된 위키 히스토리 불러오기
+router.get('/historys', wikiCont.recentHistoryGetMid);
+
 // 두 버전 비교하기
 router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonGetMid);
 
