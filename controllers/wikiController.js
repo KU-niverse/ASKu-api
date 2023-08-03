@@ -183,7 +183,14 @@ exports.contentsGetMid = async (req, res) => {
       res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
-    const version = rows[0].version;
+
+    let version;
+    if(req.calltype === 1){ // 글 불러오거나 수정용
+      version = rows[0].version;
+    } else if(req.calltype === 2) { // 버전별 글 불러오기용
+      version = req.params.version;
+    }
+
     let text = "";
     let jsonData = {};
 

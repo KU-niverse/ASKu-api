@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
 // 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
-router.get('/contents/:title(*)/version/:version', wikiCont.contentsGetMid);
+router.get('/contents/:title(*)/version/:version', (req, res, next)=>{req.calltype = 2; next();}, wikiCont.contentsGetMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
@@ -26,16 +26,13 @@ router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.content
 router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
-router.get('/contents/:title(*)', wikiCont.contentsGetMid);
+router.get('/contents/:title(*)', (req, res, next)=>{req.calltype = 1; next();}, wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
 // 모든 글 제목 조회
 router.get('/titles', wikiCont.titlesGetMid);
-
-// 랜덤 글 제목 조회
-router.get('/random', wikiCont.randomTitleGetMid);
 
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {

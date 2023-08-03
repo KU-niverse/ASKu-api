@@ -3494,7 +3494,7 @@
           }
         }
       }
-    },    
+    },
     "/wiki/contents/new/{title(*)}": {
       "post": {
         "tags": ["wiki"],
@@ -3601,6 +3601,145 @@
           },
           "500": {
             "description": "위키 생성/히스토리 생성/기여도 부여 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/contents/{title(*)}/version/{version}": {
+      "get": {
+        "summary": "위키 문서 버전 미리보기 정보 가져오기",
+        "description": "GET 방식으로 위키 문서 버전 미리보기 정보를 가져옵니다.",
+        "tags": ["wiki"],
+        "parameters": [
+          {
+            "name": "title(*)",
+            "in": "path",
+            "description": "위키 문서 제목",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "위키 문서 제목"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "위키 문서 버전",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "위키 문서 버전"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "위키 문서 정보 가져오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "위키 전체 내용",
+                      "example": "위키 전체 내용"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "가장 최근 버전",
+                      "example": 1
+                    },
+                    "contents": {
+                      "type": "array",
+                      "description": "위키 문서 섹션 정보",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "section": {
+                            "type": "integer",
+                            "description": "위키 문서 섹션 번호",
+                            "example": 1
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 목차",
+                            "example": "2.3.1"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 제목",
+                            "example": "위키 문서 섹션 제목"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 내용",
+                            "example": "위키 문서 섹션 내용"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "삭제된 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "410",
+                      "example": "410"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "삭제된 문서입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 문서 정보 가져오기 중 오류",
             "content": {
               "application/json": {
                 "schema": {
