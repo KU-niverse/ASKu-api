@@ -435,6 +435,18 @@ exports.contentsSectionPostMid = async (req, res, next) => {
   }
 };
 
+// 모든 글 제목 조회
+exports.titlesGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_docs.getAllWikiDocs();
+    res.status(200).send({ success: true, titles: rows });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+  }
+};
+
+
 // 위키 히스토리 불러오기
 exports.historyGetMid = async (req, res) => {
   try{

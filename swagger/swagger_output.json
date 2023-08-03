@@ -4273,6 +4273,56 @@
         }
       }
     },
+    "/wiki/titles": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "모든 글 제목 조회",
+        "description": "GET 방식으로 모든 글 제목을 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "모든 글 제목 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "description" : "200",
+                      "example" : "200"
+                    },
+                    "success" : {
+                      "type" : "boolean",
+                      "description" : "true",
+                      "example" : true
+                    },
+                    "titles": {
+                      "type": "array",
+                      "description": "모든 글 제목 조회 결과",
+                      "items": {
+                        "type": "string",
+                        "description": "위키 문서 제목",
+                        "example": "복돌이"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "글 제목 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wiki/image": {
       "post": {
         "tags": ["wiki"],
