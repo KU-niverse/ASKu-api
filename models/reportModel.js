@@ -16,7 +16,9 @@ async function getReport(id) {
 }
 
 Report.getAllReport = async () => {
-  const [rows] = await pool.query(`SELECT * FROM reports`);
+  const [rows] = await pool.query(
+    `SELECT * FROM reports ORDER BY created_at DESC `
+  );
   console.log(rows);
   return rows;
 };
