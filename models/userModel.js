@@ -287,7 +287,7 @@ User.deactivate = async (user_id) => {
 
 User.getConstraint = async () => {
   const [constraint] = await pool.query(
-    `SELECT * FROM users WHERE restrict_period >= CURDATE();`
+    `SELECT id, login_id, name, stu_id, email, nickname, point, restrict_period, restrict_count FROM users WHERE restrict_period >= CURDATE();`
   );
   return constraint;
 };

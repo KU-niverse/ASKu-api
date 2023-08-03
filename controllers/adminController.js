@@ -5,9 +5,16 @@ const User = require("../models/userModel.js");
 exports.wikiHistory = async (req, res) => {
   try {
     const wiki_history = await Wiki.Wiki_history.getAllWikiHistory();
-    return res.status(200).send({ success: true, message: wiki_history });
+    return res
+      .status(200)
+      .send({
+        success: true,
+        data: wiki_history,
+        message: "성공적으로 위키 히스토리를 불러왔습니다.",
+      });
   } catch (error) {
     console.error(error);
+    console.log("adminController-wikiHistory에서 에러 발생");
     return res.status(500).send({ success: false, message: "서버 에러" });
   }
 };
@@ -15,9 +22,14 @@ exports.wikiHistory = async (req, res) => {
 exports.newDoc = async (req, res) => {
   try {
     const wiki_docs = await Wiki.Wiki_docs.getAllDoc();
-    return res.status(200).send({ success: true, message: wiki_docs });
+    return res.status(200).send({
+      success: true,
+      data: wiki_docs,
+      messgae: "성공적으로 문서목록을 불러왔습니다.",
+    });
   } catch (err) {
     console.error(err);
+    console.log("adminController-newDoc에서 에러 발생");
     res.status(500).send({ success: false, message: "서버 에러" });
   }
 };
@@ -26,7 +38,11 @@ exports.report = async (req, res) => {
   try {
     const reports = await Report.getAllReport();
     console.log(typeof reports);
-    return res.status(200).send({ success: true, message: reports });
+    return res.status(200).send({
+      success: true,
+      data: reports,
+      message: "성공적으로 신고목록을 불러왔습니다.",
+    });
   } catch (err) {
     console.error(err);
     console.log("adminContoller-report에서 에러 발생");
