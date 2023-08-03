@@ -246,6 +246,7 @@ CREATE TABLE `reports` (
    `reason_id`   int   NOT NULL, -- [신고 사유] 문서 훼손, 욕설 등등...
    `comment`   text   NULL, -- [신고 추가 정보] 유저가 작성한 추가 정보
    `is_checked`   tinyint   NOT NULL   DEFAULT 0, -- [승인 여부] 0: 미확인 1: 승인됨 -1: 반려됨
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
    FOREIGN KEY (`type_id`) REFERENCES `report_type` (`id`),
