@@ -59,6 +59,8 @@ User.findByLoginId = async (login_id) => {
   ]);
   return rows;
 };
+
+
 //nickname으로 유저 찾기
 User.findByNickname = async (nickname) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
