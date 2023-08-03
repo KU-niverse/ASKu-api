@@ -4870,7 +4870,7 @@
                       "description": "true",
                       "example": true
                     },
-                    "historys": {
+                    "message": {
                       "type": "array",
                       "description": "최근 변경된 위키 히스토리 리스트",
                       "items": {
