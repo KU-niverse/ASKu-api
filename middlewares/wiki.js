@@ -46,7 +46,7 @@ exports.createHistoryMid = async (req, res, next) => {
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 히스토리 생성 중 오류" });
+    res.status(500).json({ success: false, message: "위키 히스토리 생성 중 오류" });
   }
 };
 
@@ -59,6 +59,6 @@ exports.wikiPointMid = async (req, res, next) => {
     //res.status(200).json({ message: "위키 작성 기여도 지급 성공" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ message: "위키 작성 기여도 지급 중 오류" });
+    res.status(500).json({ success: false, message: "위키 작성 기여도 지급 중 오류" });
   }
 };

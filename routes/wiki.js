@@ -6,11 +6,15 @@ const { isSignedIn } = require('../middlewares/sign_in');
 const { isAdmin } = require('../middlewares/admin');
 const { newNotice } = require("../middlewares/notification");
 const { newActionRevise, newActionRecord, newActionAnswer } = require('../middlewares/user_action');
+const { recordSearch } = require("../middlewares/search.js");
 
 const router = express.Router();
 
 // 새 위키 문서 생성하기 [기여도 지급]
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
+
+// 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
+router.get('/contents/:title(*)/version/:version', wikiCont.contentsGetMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
@@ -26,6 +30,12 @@ router.get('/contents/:title(*)', wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
+
+// 모든 글 제목 조회
+router.get('/titles', wikiCont.titlesGetMid);
+
+// 랜덤 글 제목 조회
+router.get('/random', wikiCont.randomTitleGetMid);
 
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
@@ -49,6 +59,9 @@ router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.history
 // 위키 히스토리 불러오기
 router.get('/historys/:title(*)', wikiCont.historyGetMid);
 
+// 최근 변경된 위키 히스토리 불러오기
+router.get('/historys', wikiCont.recentHistoryGetMid);
+
 // 두 버전 비교하기
 router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonGetMid);
 
@@ -56,7 +69,7 @@ router.get('/comparison/:title(*)/rev/:rev/oldrev/:oldrev', wikiCont.comparisonG
 router.delete('/contents/:title(*)', isSignedIn, isAdmin, wikiCont.wikiDeleteMid);
 
 // 위키 제목 기반으로 문서 검색하기
-router.get('/query/:title(*)', wikiCont.wikiSearchGetMid);
+router.get('/query/:title(*)', recordSearch, wikiCont.wikiSearchGetMid);
 
 // 위키 즐겨찾기 조회
 router.get('/favorite', isSignedIn, wikiCont.wikiFavoriteGetMid);
