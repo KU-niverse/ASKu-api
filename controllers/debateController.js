@@ -17,12 +17,12 @@ exports.debatePostMid = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
 // 토론방에서 메시지 입력
-exports.historyPostMid = async (req, res) => {
+exports.historyPostMid = async (req, res, next) => {
   try {
     if (!req.body.content) {
       res.status(400).send({message: "메시지 내용을 입력하세요."});
@@ -32,12 +32,12 @@ exports.historyPostMid = async (req, res) => {
         user_id: req.user[0].id, // jwt token 수정하면 수정
         content: req.body.content,
       });
-      const result = await History.createHistory(newHistory);
-      res.status(200).send(result);
+      req.debate_message = await History.createHistory(newHistory);
+      next();
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -48,7 +48,7 @@ exports.debateGetMid = async (req, res) => {
     res.status(200).send(debates);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -60,7 +60,7 @@ exports.historyGetMid = async (req, res) => {
     res.status(200).send(histories);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -76,6 +76,6 @@ exports.debateEndPostMid = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };

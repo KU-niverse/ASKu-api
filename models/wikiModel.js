@@ -26,6 +26,18 @@ class Wiki_docs {
 
     return rows[0];
   }
+  // is_deleted가 0인 모든 문서 제목 가져오기
+  static async getAllWikiDocs() {
+    const [rows] = await pool.query(`SELECT title FROM wiki_docs WHERE is_deleted = 0`);
+
+    return rows.map(rows => rows.title);
+  }
+  // is_deleted가 0인 문서 중 랜덤으로 제목 하나 가져오기
+  static async getRandomWikiDocs() {
+    const [rows] = await pool.query(`SELECT title FROM wiki_docs WHERE is_deleted = 0 ORDER BY RAND() LIMIT 1`);
+
+    return rows[0].title;
+  }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id) {
     const [result] = await pool.query(
@@ -97,6 +109,33 @@ class Wiki_history {
     return rows;
   }
 
+  // 최근에 수정된 wiki_history들을 반환해주는 함수
+  static async getRecentWikiHistorys(type) {
+    const [rows] = await pool.query(`
+    SELECT
+      wh.user_id,
+      wh.doc_id,
+      wh.version,
+      wh.summary,
+      wh.created_at,
+      wh.diff,
+      wh.is_rollback,
+      wd.title AS doc_title
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wh.doc_id = wd.id
+    WHERE
+      (CASE
+        WHEN ? = 'create' THEN wh.version = 1
+        WHEN ? = 'rollback' THEN wh.is_rollback = 1
+        ELSE true
+      END)
+    ORDER BY wh.created_at DESC
+    LIMIT 30` , [type, type]);
+
+    return rows;
+  }
+ 
+
   // doc id, history version 넣어주면 해당 wiki_history를 반환해주는 함수
   // 사용 안 되면 삭제 예정
   static async getWikiHistoryByVersion(doc_id, version) {
@@ -108,7 +147,7 @@ class Wiki_history {
     return rows[0];
   }
 
-  // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도도 재계산해준다.
+  // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도와 action record_count도 재계산해준다.
   static async badHistoryById(id) {
     const [result] = await pool.query(
       `UPDATE wiki_history SET is_bad = 1 WHERE id = ?`,
@@ -177,51 +216,70 @@ class Wiki_point {
     if (is_q_based == 1) {
       point = point * 5;
     }
-    const [rows] = await pool.query(
-      "UPDATE users SET point = point + ? WHERE id = ?",
-      [point * 4, user_id]
-    );
-
+    else{
+      point = point * 4;
+    }
+    const [rows] = await pool.query("UPDATE users SET point = point + ? WHERE id = ?", [point, user_id]);
     return rows.affectedRows;
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
   static async recalculatePoint(user_id) {
-    const [result] = await pool.query(
-      "UPDATE users SET point = (SELECT SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?",
-      [user_id, user_id]
-    );
+    // 기여도 재계산
+    const [result] = await pool.query("UPDATE users SET point = (SELECT SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?", [user_id, user_id]);
+    return result.affectedRows;
 
-    return result.changedRows;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query(
-      "SELECT user_id, SUM(CASE WHEN is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC",
-      [doc_id]
-    );
+    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
     return rows;
   }
 
   // 유저 기여도 전체 순위를 반환해주는 함수
   static async getRanking() {
-    const [rows] = await pool.query(
-      "SELECT id, login_id, nickname, point FROM users WHERE is_deleted = 0 ORDER BY point DESC"
-    );
+    const [rows] = await pool.query("SELECT id as user_id, login_id, nickname, point FROM users WHERE is_deleted = 0 ORDER BY point DESC");
+
     return rows;
   }
 
   // 유저 id 넣어주면 전체 유저의 수와 해당 유저의 기여도 순위를 반환해주는 함수
   static async getRankingById(user_id) {
-    const [rows] = await pool.query(
-      "SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0"
-    );
-    const [rows2] = await pool.query(
-      "SELECT COUNT(*) AS rank FROM users WHERE point > (SELECT point FROM users WHERE id = ?)",
-      [user_id]
-    );
-    return { count: rows[0].count, rank: rows2[0].rank + 1 };
+
+    const [rows] = await pool.query("SELECT COUNT(*) AS count FROM users WHERE is_deleted = 0");
+    const [rows2] = await pool.query(`SELECT
+        (SELECT COUNT(*) + 1 FROM users WHERE users.point > (SELECT point FROM users WHERE id = ?)) AS ranking,
+        (SELECT point FROM users WHERE id = ?) AS user_point`, [user_id, user_id]);
+
+    const totalUsers = rows[0].count;
+    const userRanking = rows2[0].ranking;
+    const userPoint = rows2[0].user_point;
+
+    const ranking_percentage = (userRanking / totalUsers) * 100;
+
+    return { count: totalUsers, ranking: userRanking, point: userPoint, ranking_percentage: ranking_percentage };
+  }
+
+  static async getDocsContributions(user_id) {
+    const [rows] = await pool.query(`
+    SELECT
+      wh.doc_id,
+      wd.title AS doc_title,
+      SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) AS doc_point,
+      (SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) / 
+        (SELECT SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) 
+        FROM wiki_history 
+        WHERE is_bad = 0 AND is_rollback = 0)
+      ) * 100 AS percentage
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wd.id = wh.doc_id
+    WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
+    GROUP BY wh.doc_id
+    ORDER BY percentage DESC`, [user_id]);
+
+    return rows;
+
   }
 }
 

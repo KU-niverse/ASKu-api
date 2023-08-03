@@ -46,6 +46,10 @@
     {
       "name": "notification",
       "description": "알림"
+    },
+    {
+      "name": "search",
+      "description": "검색"
     }
   ],
   "schemes": [
@@ -1993,6 +1997,163 @@
       }
     },
 
+
+    "/user/mypage/questionhistory": {
+      "get": {
+        "tags": ["mypage"],
+        "summary": "유저 질문 히스토리",
+        "description": "유저의 질문 히스토리를 조회합니다.",
+
+        "responses": {
+            "201": {
+                "description": "질문 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 1,
+                                      "doc_id": 1,
+                                      "user_id": 1,
+                                      "index_title" : "수강 신청 어캐하나여",
+                                      "content": "수강신청 어캐하는지 모르겠어요",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이(위키 문서 제목)"
+                                    },
+                                    {
+                                      "id": 2,
+                                      "doc_id": 2,
+                                      "user_id": 2,
+                                      "index_title" : "수강 신청 어캐하나여2",
+                                      "content": "수강신청 어캐하는지 모르겠어요2",
+                                      "created_at": "2021-05-20T14:48:00.000Z",
+                                      "answer_or_not": false,
+                                      "is_bad": false,
+                                      "doc_title": "복돌이2(위키 문서 제목)"
+                                    }
+                                    
+  
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "commentHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      }
+    },
+
+    "/user/mypage/debatehistory": {
+      "get": {
+        "tags": ["mypage"],
+        "summary": "유저 토론 히스토리",
+        "description": "유저의 토론 히스토리를 조회합니다.",
+
+        "responses": {
+            "201": {
+                "description": "토론 히스토리 불러오기 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "array",
+                                    "example": [
+                                      {
+                                          "debate_id": 101,
+                                          "debate_subject": "인공지능의 장단점",
+                                          "debate_content": "인공지능은 많은 분야에서 유용하게 사용될 수 있지만, 동시에 그것이 가져오는 부정적인 측면에 대해서도 고민해야 합니다.",
+                                          "debate_content_time": "2023-07-25T10:23:14Z",
+                                          "is_bad": false,
+                                          "doc_title": "인공지능"
+                                      },
+                                      {
+                                          "debate_id": 98,
+                                          "debate_subject": "과학 기술의 발전에 대한 책임",
+                                          "debate_content": "과학 기술의 발전은 인류에게 이롭지만, 이를 악용하는 경우도 발생합니다. 따라서 과학 기술의 발전에는 책임이 수반되어야 합니다.",
+                                          "debate_content_time": "2023-07-24T18:15:22Z",
+                                          "is_bad": false,
+                                          "doc_title": "과학과 기술"
+                                      },
+                                      {
+                                          "debate_id": 93,
+                                          "debate_subject": "프라이버시 보호",
+                                          "debate_content": "기술의 발전으로 인해 프라이버시 보호가 점점 더 어려워지고 있습니다. 이에 대한 해결 방안은 무엇일까요?",
+                                          "debate_content_time": "2023-07-23T12:30:45Z",
+                                          "is_bad": true,
+                                          "doc_title": "개인정보 보호"
+                                      }
+                                  ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+          "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "debateHistory-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        }
+      }
+    },
+
+
+
+
     "/user/mypage/badgehistory": {
       "get": {
         "tags": ["mypage"],
@@ -2280,12 +2441,66 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Question"
+                  "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "1"
+                      },
+                      "doc_id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "1"
+                      },
+                      "user_id": {
+                        "type": "integer",
+                        "format": "int32",
+                        "example": "1"
+                      },
+                      "index_title": {
+                        "type": "string",
+                        "example": "1. 목차"
+                      },
+                      "content": {
+                        "type": "string",
+                        "example": "고려대학교은 몇 년도에 창립되었나요?"
+                      },
+                      "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-06-26T05:05:08.000Z"
+                      },
+                      "answer_or_not": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": "0"
+                      },
+                      "is_bad": {
+                        "type": "boolean",
+                        "default": false,
+                        "example": "0"
+                      },
+                      "nickname": {
+                        "type": "string",
+                        "example": "고양이조아"
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "doc_id",
+                      "user_id",
+                      "index_title",
+                      "content",
+                      "created_at",
+                      "answer_or_not",
+                      "is_bad"
+                    ]
+                  }
                 }
               }
-            }
             },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2341,7 +2556,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2419,7 +2634,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2494,7 +2709,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2571,7 +2786,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2626,7 +2841,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2654,7 +2869,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2709,7 +2924,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2787,7 +3002,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2840,7 +3055,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2888,7 +3103,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2958,7 +3173,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -2986,7 +3201,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3014,7 +3229,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3064,7 +3279,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3127,7 +3342,7 @@
               }
             }
           },
-          "404": {
+          "500": {
             "description": "오류 발생",
             "content": {
               "application/json": {
@@ -3162,6 +3377,116 @@
                   },
                   "comment": {
                     "example": "스팸 링크 의심됨"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/report/check": {
+      "put": {
+        "tags": ["report"],
+        "summary": "신고 내역 확인(관리자만 가능)",
+        "requestBody": {
+          "description": "신고 내역 확인을 위한 정보",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "report_id": {
+                    "type": "string",
+                    "example": "1"
+                  },
+                  "is_checked": {
+                    "type": "integer",
+                    "description": "1: 신고 승인, -1: 신고 반려",
+                    "example": 1
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "신고 확인 완료",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "신고를 확인했습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "중복 신고 확인",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "이미 확인한 신고입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "description": "잘못된 확인값 (1, -1외의 다른 값)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "잘못된 확인값입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "default": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example":"오류가 발생했습니다."
+                    }
                   }
                 }
               }
@@ -3276,6 +3601,145 @@
           },
           "500": {
             "description": "위키 생성/히스토리 생성/기여도 부여 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/contents/{title(*)}/version/{version}": {
+      "get": {
+        "summary": "위키 문서 버전 미리보기 정보 가져오기",
+        "description": "GET 방식으로 위키 문서 버전 미리보기 정보를 가져옵니다.",
+        "tags": ["wiki"],
+        "parameters": [
+          {
+            "name": "title(*)",
+            "in": "path",
+            "description": "위키 문서 제목",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "위키 문서 제목"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "description": "위키 문서 버전",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": "위키 문서 버전"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "위키 문서 정보 가져오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "text": {
+                      "type": "string",
+                      "description": "위키 전체 내용",
+                      "example": "위키 전체 내용"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "description": "가장 최근 버전",
+                      "example": 1
+                    },
+                    "contents": {
+                      "type": "array",
+                      "description": "위키 문서 섹션 정보",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "section": {
+                            "type": "integer",
+                            "description": "위키 문서 섹션 번호",
+                            "example": 1
+                          },
+                          "index": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 목차",
+                            "example": "2.3.1"
+                          },
+                          "title": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 제목",
+                            "example": "위키 문서 섹션 제목"
+                          },
+                          "content": {
+                            "type": "string",
+                            "description": "위키 문서 섹션 내용",
+                            "example": "위키 문서 섹션 내용"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "존재하지 않는 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
+          },
+          "410": {
+            "description": "삭제된 위키 문서",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "410",
+                      "example": "410"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "삭제된 문서입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 문서 정보 가져오기 중 오류",
             "content": {
               "application/json": {
                 "schema": {
@@ -3948,6 +4412,102 @@
         }
       }
     },
+    "/wiki/titles": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "모든 글 제목 조회",
+        "description": "GET 방식으로 모든 글 제목을 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "모든 글 제목 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "description" : "200",
+                      "example" : "200"
+                    },
+                    "success" : {
+                      "type" : "boolean",
+                      "description" : "true",
+                      "example" : true
+                    },
+                    "titles": {
+                      "type": "array",
+                      "description": "모든 글 제목 조회 결과",
+                      "items": {
+                        "type": "string",
+                        "description": "위키 문서 제목",
+                        "example": "복돌이"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "글 제목 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/random": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "랜덤 글 제목 조회",
+        "description": "GET 방식으로 랜덤 글 제목을 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "랜덤 글 제목 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type" : "object",
+                  "properties" : {
+                    "status" : {
+                      "type" : "integer",
+                      "description" : "200",
+                      "example" : "200"
+                    },
+                    "success" : {
+                      "type" : "boolean",
+                      "description" : "true",
+                      "example" : true
+                    },
+                    "title": {
+                      "type": "string",
+                      "description": "랜덤 글 제목",
+                      "example": "복돌이"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "글 제목 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wiki/image": {
       "post": {
         "tags": ["wiki"],
@@ -4269,7 +4829,7 @@
                             "description": "위키 문서 수정 사유",
                             "example": "위키 문서 수정 사유"
                           },
-                          "timestamp": {
+                          "created_at": {
                             "type": "string",
                             "description": "수정된 시각",
                             "example": "2023-06-27T06:46:25.000Z"
@@ -4298,6 +4858,114 @@
                             "type": "boolean",
                             "description": "롤백인지 여부",
                             "example": "0"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 히스토리 불러오기 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/historys?type={type}": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "최근 변경된 위키 히스토리 불러오기",
+        "description": "GET 방식으로 최근 변경된 위키 히스토리를 불러옵니다.",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "description": "최근 변경된 위키 히스토리 타입(all: 전체, create: 새 문서, rollback: 롤백)",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "최근 변경된 위키 히스토리 타입(all: 전체, create: 새 문서, rollback: 롤백)",
+              "example": "all"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "최근 변경된 위키 히스토리 불러오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "array",
+                      "description": "최근 변경된 위키 히스토리 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "description": "수정한 유저 id",
+                            "example": "1"
+                          },
+                          "doc_id": {
+                            "type": "integer",
+                            "description": "위키 문서 id",
+                            "example": "1"
+                          },
+                          "version": {
+                            "type": "integer",
+                            "description": "위키 문서 버전",
+                            "example": "1"
+                          },
+                          "summary": {
+                            "type": "string",
+                            "description": "위키 문서 수정 사유",
+                            "example": "위키 문서 수정 사유"
+                          },
+                          "created_at": {
+                            "type": "string",
+                            "description": "수정된 시각",
+                            "example": "2023-06-27T06:46:25.000Z"
+                          },
+                          "diff": {
+                            "type": "integer",
+                            "description": "전 버전 위키 문서 글자 수와의 차이",
+                            "example": "1"
+                          },
+                          "is_bad": {
+                            "type": "boolean",
+                            "description": "나쁜 수정인지 여부(1이면 나쁜 수정)",
+                            "example": "0"
+                          },
+                          "is_rollback": {
+                            "type": "boolean",
+                            "description": "롤백인지 여부",
+                            "example": "0"
+                          },
+                          "doc_title": {
+                            "type": "string",
+                            "description": "위키 문서 제목",
+                            "example": "위키 문서 제목"
                           }
                         }
                       }
@@ -4767,6 +5435,183 @@
         }
       }
     },
+    "/wiki/contributions": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 조회",
+        "description": "GET 로그인한 유저 기여도 순위 및 문서별 기여도 비율을 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "description": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 정보",
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "type": "integer",
+                          "description": "전체 유저 수",
+                          "example": 30
+                        },
+                        "ranking": {
+                          "type": "integer",
+                          "description": "내 기여 순위",
+                          "example": 1
+                        },
+                        "ranking_percentage": {
+                          "type": "string",
+                          "description": "내 기여 순위 비율",
+                          "example": 3.333333
+                        },
+                        "point": {
+                          "type": "integer",
+                          "description": "내 기여도",
+                          "example": 30012
+                        },
+                        "docs": {
+                          "type": "array",
+                          "description": "문서별 기여도 비율",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "doc_title": {
+                                "type": "string",
+                                "description": "문서 제목",
+                                "example": "newnewdocs"
+                              },
+                              "doc_id": {
+                                "type": "integer",
+                                "description": "문서 id",
+                                "example": 3
+                              },
+                              "doc_point": {
+                                "type": "string",
+                                "description": "문서별 기여도",
+                                "example": "172"
+                              },
+                              "percentage": {
+                                "type": "string",
+                                "description": "문서별 기여도 비율",
+                                "example": "58.1081"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }            
+          },
+          "500": {
+            "description": "유저 기여도 순위 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wiki/contributions/total": {
+      "get": {
+        "tags": ["wiki"],
+        "summary": "전체 기여도 리스트 조회",
+        "description": "GET 방식으로 전체 기여도 리스트 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "전체 기여도 리스트 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "200",
+                      "example": "200"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "true",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "array",
+                      "description": "기여한 유저와 기여도 리스트",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "user_id": {
+                            "type": "integer",
+                            "description": "기여한 유저 id",
+                            "example": 1
+                          },
+                          "login_id": {
+                            "type": "string",
+                            "description": "기여한 유저 login id",
+                            "example": "jaemin8852"
+                          },
+                          "nickname": {
+                            "type": "string",
+                            "description": "기여한 유저 닉네임",
+                            "example": "jaemin"
+                          },
+                          "point": {
+                            "type": "integer",
+                            "description": "각 유저의 기여도",
+                            "example": 700
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            
+          },
+          "404": {
+            "description": "위키 문서가 존재하지 않음",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResWikiNotFound"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "위키 기여도 리스트 조회 중 오류",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/wiki/contributions/{title(*)}": {
       "get": {
         "tags": ["wiki"],
@@ -4815,9 +5660,9 @@
                             "example": 1
                           },
                           "point": {
-                            "type": "string",
+                            "type": "integer",
                             "description": "각 유저의 기여도",
-                            "example": "700"
+                            "example": 700
                           }
                         }
                       }
@@ -4826,7 +5671,6 @@
                 }
               }
             }
-            
           },
           "404": {
             "description": "위키 문서가 존재하지 않음",
@@ -5522,6 +6366,45 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Res500"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/search/popular": {
+      "get": {
+        "tags": ["search"],
+        "summary": "인기 검색어 조회 (최근 24시간 기준)",
+        "description": "GET 방식으로 최근 24시간 기준 인기 검색어를 조회합니다.",
+        "responses": {
+          "200": {
+            "description": "검색어 조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "keyword": {
+                      "type": "string",
+                      "example": "검색어"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "example": "30"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "검색어 조회 중 오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
                 }
               }
             }

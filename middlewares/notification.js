@@ -112,6 +112,6 @@ exports.newNotice = async(req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "알림 오류가 발생하였습니다."});
+    res.status(500).send({message: "알림 오류가 발생하였습니다."});
   }
 };

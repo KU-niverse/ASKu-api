@@ -183,7 +183,14 @@ exports.contentsGetMid = async (req, res) => {
       res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
-    const version = rows[0].version;
+
+    let version;
+    if(req.calltype === 1){ // 글 불러오거나 수정용
+      version = rows[0].version;
+    } else if(req.calltype === 2) { // 버전별 글 불러오기용
+      version = req.params.version;
+    }
+
     let text = "";
     let jsonData = {};
 
@@ -435,12 +442,46 @@ exports.contentsSectionPostMid = async (req, res, next) => {
   }
 };
 
+// 모든 글 제목 조회
+exports.titlesGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_docs.getAllWikiDocs();
+    res.status(200).send({ success: true, titles: rows });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+  }
+};
+
+// 랜덤 글 제목 조회
+exports.randomTitleGetMid = async (req, res) => {
+  try {
+    const title = await Wiki.Wiki_docs.getRandomWikiDocs();
+    res.status(200).send({ success: true, title: title });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+  }
+};
+
 // 위키 히스토리 불러오기
 exports.historyGetMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
     res.status(200).send({success: true, historys: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
+  }
+};
+
+// 최근 변경된 위키 히스토리 불러오기
+exports.recentHistoryGetMid = async (req, res) => {
+  try{
+    const type = req.query.type ? req.query.type : "";
+    const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
+    res.status(200).send({success: true, message: rows});
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -709,10 +750,39 @@ exports.wikiFavoriteDeleteMid = async (req, res) => {
   }
 };
 
+// 로그인한 유저 기여도 순위 조회
+exports.userContributionGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
+    const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
+    rows.docs = rows2;
+    
+    res.status(200).send({ success: true, message: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "유저 기여도 순위 조회 중 오류" });
+  }
+};
+
+// 전체 기여도 리스트 조회
+exports.totalContributionGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_point.getRanking();
+    res.status(200).send({ success: true, message: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "전체 기여도 리스트 조회 중 오류" });
+  }
+};
+
 // 문서 내 기여도 리스트 조회
 exports.contributionGetMid = async (req, res) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    if(doc_id == null) {
+      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+      return;
+    }
     const rows = await Wiki.Wiki_point.getContributors(doc_id);
     res.status(200).send({ success: true, message: rows});
   } catch (err) {

@@ -12,6 +12,41 @@ CREATE TABLE `badges` (
    PRIMARY KEY(`id`)
 );
 
+INSERT INTO `badges` (`name`, `image`, `description`, `event`, `cont`)
+VALUES 
+('단군할아버지 터 잡으시고', 'dummy_image_url', '서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능', 1, 0),
+('개국공신', 'dummy_image_url', '서비스 출시 한 달 내 다량의 정보(페이지당 500자 or 누적 1000자) 업데이트 시 획득 가능', 1, 0),
+('말하는 감자', 'dummy_image_url', '누적 100자 달성', 0, 1),
+('새내기 하호', 'dummy_image_url', '누적 1000자 달성', 0, 1),
+('대학원생 하호', 'dummy_image_url', '누적 2500자 달성', 0, 1),
+('박사 하호', 'dummy_image_url', '누적 5000자 달성', 0, 1),
+('교수 하호', 'dummy_image_url', '누적 10000자 달성', 0, 1),
+('오류 발견!', 'dummy_image_url', '문서 1회 이상 수정', 0, 1),
+('내 위키 속의 지우개', 'dummy_image_url', '문서 3회 이상 수정', 0, 1),
+('내 꿈은 editor', 'dummy_image_url', '문서 10회 이상 수정', 0, 1),
+('고치는 코쿤', 'dummy_image_url', '문서 20회 이상 수정', 0, 1),
+('보안관', 'dummy_image_url', '실제 신고 5회 이상', 0, 1),
+('암행어사', 'dummy_image_url', '실제 신고 10회 이상', 0, 1),
+('정의구현', 'dummy_image_url', '실제 신고 15회 이상', 0, 1),
+('다크나이트', 'dummy_image_url', '실제 신고 30회 이상', 0, 1),
+('똑똑똑… 여기가 asku인가요?', 'dummy_image_url', '첫 가입 시 획득, 1일 출석', 0, 1),
+('작심삼일을 이겨내고', 'dummy_image_url', '연속 4일 출석', 0, 1),
+('나는 오늘도 asku', 'dummy_image_url', '연속 10일 출석', 0, 1),
+('이제는 일상이 된 asku', 'dummy_image_url', '연속 30일 출석', 0, 1),
+('asku와 100일♥', 'dummy_image_url', '연속 100일 출석', 0, 1),
+('제 목소리가 들리시나요?', 'dummy_image_url', '첫 토론글(메시지) 작성', 0, 1),
+('변론가', 'dummy_image_url', '누적 토론글 10개 작성', 0, 1),
+('필리버스터🔥', 'dummy_image_url', '누적 토론글 30개 작성', 0, 1),
+('내공냠냠 신고합니다', 'dummy_image_url', '첫 질문글 작성', 0, 1),
+('이 시대의 질문왕!', 'dummy_image_url', '누적 질문글 10개 작성', 0, 1),
+('물음표 살인마', 'dummy_image_url', '누적 질문글 30개 작성', 0, 1),
+('asku의 답변은 문서 기여', 'dummy_image_url', '첫 댓글 작성', 0, 1),
+('이젠 좀 익숙해졌을지도…', 'dummy_image_url', '누적 댓글 30개 작성', 0, 1),
+('고인물을 향해서', 'dummy_image_url', '누적 댓글 100개 작성', 0, 1),
+('문서 지박령', 'dummy_image_url', '누적 댓글 200개 작성', 0, 1),
+('ㄹㅇㅋㅋ', 'dummy_image_url', '추천 10개 이상', 0, 1),
+('당신은 추천왕!', 'dummy_image_url', '추천 50개 이상', 0, 1);
+
 CREATE TABLE `users` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `login_id`   varchar(30)   NOT NULL UNIQUE, -- 로그인 시 사용되는 id
@@ -82,6 +117,15 @@ CREATE TABLE `wiki_favorites` (
    PRIMARY KEY (`doc_id`, `user_id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
    FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
+);
+
+CREATE TABLE search_history (
+   `id` int AUTO_INCREMENT NOT NULL,
+   `user_id` int NOT NULL, -- 검색한 유저(로그인)
+   `keyword` varchar(255) NOT NULL, -- 검색어
+   `search_time` timestamp  NOT NULL DEFAULT CURRENT_TIMESTAMP, -- 검색한 시간
+   PRIMARY KEY (`id`),
+   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
 
 CREATE TABLE `debates` (
@@ -268,6 +312,649 @@ CREATE TABLE `user_action` (
    PRIMARY KEY (`user_id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 );
+
+-- 뱃지 목록과 트리거 정의
+-- 1. (오픈 이벤트) 단군할아버지 터 잡으시고
+DELIMITER //
+CREATE TRIGGER check_event_beginning_update
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 1 AND is_bad = 0;
+
+  IF NEW.record_count > 0 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 1);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 2. (오픈 이벤트) 개국공신
+DELIMITER //
+CREATE TRIGGER check_event_opening_update
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 2 AND is_bad = 0;
+
+  IF NEW.record_count > 0 AND badge_exists = 0 THEN -- 결정 후 수정 필요
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 2);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 3. (정보 기록) 말하는 감자
+DELIMITER //
+CREATE TRIGGER check_record_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 3 AND is_bad = 0;
+
+  IF NEW.record_count > 100 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 3);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 4. (정보 기록) 새내기 하호
+DELIMITER //
+CREATE TRIGGER check_record_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 4 AND is_bad = 0;
+
+  IF NEW.record_count > 1000 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 4);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 5. (정보 기록) 대학원생 하호
+DELIMITER //
+CREATE TRIGGER check_record_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 5 AND is_bad = 0;
+
+  IF NEW.record_count > 2500 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 5);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 6. (정보 기록) 박사 하호
+DELIMITER //
+CREATE TRIGGER check_record_update_04
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 6 AND is_bad = 0;
+
+  IF NEW.record_count > 5000 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 6);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 7. (정보 기록) 교수 하호
+DELIMITER //
+CREATE TRIGGER check_record_update_05
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 7 AND is_bad = 0;
+
+  IF NEW.record_count > 10000 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 7);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 8. (문서 수정) 오류 발견!
+DELIMITER //
+CREATE TRIGGER check_revise_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 8 AND is_bad = 0;
+
+  IF NEW.revise_count >= 1 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 8);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 9. (문서 수정) 내 위키 속의 지우개
+DELIMITER //
+CREATE TRIGGER check_revise_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 9 AND is_bad = 0;
+
+  IF NEW.revise_count >= 3 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 9);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 10. (문서 수정) 내 꿈은 editor
+DELIMITER //
+CREATE TRIGGER check_revise_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 10 AND is_bad = 0;
+
+  IF NEW.revise_count >= 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 10);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 11. (문서 수정) 고치는 코쿤
+DELIMITER //
+CREATE TRIGGER check_revise_update_04
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 11 AND is_bad = 0;
+
+  IF NEW.revise_count >= 20 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 11);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 12. (신고) 보안관
+DELIMITER //
+CREATE TRIGGER check_report_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 12 AND is_bad = 0;
+
+  IF NEW.report_count >= 5 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 12);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 13. (신고) 암행어사
+DELIMITER //
+CREATE TRIGGER check_report_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 13 AND is_bad = 0;
+
+  IF NEW.report_count >= 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 13);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 14. (신고) 정의구현
+DELIMITER //
+CREATE TRIGGER check_report_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 14 AND is_bad = 0;
+
+  IF NEW.report_count >= 15 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 14);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 15. (신고) 다크나이트
+DELIMITER //
+CREATE TRIGGER check_report_update_04
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 15 AND is_bad = 0;
+
+  IF NEW.report_count >= 30 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 15);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 16. (출석) 똑똑똑… 여기가 asku인가요?
+DELIMITER //
+CREATE TRIGGER check_attend_update_01
+AFTER UPDATE
+ON user_attend
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 16 AND is_bad = 0;
+
+  IF NEW.cont_attend >= 1 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 16);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 17. (출석) 작심삼일을 이겨내고
+DELIMITER //
+CREATE TRIGGER check_attend_update_02
+AFTER UPDATE
+ON user_attend
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 17 AND is_bad = 0;
+
+  IF NEW.cont_attend >= 4 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 17);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 18. (출석) 나는 오늘도 asku
+DELIMITER //
+CREATE TRIGGER check_attend_update_03
+AFTER UPDATE
+ON user_attend
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 18 AND is_bad = 0;
+
+  IF NEW.cont_attend >= 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 18);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 19. (출석) 이제는 일상이 된 asku
+DELIMITER //
+CREATE TRIGGER check_attend_update_04
+AFTER UPDATE
+ON user_attend
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 19 AND is_bad = 0;
+
+  IF NEW.cont_attend >= 30 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 19);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 20. (출석) asku와 100일♥
+DELIMITER //
+CREATE TRIGGER check_attend_update_05
+AFTER UPDATE
+ON user_attend
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 20 AND is_bad = 0;
+
+  IF NEW.cont_attend >= 100 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 20);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 21. (토론) 제 목소리가 들리시나요?
+DELIMITER //
+CREATE TRIGGER check_debate_update_05
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 21 AND is_bad = 0;
+
+  IF NEW.debate_count = 1 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 21);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 22. (토론) 변론가
+DELIMITER //
+CREATE TRIGGER check_debate_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 22 AND is_bad = 0;
+
+  IF NEW.debate_count = 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 22);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 23. (토론) 필리버스터🔥
+DELIMITER //
+CREATE TRIGGER check_debate_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 1 AND is_bad = 0;
+
+  IF NEW.debate_count = 30 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 23);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 24. (질문) 내공냠냠 신고합니다
+DELIMITER //
+CREATE TRIGGER check_question_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 24 AND is_bad = 0;
+
+  IF NEW.question_count >= 1 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 24);
+  END IF;
+END;//
+DELIMITER ;
+
+
+-- 25. (질문) 이 시대의 질문왕!
+DELIMITER //
+CREATE TRIGGER check_question_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 25 AND is_bad = 0;
+
+  IF NEW.question_count >= 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 25);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 26. (질문) 물음표 살인마
+DELIMITER //
+CREATE TRIGGER check_question_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 26 AND is_bad = 0;
+
+  IF NEW.question_count >= 30 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 26);
+  END IF;
+END;//
+DELIMITER ;
+
+
+-- 27. (답변) asku의 답변은 문서 기여
+DELIMITER //
+CREATE TRIGGER check_answer_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 27 AND is_bad = 0;
+
+  IF NEW.answer_count >= 1 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 27);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 28. (답변) 이젠 좀 익숙해졌을지도...
+DELIMITER //
+CREATE TRIGGER check_answer_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 28 AND is_bad = 0;
+
+  IF NEW.answer_count >= 30 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 28);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 29. (답변) 고인물을 향해서
+DELIMITER //
+CREATE TRIGGER check_answer_update_03
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 29 AND is_bad = 0;
+
+  IF NEW.answer_count >= 100 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 29);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 30. (답변) 문서 지박령
+DELIMITER //
+CREATE TRIGGER check_answer_update_04
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 30 AND is_bad = 0;
+
+  IF NEW.answer_count >= 200 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 30);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 31. (추천) ㄹㅇㅋㅋ
+DELIMITER //
+CREATE TRIGGER check_like_update_01
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 31 AND is_bad = 0;
+
+  IF NEW.like_count >= 10 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 31);
+  END IF;
+END;//
+DELIMITER ;
+
+-- 32. (추천) 당신은 추천왕!
+DELIMITER //
+CREATE TRIGGER check_like_update_02
+AFTER UPDATE
+ON user_action
+FOR EACH ROW
+BEGIN
+  DECLARE badge_exists INT;
+  
+  SELECT COUNT(*)
+  INTO badge_exists
+  FROM badge_history
+  WHERE user_id = NEW.user_id AND badge_id = 32 AND is_bad = 0;
+
+  IF NEW.like_count >= 50 AND badge_exists = 0 THEN
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 32);
+  END IF;
+END;//
+DELIMITER ;
 
 
 CREATE TABLE `temp_users` (

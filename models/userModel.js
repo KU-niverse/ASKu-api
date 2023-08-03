@@ -225,7 +225,7 @@ User.initAttend = async (user_id) => {
 };
 
 User.markAttend = async (user_id) => {
-  const [[attend_info]] = await pool.query(
+  const [attend_info] = await pool.query(
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
   );
@@ -233,10 +233,13 @@ User.markAttend = async (user_id) => {
   //오늘 첫 출석이라면
   if (!attend_info.today_attend) {
     //연속 출석일수가 최대 연속 출석일수보다 크다면 최대 연속 출석일수를 업데이트
-    const max_attend =
-      attend_info.max_attend < attend_info.cont_attend + 1
-        ? attend_info.cont_attend + 1
-        : attend_info.max_attend;
+    let max_attend = 0;
+    if (attend_info.max_attend) {
+      max_attend =
+        attend_info.max_attend < attend_info.cont_attend + 1
+          ? attend_info.cont_attend + 1
+          : attend_info.max_attend;
+    }
 
     await pool.query(
       `UPDATE user_attend SET today_attend = true, cont_attend = cont_attend + 1, total_attend = total_attend + 1, max_attend = ? WHERE user_id = ? `,
@@ -285,11 +288,48 @@ User.deactivate = async (user_id) => {
   }
 };
 
+
 User.getConstraint = async () => {
   const [constraint] = await pool.query(
     `SELECT id, login_id, name, stu_id, email, nickname, point, restrict_period, restrict_count FROM users WHERE restrict_period >= CURDATE();`
   );
   return constraint;
+  
+User.debatetHistory = async (user_id) => {
+  const [rows] = await pool.query(
+    `SELECT 
+      debates.id AS debate_id,
+      debates.subject AS debate_subject,
+      debate_history.content AS debate_content,
+      debate_history.created_at AS debate_content_time,
+      debate_history.is_bad AS is_bad,
+      wiki_docs.title AS doc_title
+      FROM 
+          debates
+      JOIN 
+          debate_history ON debates.id = debate_history.debate_id
+      JOIN
+          wiki_docs ON debates.doc_id = wiki_docs.id
+      WHERE 
+          debates.user_id = ? 
+      ORDER BY
+          debate_history.created_at DESC;`,
+    [user_id]
+  );
+  return rows;
+};
+
+User.questionHistory = async (user_id) => {
+  const [rows] = await pool.query(
+    `SELECT questions.*, wiki_docs.title as docsname 
+    FROM questions 
+    JOIN wiki_docs ON questions.doc_id = wiki_docs.id 
+    WHERE questions.user_id = ? 
+    ORDER BY questions.created_at DESC;`,
+    [user_id]
+  );
+
+  return rows;
 };
 
 module.exports = User;

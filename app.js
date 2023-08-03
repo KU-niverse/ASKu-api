@@ -14,6 +14,8 @@ const debateRoutes = require("./routes/debate");
 const notificationRoutes = require("./routes/notification");
 const reportRoutes = require("./routes/report");
 const admin = require("./routes/admin");
+const searchRoutes = require("./routes/search");
+
 dotenv.config();
 
 const wikiRoutes = require("./routes/wiki");
@@ -23,7 +25,13 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerFile = require("./swagger/swagger_output.json");
 
 const app = express();
-app.use(cors());
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
 
 passportConfig(); // 패스포트 설정
 
@@ -80,7 +88,10 @@ app.use("/question", questionRoutes);
 app.use("/debate", debateRoutes);
 app.use("/notification", notificationRoutes);
 app.use("/report", reportRoutes);
+
 app.use("/admin", admin);
+app.use("/search", searchRoutes);
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));

@@ -7,6 +7,8 @@ const {
   badgeHistory,
   setRepBadge,
   editInfo,
+  debatetHistory,
+  questionHistory,
 } = require("../../controllers/userController/myPage");
 
 const router = express.Router();
@@ -16,4 +18,7 @@ router.get("/wikihistory", isSignedIn, wikiHistory);
 router.get("/badgehistory", isSignedIn, badgeHistory);
 router.put("/setrepbadge", isSignedIn, setRepBadge);
 router.put("/editinfo", isSignedIn, editInfo);
+
+router.get("/debatehistory", isSignedIn, debatetHistory);
+router.get("/questionhistory", isSignedIn, questionHistory);
 module.exports = router;
