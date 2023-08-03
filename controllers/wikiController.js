@@ -446,6 +446,16 @@ exports.titlesGetMid = async (req, res) => {
   }
 };
 
+// 랜덤 글 제목 조회
+exports.randomTitleGetMid = async (req, res) => {
+  try {
+    const title = await Wiki.Wiki_docs.getRandomWikiDocs();
+    res.status(200).send({ success: true, title: title });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+  }
+};
 
 // 위키 히스토리 불러오기
 exports.historyGetMid = async (req, res) => {

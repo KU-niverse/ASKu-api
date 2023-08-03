@@ -27,6 +27,12 @@ class Wiki_docs {
 
     return rows.map(rows => rows.title);
   }
+  // is_deleted가 0인 문서 중 랜덤으로 제목 하나 가져오기
+  static async getRandomWikiDocs() {
+    const [rows] = await pool.query(`SELECT title FROM wiki_docs WHERE is_deleted = 0 ORDER BY RAND() LIMIT 1`);
+
+    return rows[0].title;
+  }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id) {
     const [result] = await pool.query(`UPDATE wiki_docs SET is_deleted = 1 WHERE id = ?`, [id]);
