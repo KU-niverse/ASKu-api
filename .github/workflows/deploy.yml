@@ -1,0 +1,26 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - develop
+      
+jobs:
+  build:
+    runs-on: ubuntu-18.04.5
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: SSH and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_IP_TEST }}
+          username: ${{ secrets.SSH_ID_TEST }}
+          key: ${{ secrets.REMOTE_SSH_KEY_TEST }}
+          port: ${{ secrets.REMOTE_SSH_PORT_TEST }}
+          script: |
+            cd /var/www/ASKu-api
+            git reset --hard HEAD
+            git pull origin develop
+            cd swagger
+            sed -i 's|http://localhost:8080|http://118.67.130.57:8080|g' swagger_output.json
