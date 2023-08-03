@@ -74,6 +74,7 @@ CREATE TABLE `wiki_docs` (
    `latest_ver`   int   NOT NULL,
    `type`   enum('doc', 'list')   NOT NULL, -- [문서 타입] doc: 목차형, list: 나열형
    `is_deleted`   bool   NOT NULL   DEFAULT 0, -- [문서 삭제 여부] 0: 존재하는 문서 1: 삭제한 문서
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY(`id`)
 );
 
@@ -245,6 +246,7 @@ CREATE TABLE `reports` (
    `reason_id`   int   NOT NULL, -- [신고 사유] 문서 훼손, 욕설 등등...
    `comment`   text   NULL, -- [신고 추가 정보] 유저가 작성한 추가 정보
    `is_checked`   tinyint   NOT NULL   DEFAULT 0, -- [승인 여부] 0: 미확인 1: 승인됨 -1: 반려됨
+   `created_at`   timestamp   NOT NULL   DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY (`id`),
    FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
    FOREIGN KEY (`type_id`) REFERENCES `report_type` (`id`),
@@ -996,16 +998,15 @@ DO
 
 
 -- 매일 오전 0시에 출석여부를 확인하여 연속 출석을 0으로 만들고, 모든 사용자의 오늘 출석을 false로 재설정
-CREATE EVENT reset_daily_attendance
+CREATE EVENT reset_continuous_attendance_for_absent_users
 ON SCHEDULE EVERY 1 DAY STARTS '2023-07-24 00:00:00'
 DO
-BEGIN
-    -- 출석하지 않은 유저의 연속 출석을 0으로 만드는 작업
     UPDATE `user_attend`
     SET `cont_attend` = 0
     WHERE `today_attend` = 0;
 
-    -- 모든 사용자의 오늘 출석을 false로 만드는 작업
+CREATE EVENT reset_today_attendance_for_all_users
+ON SCHEDULE EVERY 1 DAY STARTS '2023-07-24 00:00:10'  -- 10초 뒤에 실행
+DO
     UPDATE `user_attend`
     SET `today_attend` = 0;
-END
