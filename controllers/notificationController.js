@@ -8,7 +8,7 @@ exports.userNoticeGetMid = async(req, res) => {
     res.status(200).send(notices[0]);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -19,7 +19,7 @@ exports.adminNoticeGetMid = async(req, res) => {
     res.status(200).send(notices[0]);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -32,9 +32,8 @@ exports.NoticeReadPostMid = async(req, res) => {
     } else {
       res.status(400).send({message: "이미 읽음 표시한 알림입니다."});
     }
-    
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };

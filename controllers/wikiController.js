@@ -435,12 +435,36 @@ exports.contentsSectionPostMid = async (req, res, next) => {
   }
 };
 
+// 모든 글 제목 조회
+exports.titlesGetMid = async (req, res) => {
+  try {
+    const rows = await Wiki.Wiki_docs.getAllWikiDocs();
+    res.status(200).send({ success: true, titles: rows });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+  }
+};
+
+
 // 위키 히스토리 불러오기
 exports.historyGetMid = async (req, res) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
     res.status(200).send({success: true, historys: rows});
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
+  }
+};
+
+// 최근 변경된 위키 히스토리 불러오기
+exports.recentHistoryGetMid = async (req, res) => {
+  try{
+    const type = req.query.type ? req.query.type : "";
+    const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
+    res.status(200).send({success: true, message: rows});
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });

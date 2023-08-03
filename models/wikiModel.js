@@ -21,6 +21,12 @@ class Wiki_docs {
 
     return rows[0];
   }
+  // is_deleted가 0인 모든 문서 제목 가져오기
+  static async getAllWikiDocs() {
+    const [rows] = await pool.query(`SELECT title FROM wiki_docs WHERE is_deleted = 0`);
+
+    return rows.map(rows => rows.title);
+  }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id) {
     const [result] = await pool.query(`UPDATE wiki_docs SET is_deleted = 1 WHERE id = ?`, [id]);
@@ -66,6 +72,32 @@ class Wiki_history {
   // 가장 최근에 수정된 wiki_history를 반환해주는 함수(doc_id로)
   static async getRecentWikiHistoryByDocId(doc_id) {
     const [rows] = await pool.query("SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC LIMIT 1", [doc_id]);
+    return rows;
+  }
+
+  // 최근에 수정된 wiki_history들을 반환해주는 함수
+  static async getRecentWikiHistorys(type) {
+    const [rows] = await pool.query(`
+    SELECT
+      wh.user_id,
+      wh.doc_id,
+      wh.version,
+      wh.summary,
+      wh.created_at,
+      wh.diff,
+      wh.is_rollback,
+      wd.title AS doc_title
+    FROM wiki_history wh
+    JOIN wiki_docs wd ON wh.doc_id = wd.id
+    WHERE
+      (CASE
+        WHEN ? = 'create' THEN wh.version = 1
+        WHEN ? = 'rollback' THEN wh.is_rollback = 1
+        ELSE true
+      END)
+    ORDER BY wh.created_at DESC
+    LIMIT 30` , [type, type]);
+
     return rows;
   }
  
@@ -176,7 +208,7 @@ class Wiki_point {
     JOIN wiki_docs wd ON wd.id = wh.doc_id
     WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
     GROUP BY wh.doc_id
-    ORDER BY percentage DESC;`, [user_id]);
+    ORDER BY percentage DESC`, [user_id]);
 
     return rows;
   }

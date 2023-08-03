@@ -17,7 +17,7 @@ exports.debatePostMid = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -37,7 +37,7 @@ exports.historyPostMid = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -48,7 +48,7 @@ exports.debateGetMid = async (req, res) => {
     res.status(200).send(debates);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -60,7 +60,7 @@ exports.historyGetMid = async (req, res) => {
     res.status(200).send(histories);
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
 
@@ -76,6 +76,6 @@ exports.debateEndPostMid = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(404).send({message: "오류가 발생하였습니다."});
+    res.status(500).send({message: "오류가 발생하였습니다."});
   }
 };
