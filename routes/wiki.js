@@ -31,6 +31,9 @@ router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid
 // 모든 글 제목 조회
 router.get('/titles', wikiCont.titlesGetMid);
 
+// 랜덤 글 제목 조회
+router.get('/random', wikiCont.randomTitleGetMid);
+
 // 이미지 업로드
 router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
   try{
