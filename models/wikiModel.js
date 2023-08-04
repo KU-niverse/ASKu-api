@@ -262,6 +262,19 @@ class Wiki_favorite {
 
     return rows;
   } 
+
+  // user_id와 doc_id로 위키 즐겨찾기 조회
+  static async getWikiFavoriteByUserIdAndDocId(user_id, doc_id) {
+    const [rows] = await pool.query(
+      `SELECT wd.*
+      FROM wiki_favorites wf
+      JOIN wiki_docs wd ON wf.doc_id = wd.id
+      WHERE wf.user_id = ? AND wf.doc_id = ?
+      ORDER BY wf.created_at DESC`,
+      [user_id], [doc_id]);
+
+    return rows;
+  }
 }
 
 module.exports = { Wiki_history, Wiki_docs, Wiki_point, Wiki_favorite };
