@@ -3667,6 +3667,11 @@
                       "description": "가장 최근 버전",
                       "example": 1
                     },
+                    "is_favorite": {
+                      "type": "boolean",
+                      "description": "유저가 로그인 했을 시 위키 즐겨찾기 여부",
+                      "example": true
+                    },
                     "contents": {
                       "type": "array",
                       "description": "위키 문서 섹션 정보",
@@ -4147,6 +4152,11 @@
                       "type": "integer",
                       "description": "가장 최근 버전",
                       "example": 1
+                    },
+                    "is_favorite": {
+                      "type": "boolean",
+                      "description": "유저가 로그인 했을 시 위키 즐겨찾기 여부",
+                      "example": true
                     },
                     "contents": {
                       "type": "array",
