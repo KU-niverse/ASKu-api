@@ -271,7 +271,7 @@ class Wiki_favorite {
       JOIN wiki_docs wd ON wf.doc_id = wd.id
       WHERE wf.user_id = ? AND wf.doc_id = ?
       ORDER BY wf.created_at DESC`,
-      [user_id], [doc_id]);
+      [user_id, doc_id]);
 
     return rows;
   }

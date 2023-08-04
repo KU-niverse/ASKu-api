@@ -253,6 +253,16 @@ exports.contentsGetMid = async (req, res) => {
 
     jsonData["contents"] = indexing(numbers, sections);
     jsonData["success"] = true;
+    if (req.isAuthenticated()) {
+      const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
+      if(rows.length === 0) {
+        jsonData["is_favorite"] = false;
+      } else {
+        jsonData["is_favorite"] = true;
+      }
+    } else {
+      jsonData["is_favorite"] = false;
+    }
     res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
