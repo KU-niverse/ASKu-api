@@ -23,7 +23,6 @@ router.post("/signup/emailcheck", signUpEmailCheck);
 //회원가입
 router.post("/signup", isNotSignedIn, signUp);
 //로그인
-//TODO: 로그인시 bad인지 체크
 router.post("/signin", isNotSignedIn, signIn);
 //로그아웃
 router.get("/signout", isSignedIn, signOut);

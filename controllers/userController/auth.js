@@ -13,8 +13,11 @@ const { signUp, signIn, signOut } = require("../../controllers/user/auth"); */
 exports.idDupCheck = async (req, res) => {
   const login_id = req.params.loginid;
   try {
-    const ex_user_login_id = await User.findByLoginId(login_id);
-    const ex_temp_user_login_id = await User.findByLoginIdTemp(login_id);
+    const [ex_user_login_id, ex_temp_user_login_id] = await Promise.all([
+      User.findByLoginId(login_id),
+      User.findByLoginIdTemp(login_id),
+    ]);
+
     if (ex_user_login_id.length != 0 || ex_temp_user_login_id.length != 0) {
       return res.status(401).json({
         success: false,
@@ -38,8 +41,10 @@ exports.idDupCheck = async (req, res) => {
 exports.nickDupCheck = async (req, res) => {
   const nickname = req.params.nick;
   try {
-    const ex_user_nickname = await User.findByNickname(nickname);
-    const ex_temp_user_nickname = await User.findByNicknameTemp(nickname);
+    const [ex_user_nickname, ex_temp_user_nickname] = await Promise.all([
+      User.findByNickname(nickname),
+      User.findByNicknameTemp(nickname),
+    ]);
     if (ex_user_nickname.length != 0 || ex_temp_user_nickname != 0) {
       return res.status(401).json({
         success: false,
@@ -74,10 +79,10 @@ exports.emailDupCheck = async (req, res) => {
         message: "이메일은 '{email_id}@korea.ac.kr' 형식이어야 합니다.",
       });
     }
-
-    const ex_user_email = await User.findByEmail(email);
-
-    const ex_temp_user_email = await User.findByEmailTemp(email);
+    const [ex_user_email, ex_temp_user_email] = await Promise.all([
+      User.findByEmail(email),
+      User.findByEmailTemp(email),
+    ]);
 
     if (ex_user_email.length != 0 || ex_temp_user_email != 0) {
       return res.status(401).json({
@@ -446,10 +451,10 @@ exports.signUpEmailCheck = async (req, res) => {
     if (user_id) {
       //user attend_check 데이터 생성
       await User.initAttend(user_id);
-      
+
       //user_action 데이터 생성
       await Action.initAction(user_id);
-        
+
       console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({
         success: true,
