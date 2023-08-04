@@ -22,6 +22,9 @@ exports.createHistoryMid = async (req, res, next) => {
     const wiki_history_id = await Wiki.Wiki_history.create(new_wiki_history);
     req.is_q_based = is_q_based;
     
+    // res message 정의 (롤백 제외)
+    req.message = "위키 히스토리를 생성하였습니다.";
+    
     /* 알림 변수 정의*/
     if (!req.body.types_and_conditions) { // type_id: 6(글 생성)의 경우 newWikiPostMid에서 이미 변수가 정의됨
       req.body.types_and_conditions = [];

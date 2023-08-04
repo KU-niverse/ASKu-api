@@ -4,18 +4,19 @@ const {Report, getReport} = require("../models/reportModel");
 exports.reportPostMid = async (req, res, next) => {
   try {
     const newReport = new Report({
-      user_id: req.user[0].id, // jwt token 적용 시 변경
+      user_id: req.user[0].id,
       type_id: req.params.type,
       target: req.body.target,
       reason_id: req.body.reason_id,
       comment: req.body.comment,
     });
-    await Report.createReport(newReport);
+    req.data = await Report.createReport(newReport);
+    req.message = "신고를 생성하였습니다.";
     req.body.types_and_conditions = [[7, -1]];
     next();
   } catch (err) {
     console.error(err);
-    res.status(500).send({message: "오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "오류가 발생하였습니다."});
   }
 };
 
@@ -36,6 +37,6 @@ exports.reportCheckPostMid = async (req, res, next) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "오류가 발생하였습니다."});
   }
 };

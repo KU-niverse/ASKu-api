@@ -53,11 +53,10 @@ History.createHistory = async (newHistory) => {
   const result = await pool.query("INSERT INTO debate_history SET ?", newHistory);
   const date = new Date();
   date.setHours(date.getHours()+9);
-  const debate_update = await pool.query(
+  await pool.query(
     `UPDATE debates SET recent_edited_at = ? WHERE id = ?`,
     [date.toISOString().slice(0, 19).replace('T', ' '), newHistory.debate_id]
   );
-  console.log(debate_update); 
   const id = result[0].insertId;
   return getHistory(id);
 };

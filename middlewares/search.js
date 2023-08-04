@@ -10,7 +10,7 @@ exports.recordSearch = async (req, res, next) => {
       await postSearch(user, keyword);
     } catch (err) {
       console.error(err);
-      res.status(500).send({message: "오류가 발생하였습니다."});
+      res.status(500).send({success: false, message: "오류가 발생하였습니다."});
     }
   }
   next();

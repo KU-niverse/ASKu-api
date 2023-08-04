@@ -35,10 +35,10 @@ exports.newActionReport = async (req, res) => {
 exports.newActionDebate = async (req, res) => {
   try {
     await Action.updateAction(req.user[0].id, 4, 0);
-    res.status(200).send(req.debate_message);
+    res.status(200).send({success: true, message: "토론 메시지를 생성하였습니다.", data: req.debate_message});
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "토론 action 오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "토론 action 오류가 발생하였습니다."});
   }
 };
 
@@ -48,17 +48,17 @@ exports.newActionQuestion = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "질문 action 오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "질문 action 오류가 발생하였습니다."});
   }
 };
 
 exports.newActionLike = async (req, res) => {
   try {
     await Action.updateAction(req.user[0].id, 6, 0);
-    res.status(200).send({message: "좋아요를 등록했습니다."});
+    res.status(200).send({success: true, message: "좋아요를 등록하였습니다."});
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "좋아요 action 오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "좋아요 action 오류가 발생하였습니다."});
   }
 };
 
@@ -70,17 +70,17 @@ exports.newActionAnswer = async (req, res, next) => {
     next();
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "답변 action 오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "답변 action 오류가 발생하였습니다."});
   }
 };
 
 exports.cancelActionQuestion = async (req, res) => {
   try {
     await Action.cancelAction(req.user[0].id, 5);
-    res.status(200).send({message: "질문을 삭제하였습니다."});
+    res.status(200).send({success: true, message: "질문을 삭제하였습니다."});
   } catch (err) {
     console.error(err);
-    res.status(500).send({success: false, message: "질문 취소 action 오류가 발생했습니다."});
+    res.status(500).send({success: false, message: "질문 취소 action 오류가 발생하였습니다."});
   }
 };
 
