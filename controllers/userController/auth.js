@@ -218,7 +218,6 @@ exports.signUp = async (req, res) => {
 };
 
 //로그인
-//FIXME: signIn 과정에서 isbad, isdeleted를 고려한 로직이 반영되어야함
 exports.signIn = async (req, res, next) => {
   try {
     passport.authenticate("local", (authError, user, info) => {
