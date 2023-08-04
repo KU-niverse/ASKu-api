@@ -67,6 +67,11 @@ CREATE TABLE `users` (
    FOREIGN KEY (`rep_badge`) REFERENCES `badges` (`id`) 
 );
 
+-- 비로그인용 유저
+INSERT INTO `asku_api`.`users` (`id`, `login_id`, `name`, `stu_id`, `email`, `password`, `nickname`, `point`, `is_admin`, `restrict_count`, `uuid`, `is_deleted`) 
+VALUES ('0', 'unsignedin', '비로그인', '0000000000', 'unsignedin0123@korea.ac.kr', '1234123456', '비로그인', '0', '0', '0', '1234', '0');
+UPDATE `asku_api`.`users` SET `id` = '0' WHERE (`id` = last_insert_id());
+
 CREATE TABLE `wiki_docs` (
    `id`   int   NOT NULL AUTO_INCREMENT,
    `title`   varchar(100)   NOT NULL,
