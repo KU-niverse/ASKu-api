@@ -16,7 +16,7 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_IP_TEST }}
           username: ${{ secrets.SSH_ID_TEST }}
-          key: ${{ secrets.REMOTE_SSH_KEY_TEST }}
+          password: ${{ secrets.REMOTE_SSH_KEY_TEST }}
           port: ${{ secrets.REMOTE_SSH_PORT_TEST }}
           script: |
             cd /var/www/ASKu-api
