@@ -19,6 +19,7 @@ jobs:
           password: ${{ secrets.REMOTE_SSH_KEY_TEST }}
           port: ${{ secrets.REMOTE_SSH_PORT_TEST }}
           script: |
+            source ~/.bashrc
             cd /var/www/ASKu-api
             git reset --hard HEAD
             git pull origin develop
