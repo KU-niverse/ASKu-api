@@ -108,10 +108,10 @@ exports.newNotice = async(req, res, next) => {
     if (req.is_rollback) {
       next();
     } else {
-      res.status(200).send(result);
+      res.status(200).send({success: true, message: req.message, data: req.data ? req.data : undefined});
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send({message: "알림 오류가 발생하였습니다."});
+    res.status(500).send({success: false, message: "알림 오류가 발생하였습니다."});
   }
 };
