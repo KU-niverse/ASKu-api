@@ -25,4 +25,4 @@ jobs:
             cd swagger
             sed -i 's|http://localhost:8080|http://118.67.130.57:8080|g' swagger_output.json
             sed -i 's|http://localhost:8080|http://118.67.130.57:8080|g' swagger.js
-            pm2 restart app
+            /opt/nodejs/node/bin/pm2 restart app
