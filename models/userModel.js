@@ -296,7 +296,8 @@ User.getConstraint = async () => {
     `SELECT id, login_id, name, stu_id, email, nickname, point, restrict_period, restrict_count FROM users WHERE restrict_period >= CURDATE();`
   );
   return constraint;
-  
+};
+
 User.debatetHistory = async (user_id) => {
   const [rows] = await pool.query(
     `SELECT 
