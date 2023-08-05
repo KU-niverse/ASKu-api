@@ -1,4 +1,4 @@
-const Notice = require("../models/notificationModel");
+const {Notice} = require("../models/notificationModel");
 
 
 // 유저 알림 조회

@@ -4,7 +4,7 @@ const {postSearch} = require("../models/searchModel");
 
 exports.recordSearch = async (req, res, next) => {
   const keyword = req.params.query || req.params.title;
-  const user = req.user[0].id ? req.user[0].id : 0;
+  const user = (req.user && req.user[0] && req.user[0].id) ? req.user[0].id : 0;
   if (keyword) {
     try {
       await postSearch(user, keyword);

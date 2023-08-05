@@ -23,7 +23,7 @@ exports.reportPostMid = async (req, res, next) => {
 // 신고 확인하기
 exports.reportCheckPostMid = async (req, res, next) => {
   try {
-    if (!req.body.is_checked) {
+    if (req.body.is_checked != 1 || req.body.is_checked != 1) {
       res.status(406).send({success: false, message: "잘못된 확인값입니다."});
     } else {
       const result = await Report.checkReport(req.body.report_id, req.body.is_checked);

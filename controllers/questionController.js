@@ -5,7 +5,7 @@ exports.questionGetMid = async (req, res) => {
   try {
     const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
     const questions = await Question.getQuestionsAll(doc_id);
-    res.status(200).send({success: true, message: questions});
+    res.status(200).send({success: true, message: "질문 목록을 조회하였습니다.", data: questions});
   } catch (err) {
     console.error(err);
     res.status(500).send({success: false, message: "오류가 발생하였습니다."});
@@ -60,6 +60,7 @@ exports.questionDeleteMid = async(req, res, next) => {
     if (!result) {
       res.status(400).send({success: false, message: "이미 답변 및 좋아요가 달렸거나, 다른 회원의 질문입니다."});
     } else {
+      req.message = "질문을 삭제하였습니다.";
       next();
     }
   } catch (err) {
@@ -94,9 +95,8 @@ exports.questionSearchGetMid = async (req, res) => {
       res.status(400).send({success: false, message: "검색어를 입력해주세요."});
     } else {
       const questions = await Question.getQuestionSearchByQuery(decodeURIComponent(req.params.query));
-      res.status(200).send({success: true, message: questions});
+      res.status(200).send({success: true, message: "질문을 검색하였습니다", data: questions});
     }
-
   } catch (err) {
     console.error(err);
     res.status(500).send({success: false, message: "오류가 발생하였습니다."});
@@ -108,7 +108,7 @@ exports.questionSearchGetMid = async (req, res) => {
 exports.questionPopularGetMid = async (req, res) => {
   try {
     const questions = await Question.getQuestionsPopular();
-    res.status(200).send({success: true, message: questions});
+    res.status(200).send({success: true, message: "인기 질문을 조회하였습니다.", data: questions});
   } catch (err) {
     console.error(err);
     res.status(500).send({success: false, message: "오류가 발생하였습니다."}); 
