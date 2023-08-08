@@ -32,7 +32,6 @@ VALUES
 ('똑똑똑… 여기가 asku인가요?', 'dummy_image_url', '첫 가입 시 획득, 1일 출석', 0, 1),
 ('작심삼일을 이겨내고', 'dummy_image_url', '연속 4일 출석', 0, 1),
 ('나는 오늘도 asku', 'dummy_image_url', '연속 10일 출석', 0, 1),
-('이제는 일상이 된 asku', 'dummy_image_url', '연속 30일 출석', 0, 1),
 ('asku와 100일♥', 'dummy_image_url', '연속 100일 출석', 0, 1),
 ('제 목소리가 들리시나요?', 'dummy_image_url', '첫 토론글(메시지) 작성', 0, 1),
 ('변론가', 'dummy_image_url', '누적 토론글 10개 작성', 0, 1),
@@ -680,7 +679,7 @@ BEGIN
 END;//
 DELIMITER ;
 
--- 19. (출석) 이제는 일상이 된 asku
+-- 19. (출석) asku와 100일♥
 DELIMITER //
 CREATE TRIGGER check_attend_update_04
 AFTER UPDATE
@@ -694,35 +693,15 @@ BEGIN
   FROM badge_history
   WHERE user_id = NEW.user_id AND badge_id = 19 AND is_bad = 0;
 
-  IF NEW.cont_attend >= 30 AND badge_exists = 0 THEN
+  IF NEW.cont_attend >= 100 AND badge_exists = 0 THEN
     INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 19);
   END IF;
 END;//
 DELIMITER ;
 
--- 20. (출석) asku와 100일♥
+-- 20. (토론) 제 목소리가 들리시나요?
 DELIMITER //
-CREATE TRIGGER check_attend_update_05
-AFTER UPDATE
-ON user_attend
-FOR EACH ROW
-BEGIN
-  DECLARE badge_exists INT;
-  
-  SELECT COUNT(*)
-  INTO badge_exists
-  FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 20 AND is_bad = 0;
-
-  IF NEW.cont_attend >= 100 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 20);
-  END IF;
-END;//
-DELIMITER ;
-
--- 21. (토론) 제 목소리가 들리시나요?
-DELIMITER //
-CREATE TRIGGER check_debate_update_05
+CREATE TRIGGER check_debate_update_01
 AFTER UPDATE
 ON user_action
 FOR EACH ROW
@@ -732,15 +711,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 21 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 20 AND is_bad = 0;
 
   IF NEW.debate_count = 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 21);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 20);
   END IF;
 END;//
 DELIMITER ;
 
--- 22. (토론) 변론가
+-- 21. (토론) 변론가
 DELIMITER //
 CREATE TRIGGER check_debate_update_02
 AFTER UPDATE
@@ -752,15 +731,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 22 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 21 AND is_bad = 0;
 
   IF NEW.debate_count = 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 22);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 21);
   END IF;
 END;//
 DELIMITER ;
 
--- 23. (토론) 필리버스터🔥
+-- 22. (토론) 필리버스터🔥
 DELIMITER //
 CREATE TRIGGER check_debate_update_03
 AFTER UPDATE
@@ -772,15 +751,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 1 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 22 AND is_bad = 0;
 
   IF NEW.debate_count = 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 23);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 22);
   END IF;
 END;//
 DELIMITER ;
 
--- 24. (질문) 내공냠냠 신고합니다
+-- 23. (질문) 내공냠냠 신고합니다
 DELIMITER //
 CREATE TRIGGER check_question_update_01
 AFTER UPDATE
@@ -792,16 +771,16 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 24 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 23 AND is_bad = 0;
 
   IF NEW.question_count >= 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 24);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 23);
   END IF;
 END;//
 DELIMITER ;
 
 
--- 25. (질문) 이 시대의 질문왕!
+-- 24. (질문) 이 시대의 질문왕!
 DELIMITER //
 CREATE TRIGGER check_question_update_02
 AFTER UPDATE
@@ -813,15 +792,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 25 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 24 AND is_bad = 0;
 
   IF NEW.question_count >= 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 25);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 24);
   END IF;
 END;//
 DELIMITER ;
 
--- 26. (질문) 물음표 살인마
+-- 25. (질문) 물음표 살인마
 DELIMITER //
 CREATE TRIGGER check_question_update_03
 AFTER UPDATE
@@ -833,16 +812,16 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 26 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 25 AND is_bad = 0;
 
   IF NEW.question_count >= 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 26);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 25);
   END IF;
 END;//
 DELIMITER ;
 
 
--- 27. (답변) asku의 답변은 문서 기여
+-- 26. (답변) asku의 답변은 문서 기여
 DELIMITER //
 CREATE TRIGGER check_answer_update_01
 AFTER UPDATE
@@ -854,15 +833,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 27 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 26 AND is_bad = 0;
 
   IF NEW.answer_count >= 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 27);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 26);
   END IF;
 END;//
 DELIMITER ;
 
--- 28. (답변) 이젠 좀 익숙해졌을지도...
+-- 27. (답변) 이젠 좀 익숙해졌을지도...
 DELIMITER //
 CREATE TRIGGER check_answer_update_02
 AFTER UPDATE
@@ -874,15 +853,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 28 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 27 AND is_bad = 0;
 
   IF NEW.answer_count >= 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 28);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 27);
   END IF;
 END;//
 DELIMITER ;
 
--- 29. (답변) 고인물을 향해서
+-- 28. (답변) 고인물을 향해서
 DELIMITER //
 CREATE TRIGGER check_answer_update_03
 AFTER UPDATE
@@ -894,15 +873,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 29 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 28 AND is_bad = 0;
 
   IF NEW.answer_count >= 100 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 29);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 28);
   END IF;
 END;//
 DELIMITER ;
 
--- 30. (답변) 문서 지박령
+-- 29. (답변) 문서 지박령
 DELIMITER //
 CREATE TRIGGER check_answer_update_04
 AFTER UPDATE
@@ -914,15 +893,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 30 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 29 AND is_bad = 0;
 
   IF NEW.answer_count >= 200 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 30);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 29);
   END IF;
 END;//
 DELIMITER ;
 
--- 31. (추천) ㄹㅇㅋㅋ
+-- 30. (추천) ㄹㅇㅋㅋ
 DELIMITER //
 CREATE TRIGGER check_like_update_01
 AFTER UPDATE
@@ -934,15 +913,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 31 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 30 AND is_bad = 0;
 
   IF NEW.like_count >= 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 31);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 30);
   END IF;
 END;//
 DELIMITER ;
 
--- 32. (추천) 당신은 추천왕!
+-- 31. (추천) 당신은 추천왕!
 DELIMITER //
 CREATE TRIGGER check_like_update_02
 AFTER UPDATE
@@ -954,10 +933,10 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 32 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 31 AND is_bad = 0;
 
   IF NEW.like_count >= 50 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 32);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 31);
   END IF;
 END;//
 DELIMITER ;
