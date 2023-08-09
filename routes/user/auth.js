@@ -12,7 +12,6 @@ const {
   findId,
   signUpEmailCheck,
   findPw,
-  pwFindSessionCheck,
   deactivate,
   resetPw,
 } = require("../../controllers/userController/auth");
