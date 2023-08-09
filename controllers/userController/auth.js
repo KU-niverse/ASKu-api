@@ -338,30 +338,25 @@ exports.changePw = async (req, res) => {
       req.user[0].password
     );
     if (is_password_right === false) {
-      return res.status(400).json({
+      return res.status(401).json({
         success: false,
         message: "기존 비밀번호가 일치하지 않습니다.",
       });
     }
     //새로운 비밀번호로 변경
     const hashed_pw = await bcrypt.hash(new_password, 12);
-    const result = User.changePw(login_id, hashed_pw);
-    if (result) {
-      return res.status(200).json({
-        success: true,
-        message: "비밀번호 변경이 완료되었습니다.",
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        message: "changePw(controller)에서 문제가 발생했습니다.",
-      });
-    }
+    await User.changePw(login_id, hashed_pw);
+
+    return res.status(200).json({
+      success: true,
+      message: "비밀번호 변경이 완료되었습니다.",
+    });
   } catch (error) {
+    console.log("chagePw-controller에서 문제가 발생했습니다.");
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "changePw(controller)에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };

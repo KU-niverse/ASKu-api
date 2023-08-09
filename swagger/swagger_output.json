@@ -1415,7 +1415,7 @@
       "put": {
         "tags": ["user"],
         "summary": "유저 비밀번호 변경",
-        "description": "유저 비밀번호 변경을 진행합니다. 유저 비밀번호 변경은 비밀번호 찾기, 마이페이지에서 이루어집니다. 만약 마이페이지에서 진행한 비밀번호 변경이라면 hashed_login_id없이 전송하면 됩니다.",
+        "description": "로그인이 되어있는 상태인 유저가 마이페이지에서 비밀번호 변경, 기존 비밀번호와 새로운 비밀번호를 입력합니다.",
         "requestBody": {
             "required": true,
             "content": {
@@ -1423,20 +1423,16 @@
                     "schema": {
                         "type": "object",
                         "properties": {
-                            "login_id": {
-                                "type": "string",
-                                "example": "sup1214"
-                            },
-                            "hashed_login_id": {
+                            "password": {
                               "type": "string",
-                              "example": "sudhfiaeoijfoisdjfklsjfie"
-                          },
-                          "password": {
-                            "type": "string",
-                            "example": "qwer1234!"
+                              "example": "qwer1234!"
+                           },
+                            "new_password": {
+                              "type": "string",
+                              "example": "qwer2345!"
                         }
                         },
-                        "required": ["login_id", "password"]
+                        "required": ["password", "new_password"]
                     }
                 }
             }
@@ -1462,8 +1458,8 @@
                     }
                 }
             },
-            "400": {
-              "description": "해당 오류는 서버오류일 가능성이 높습니다. 관리자에게 문의해주세요.",
+            "401": {
+              "description": "유저의 기존 비밀번호가 일치하지 않습니다.",
               "content": {
                   "application/json": {
                       "schema": {
@@ -1475,7 +1471,7 @@
                               },
                               "message": {
                                   "type": "string",
-                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                                  "example": "기존 비밀번호가 일치하지 않습니다."
                               }
                           }
                       }
@@ -1496,7 +1492,7 @@
                               },
                               "message": {
                                   "type": "string",
-                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                                  "example": "서버 에러"
                               }
                           }
                       }
