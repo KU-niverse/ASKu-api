@@ -331,7 +331,7 @@ exports.resetPw = async (req, res) => {
 //로그인 되어있는 상태에서 유저 비밀번호 변경
 exports.changePw = async (req, res) => {
   try {
-    const { login_id, password, new_password } = req.body;
+    const { password, new_password } = req.body;
     //기존 비밀번호와 일치하는지 확인
     const is_password_right = await bcrypt.compare(
       password,
@@ -345,7 +345,7 @@ exports.changePw = async (req, res) => {
     }
     //새로운 비밀번호로 변경
     const hashed_pw = await bcrypt.hash(new_password, 12);
-    await User.changePw(login_id, hashed_pw);
+    await User.changePw(req.user[0].login_id, hashed_pw);
 
     return res.status(200).json({
       success: true,
