@@ -14,38 +14,37 @@ CREATE TABLE `badges` (
 
 INSERT INTO `badges` (`name`, `image`, `description`, `event`, `cont`)
 VALUES 
-('단군할아버지 터 잡으시고', 'dummy_image_url', '서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능', 1, 0),
-('개국공신', 'dummy_image_url', '서비스 출시 한 달 내 다량의 정보(페이지당 500자 or 누적 1000자) 업데이트 시 획득 가능', 1, 0),
-('말하는 감자', 'dummy_image_url', '누적 100자 달성', 0, 1),
-('새내기 하호', 'dummy_image_url', '누적 1000자 달성', 0, 1),
-('대학원생 하호', 'dummy_image_url', '누적 2500자 달성', 0, 1),
-('박사 하호', 'dummy_image_url', '누적 5000자 달성', 0, 1),
-('교수 하호', 'dummy_image_url', '누적 10000자 달성', 0, 1),
-('오류 발견!', 'dummy_image_url', '문서 1회 이상 수정', 0, 1),
-('내 위키 속의 지우개', 'dummy_image_url', '문서 3회 이상 수정', 0, 1),
-('내 꿈은 editor', 'dummy_image_url', '문서 10회 이상 수정', 0, 1),
-('고치는 코쿤', 'dummy_image_url', '문서 20회 이상 수정', 0, 1),
-('보안관', 'dummy_image_url', '실제 신고 5회 이상', 0, 1),
-('암행어사', 'dummy_image_url', '실제 신고 10회 이상', 0, 1),
-('정의구현', 'dummy_image_url', '실제 신고 15회 이상', 0, 1),
-('다크나이트', 'dummy_image_url', '실제 신고 30회 이상', 0, 1),
-('똑똑똑… 여기가 asku인가요?', 'dummy_image_url', '첫 가입 시 획득, 1일 출석', 0, 1),
-('작심삼일을 이겨내고', 'dummy_image_url', '연속 4일 출석', 0, 1),
-('나는 오늘도 asku', 'dummy_image_url', '연속 10일 출석', 0, 1),
-('이제는 일상이 된 asku', 'dummy_image_url', '연속 30일 출석', 0, 1),
-('asku와 100일♥', 'dummy_image_url', '연속 100일 출석', 0, 1),
-('제 목소리가 들리시나요?', 'dummy_image_url', '첫 토론글(메시지) 작성', 0, 1),
-('변론가', 'dummy_image_url', '누적 토론글 10개 작성', 0, 1),
-('필리버스터🔥', 'dummy_image_url', '누적 토론글 30개 작성', 0, 1),
-('내공냠냠 신고합니다', 'dummy_image_url', '첫 질문글 작성', 0, 1),
-('이 시대의 질문왕!', 'dummy_image_url', '누적 질문글 10개 작성', 0, 1),
-('물음표 살인마', 'dummy_image_url', '누적 질문글 30개 작성', 0, 1),
-('asku의 답변은 문서 기여', 'dummy_image_url', '첫 댓글 작성', 0, 1),
-('이젠 좀 익숙해졌을지도…', 'dummy_image_url', '누적 댓글 30개 작성', 0, 1),
-('고인물을 향해서', 'dummy_image_url', '누적 댓글 100개 작성', 0, 1),
-('문서 지박령', 'dummy_image_url', '누적 댓글 200개 작성', 0, 1),
-('ㄹㅇㅋㅋ', 'dummy_image_url', '추천 10개 이상', 0, 1),
-('당신은 추천왕!', 'dummy_image_url', '추천 50개 이상', 0, 1);
+('단군할아버지 터 잡으시고', 'https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png', '서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능', 1, 0),
+('개국공신', 'https://kr.object.ncloudstorage.com/image-bucket/badge/2_%EA%B0%9C%EA%B5%AD%EA%B3%B5%EC%8B%A0.png', '서비스 출시 한 달 내 다량의 정보(페이지당 500자 or 누적 1000자) 업데이트 시 획득 가능', 1, 0),
+('말하는 감자', 'https://kr.object.ncloudstorage.com/image-bucket/badge/3_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D1.png', '누적 100자 달성', 0, 1),
+('새내기 하호', 'https://kr.object.ncloudstorage.com/image-bucket/badge/4_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D2.png', '누적 1000자 달성', 0, 1),
+('대학원생 하호', 'https://kr.object.ncloudstorage.com/image-bucket/badge/5_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D3.png', '누적 2500자 달성', 0, 1),
+('박사 하호', 'https://kr.object.ncloudstorage.com/image-bucket/badge/6_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D4.png', '누적 5000자 달성', 0, 1),
+('교수 하호', 'https://kr.object.ncloudstorage.com/image-bucket/badge/7_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D5.png', '누적 10000자 달성', 0, 1),
+('오류 발견!', 'https://kr.object.ncloudstorage.com/image-bucket/badge/8_%EB%AC%B8%EC%84%9C%20%EC%88%98%EC%A0%951.png', '문서 1회 이상 수정', 0, 1),
+('내 위키 속의 지우개', 'https://kr.object.ncloudstorage.com/image-bucket/badge/9_%EB%AC%B8%EC%84%9C%20%EC%88%98%EC%A0%952.png', '문서 3회 이상 수정', 0, 1),
+('내 꿈은 editor', 'https://kr.object.ncloudstorage.com/image-bucket/badge/10_%EB%AC%B8%EC%84%9C%20%EC%88%98%EC%A0%953.png', '문서 10회 이상 수정', 0, 1),
+('고치는 코쿤', 'https://kr.object.ncloudstorage.com/image-bucket/badge/11_%EB%AC%B8%EC%84%9C%20%EC%88%98%EC%A0%954.png', '문서 20회 이상 수정', 0, 1),
+('보안관', 'https://kr.object.ncloudstorage.com/image-bucket/badge/12_%EC%8B%A0%EA%B3%A01.png', '실제 신고 5회 이상', 0, 1),
+('암행어사', 'https://kr.object.ncloudstorage.com/image-bucket/badge/13_%EC%8B%A0%EA%B3%A02.png', '실제 신고 10회 이상', 0, 1),
+('정의구현', 'https://kr.object.ncloudstorage.com/image-bucket/badge/14_%EC%8B%A0%EA%B3%A03.png', '실제 신고 15회 이상', 0, 1),
+('다크나이트', 'https://kr.object.ncloudstorage.com/image-bucket/badge/15_%EC%8B%A0%EA%B3%A04.png', '실제 신고 30회 이상', 0, 1),
+('똑똑똑… 여기가 asku인가요?', 'https://kr.object.ncloudstorage.com/image-bucket/badge/16_%EC%B6%9C%EC%84%9D1.png', '첫 가입 시 획득, 1일 출석', 0, 1),
+('작심삼일을 이겨내고', 'https://kr.object.ncloudstorage.com/image-bucket/badge/17_%EC%B6%9C%EC%84%9D2.png', '연속 4일 출석', 0, 1),
+('나는 오늘도 asku', 'https://kr.object.ncloudstorage.com/image-bucket/badge/18_%EC%B6%9C%EC%84%9D3.png', '연속 10일 출석', 0, 1),
+('asku와 100일♥', 'https://kr.object.ncloudstorage.com/image-bucket/badge/19_%EC%B6%9C%EC%84%9D4.png', '연속 100일 출석', 0, 1),
+('제 목소리가 들리시나요?', 'https://kr.object.ncloudstorage.com/image-bucket/badge/20_%ED%86%A0%EB%A1%A01.png', '첫 토론글(메시지) 작성', 0, 1),
+('변론가', 'https://kr.object.ncloudstorage.com/image-bucket/badge/21_%ED%86%A0%EB%A1%A02.png', '누적 토론글 10개 작성', 0, 1),
+('필리버스터🔥', 'https://kr.object.ncloudstorage.com/image-bucket/badge/22_%ED%86%A0%EB%A1%A03.png', '누적 토론글 30개 작성', 0, 1),
+('내공냠냠 신고합니다', 'https://kr.object.ncloudstorage.com/image-bucket/badge/23_%EC%A7%88%EB%AC%B81.png', '첫 질문글 작성', 0, 1),
+('이 시대의 질문왕!', 'https://kr.object.ncloudstorage.com/image-bucket/badge/24_%EC%A7%88%EB%AC%B82.png', '누적 질문글 10개 작성', 0, 1),
+('물음표 살인마', 'https://kr.object.ncloudstorage.com/image-bucket/badge/25_%EC%A7%88%EB%AC%B83.png', '누적 질문글 30개 작성', 0, 1),
+('asku의 답변은 문서 기여', 'https://kr.object.ncloudstorage.com/image-bucket/badge/26_%EB%8B%B5%EB%B3%801.png', '첫 댓글 작성', 0, 1),
+('이젠 좀 익숙해졌을지도…', 'https://kr.object.ncloudstorage.com/image-bucket/badge/27_%EB%8B%B5%EB%B3%802.png', '누적 댓글 30개 작성', 0, 1),
+('고인물을 향해서', 'https://kr.object.ncloudstorage.com/image-bucket/badge/28_%EB%8B%B5%EB%B3%803.png', '누적 댓글 100개 작성', 0, 1),
+('문서 지박령', 'https://kr.object.ncloudstorage.com/image-bucket/badge/29_%EB%8B%B5%EB%B3%804.png', '누적 댓글 200개 작성', 0, 1),
+('ㄹㅇㅋㅋ', 'https://kr.object.ncloudstorage.com/image-bucket/badge/30_%EC%B6%94%EC%B2%9C1.png', '추천 10개 이상', 0, 1),
+('당신은 추천왕!', 'https://kr.object.ncloudstorage.com/image-bucket/badge/31_%EC%B6%94%EC%B2%9C2.png', '추천 50개 이상', 0, 1);
 
 CREATE TABLE `users` (
    `id`   int   NOT NULL AUTO_INCREMENT,
@@ -680,7 +679,7 @@ BEGIN
 END;//
 DELIMITER ;
 
--- 19. (출석) 이제는 일상이 된 asku
+-- 19. (출석) asku와 100일♥
 DELIMITER //
 CREATE TRIGGER check_attend_update_04
 AFTER UPDATE
@@ -694,35 +693,15 @@ BEGIN
   FROM badge_history
   WHERE user_id = NEW.user_id AND badge_id = 19 AND is_bad = 0;
 
-  IF NEW.cont_attend >= 30 AND badge_exists = 0 THEN
+  IF NEW.cont_attend >= 100 AND badge_exists = 0 THEN
     INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 19);
   END IF;
 END;//
 DELIMITER ;
 
--- 20. (출석) asku와 100일♥
+-- 20. (토론) 제 목소리가 들리시나요?
 DELIMITER //
-CREATE TRIGGER check_attend_update_05
-AFTER UPDATE
-ON user_attend
-FOR EACH ROW
-BEGIN
-  DECLARE badge_exists INT;
-  
-  SELECT COUNT(*)
-  INTO badge_exists
-  FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 20 AND is_bad = 0;
-
-  IF NEW.cont_attend >= 100 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 20);
-  END IF;
-END;//
-DELIMITER ;
-
--- 21. (토론) 제 목소리가 들리시나요?
-DELIMITER //
-CREATE TRIGGER check_debate_update_05
+CREATE TRIGGER check_debate_update_01
 AFTER UPDATE
 ON user_action
 FOR EACH ROW
@@ -732,15 +711,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 21 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 20 AND is_bad = 0;
 
   IF NEW.debate_count = 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 21);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 20);
   END IF;
 END;//
 DELIMITER ;
 
--- 22. (토론) 변론가
+-- 21. (토론) 변론가
 DELIMITER //
 CREATE TRIGGER check_debate_update_02
 AFTER UPDATE
@@ -752,15 +731,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 22 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 21 AND is_bad = 0;
 
   IF NEW.debate_count = 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 22);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 21);
   END IF;
 END;//
 DELIMITER ;
 
--- 23. (토론) 필리버스터🔥
+-- 22. (토론) 필리버스터🔥
 DELIMITER //
 CREATE TRIGGER check_debate_update_03
 AFTER UPDATE
@@ -772,15 +751,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 1 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 22 AND is_bad = 0;
 
   IF NEW.debate_count = 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 23);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 22);
   END IF;
 END;//
 DELIMITER ;
 
--- 24. (질문) 내공냠냠 신고합니다
+-- 23. (질문) 내공냠냠 신고합니다
 DELIMITER //
 CREATE TRIGGER check_question_update_01
 AFTER UPDATE
@@ -792,16 +771,16 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 24 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 23 AND is_bad = 0;
 
   IF NEW.question_count >= 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 24);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 23);
   END IF;
 END;//
 DELIMITER ;
 
 
--- 25. (질문) 이 시대의 질문왕!
+-- 24. (질문) 이 시대의 질문왕!
 DELIMITER //
 CREATE TRIGGER check_question_update_02
 AFTER UPDATE
@@ -813,15 +792,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 25 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 24 AND is_bad = 0;
 
   IF NEW.question_count >= 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 25);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 24);
   END IF;
 END;//
 DELIMITER ;
 
--- 26. (질문) 물음표 살인마
+-- 25. (질문) 물음표 살인마
 DELIMITER //
 CREATE TRIGGER check_question_update_03
 AFTER UPDATE
@@ -833,16 +812,16 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 26 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 25 AND is_bad = 0;
 
   IF NEW.question_count >= 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 26);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 25);
   END IF;
 END;//
 DELIMITER ;
 
 
--- 27. (답변) asku의 답변은 문서 기여
+-- 26. (답변) asku의 답변은 문서 기여
 DELIMITER //
 CREATE TRIGGER check_answer_update_01
 AFTER UPDATE
@@ -854,15 +833,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 27 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 26 AND is_bad = 0;
 
   IF NEW.answer_count >= 1 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 27);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 26);
   END IF;
 END;//
 DELIMITER ;
 
--- 28. (답변) 이젠 좀 익숙해졌을지도...
+-- 27. (답변) 이젠 좀 익숙해졌을지도...
 DELIMITER //
 CREATE TRIGGER check_answer_update_02
 AFTER UPDATE
@@ -874,15 +853,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 28 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 27 AND is_bad = 0;
 
   IF NEW.answer_count >= 30 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 28);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 27);
   END IF;
 END;//
 DELIMITER ;
 
--- 29. (답변) 고인물을 향해서
+-- 28. (답변) 고인물을 향해서
 DELIMITER //
 CREATE TRIGGER check_answer_update_03
 AFTER UPDATE
@@ -894,15 +873,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 29 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 28 AND is_bad = 0;
 
   IF NEW.answer_count >= 100 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 29);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 28);
   END IF;
 END;//
 DELIMITER ;
 
--- 30. (답변) 문서 지박령
+-- 29. (답변) 문서 지박령
 DELIMITER //
 CREATE TRIGGER check_answer_update_04
 AFTER UPDATE
@@ -914,15 +893,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 30 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 29 AND is_bad = 0;
 
   IF NEW.answer_count >= 200 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 30);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 29);
   END IF;
 END;//
 DELIMITER ;
 
--- 31. (추천) ㄹㅇㅋㅋ
+-- 30. (추천) ㄹㅇㅋㅋ
 DELIMITER //
 CREATE TRIGGER check_like_update_01
 AFTER UPDATE
@@ -934,15 +913,15 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 31 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 30 AND is_bad = 0;
 
   IF NEW.like_count >= 10 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 31);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 30);
   END IF;
 END;//
 DELIMITER ;
 
--- 32. (추천) 당신은 추천왕!
+-- 31. (추천) 당신은 추천왕!
 DELIMITER //
 CREATE TRIGGER check_like_update_02
 AFTER UPDATE
@@ -954,10 +933,10 @@ BEGIN
   SELECT COUNT(*)
   INTO badge_exists
   FROM badge_history
-  WHERE user_id = NEW.user_id AND badge_id = 32 AND is_bad = 0;
+  WHERE user_id = NEW.user_id AND badge_id = 31 AND is_bad = 0;
 
   IF NEW.like_count >= 50 AND badge_exists = 0 THEN
-    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 32);
+    INSERT INTO badge_history(user_id, badge_id) VALUES (NEW.user_id, 31);
   END IF;
 END;//
 DELIMITER ;
