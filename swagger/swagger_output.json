@@ -1459,6 +1459,26 @@
                 }
             },
             "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "403": {
               "description": "유저의 기존 비밀번호가 일치하지 않습니다.",
               "content": {
                   "application/json": {
@@ -1502,6 +1522,138 @@
         }
     }
     },
+    "/user/auth/resetpw": {
+      "put": {
+        "tags": ["user"],
+        "summary": "유저 비밀번호 재설정",
+        "description": "비밀번호를 잊어버린 유저가 비밀번호 재설정, 새로운 비밀번호와 재설정 토큰을 입력합니다.",
+        "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "hashed_login_id": {
+                              "type": "string",
+                              "example": "aesohfiojadsljfo;ij3o2aojo;fl.lzkjd;fjaiflselj"
+                           },
+                            "new_password": {
+                              "type": "string",
+                              "example": "qwer2345!"
+                        }
+                        },
+                        "required": ["hashed_login_id", "new_password"]
+                    }
+                }
+            }
+        },
+        "responses": {
+            "200": {
+                "description": "비밀번호 재설정 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "비밀번호 재설정이 완료되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 비밀번호 재설정 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "410": {
+              "description": "해당 유저가 비밀번호 변경을 시작하고 너무 늦게 비밀번호 변경을 시도했을 때, 비밀번호 변경 세션이 만료되었습니다.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "비밀번호 변경 세션의 기한이 만료되었습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "404": {
+              "description": "해당 링크로 접근한 비밀번호 변경 세션이 존재하지 않습니다.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "비밀번호 변경 세션이 존재하지 않습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "500": {
+              "description": "서버에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "서버 에러"
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+        }
+    }
+    },
+
     "/user/mypage/info": {
       "get": {
         "tags": ["mypage"],

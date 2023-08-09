@@ -350,7 +350,7 @@ exports.changePw = async (req, res) => {
       req.user[0].password
     );
     if (is_password_right === false) {
-      return res.status(401).json({
+      return res.status(403).json({
         success: false,
         message: "기존 비밀번호가 일치하지 않습니다.",
       });
