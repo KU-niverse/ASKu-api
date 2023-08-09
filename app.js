@@ -19,6 +19,7 @@ const notificationRoutes = require("./routes/notification");
 const reportRoutes = require("./routes/report");
 const admin = require("./routes/admin");
 const searchRoutes = require("./routes/search");
+const { stream } = require("./config/winston");
 
 dotenv.config();
 const redisClient = redis.createClient({
@@ -51,7 +52,7 @@ passportConfig(); // 패스포트 설정
 
 app.use(bodyParser.json());
 if (process.env.NODE_ENV === "production") {
-  app.use(morgan("combined"));
+  app.use(morgan("combined", {stream}));
   app.use(
     helmet({
       contentSecurityPolicy: false,
