@@ -14,6 +14,7 @@ const {
   findPw,
   pwFindSessionCheck,
   deactivate,
+  resetPw,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -56,5 +57,7 @@ router.post("/findid", isNotSignedIn, findId);
 router.post("/findpw", isNotSignedIn, findPw);
 //비밀번호 변경
 router.put("/changepw", isSignedIn, changePw);
+//비밀번호 재설정
+router.put("/resetpw", isNotSignedIn, resetPw);
 
 module.exports = router;
