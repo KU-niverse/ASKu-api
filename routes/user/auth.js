@@ -12,8 +12,8 @@ const {
   findId,
   signUpEmailCheck,
   findPw,
-  pwFindSessionCheck,
   deactivate,
+  resetPw,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -48,13 +48,13 @@ router.get("/issignedin", isSignedIn, (req, res) => {
     .json({ success: true, message: "로그인한 상태입니다." });
 });
 
-//세션 유효성 확인
-router.post("/pwchangesessioncheck", isNotSignedIn, pwFindSessionCheck);
 //아이디 찾기
 router.post("/findid", isNotSignedIn, findId);
 //비밀번호 찾기
 router.post("/findpw", isNotSignedIn, findPw);
 //비밀번호 변경
-router.put("/changepw", changePw);
+router.put("/changepw", isSignedIn, changePw);
+//비밀번호 재설정
+router.put("/resetpw", isNotSignedIn, resetPw);
 
 module.exports = router;

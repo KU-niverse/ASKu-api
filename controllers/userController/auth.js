@@ -4,6 +4,7 @@ const User = require("../../models/userModel");
 const Action = require("../../models/actionModel");
 const { v4: uuidv4 } = require("uuid");
 const passport = require("passport");
+const moment = require("moment");
 
 const nodemailer = require("nodemailer");
 
@@ -294,35 +295,80 @@ exports.signOut = (req, res) => {
     });
   }
 };
-//FIXME: 해당 로직 취약점 많음
-exports.changePw = async (req, res) => {
-  try {
-    const { login_id, hashed_login_id, password } = req.body;
-    const new_pw = password;
 
-    const hashed_pw = await bcrypt.hash(new_pw, 12);
-    const result = User.changePw(login_id, hashed_pw);
-    if (result) {
-      //비밀번호 찾기 후 재설정이라면(hashed_login_id가 존재) change_pw_session에서 해당 세션을 제거
-      if (hashed_login_id) {
-        await User.deletePwFindSession(hashed_login_id);
-        console.log("hih");
-      }
-      return res.status(200).json({
-        success: true,
-        message: "비밀번호 변경이 완료되었습니다.",
-      });
-    } else {
-      return res.status(400).json({
+//비밀번호를 잊어버린 상태에서 비밀번호 변경
+exports.resetPw = async (req, res) => {
+  try {
+    const { hashed_login_id, new_password } = req.body;
+    //해당 세션이 유효한지 체크
+    const pw_change_session = await User.checkPwChangeSession(hashed_login_id);
+    const EXPIRATION_TIME_HOURS = 3; // 세션 만료 시간을 변수로 지정(현재 3시간)
+    const EXPIRATION_TIME_MILLISECONDS = EXPIRATION_TIME_HOURS * 60 * 60 * 1000; // 밀리초로 변환
+    //해당 세션이 존재하지 않는다면
+    if (pw_change_session.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "changePw(controller)에서 문제가 발생했습니다.",
+        message: "비밀번호 변경 세션이 존재하지 않습니다.",
+      });
+    } else if (
+      //해당 세션이 만료되었다면
+      moment(pw_change_session[0].created_at).valueOf() +
+        EXPIRATION_TIME_MILLISECONDS <
+      Date.now()
+    ) {
+      return res.status(410).json({
+        success: false,
+        message: "비밀번호 변경 세션의 기한이 만료되었습니다.",
       });
     }
+    //해당 세션이 유효하다면
+    const hashed_pw = await bcrypt.hash(new_password, 12);
+    await Promise.all([
+      User.changePw(pw_change_session[0].user_id, hashed_pw),
+      User.deletePwFindSession(hashed_login_id),
+    ]);
+    return res.status(200).json({
+      success: true,
+      message: "비밀번호 재설정이 완료되었습니다.",
+    });
   } catch (error) {
+    console.log(error);
+    console.log("changePw(controller)에서 문제가 발생했습니다.");
+    return res.status(500).json({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};
+//로그인 되어있는 상태에서 유저 비밀번호 변경
+exports.changePw = async (req, res) => {
+  try {
+    const { password, new_password } = req.body;
+    //기존 비밀번호와 일치하는지 확인
+    const is_password_right = await bcrypt.compare(
+      password,
+      req.user[0].password
+    );
+    if (is_password_right === false) {
+      return res.status(403).json({
+        success: false,
+        message: "기존 비밀번호가 일치하지 않습니다.",
+      });
+    }
+    //새로운 비밀번호로 변경
+    const hashed_pw = await bcrypt.hash(new_password, 12);
+    await User.changePw(req.user[0].id, hashed_pw);
+
+    return res.status(200).json({
+      success: true,
+      message: "비밀번호 변경이 완료되었습니다.",
+    });
+  } catch (error) {
+    console.log("chagePw-controller에서 문제가 발생했습니다.");
     console.log(error);
     return res.status(500).json({
       success: false,
-      message: "changePw(controller)에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -351,7 +397,7 @@ exports.findId = async (req, res) => {
     });
   }
 };
-//TODO: 이메일 html 파일 추가
+
 exports.findPw = async (req, res) => {
   try {
     const login_id = req.body.login_id;
@@ -416,7 +462,7 @@ exports.findPw = async (req, res) => {
   text-decoration: none;
   cursor: pointer;
   margin-left: calc(max(-450px, -100vw + 350px));">
-  <a href="https://www.asku.wiki/changepw/${hashed_login_id}" style="color: white; text-decoration: none;">비밀번호 재설정하기</a>
+  <a href="https://www.asku.wiki/resetpw/${hashed_login_id}" style="color: white; text-decoration: none;">비밀번호 재설정하기</a>
 </div>
     </td>
   </tr>
@@ -473,35 +519,6 @@ exports.signUpEmailCheck = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "signUpEmailCheck-controller에서 문제가 발생했습니다.",
-    });
-  }
-};
-
-exports.pwFindSessionCheck = async (req, res) => {
-  try {
-    const hashed_login_id = await req.body.hashed_login_id;
-    const session = await User.checkPwChangeSession(hashed_login_id);
-
-    if (session.length == 0) {
-      return res.status(401).json({
-        success: false,
-        message:
-          "만료되었거나 존재하지 않는 세션 접근입니다. 다시 한 번 비밀번호 찾기를 진행해주세요.",
-      });
-    } else {
-      const user = await User.findById(session[0].user_id);
-
-      session[0].login_id = user[0].login_id;
-      return res.status(200).json({
-        success: true,
-        message: session[0],
-      });
-    }
-  } catch (error) {
-    console.log(error);
-    return res.status(500).json({
-      success: false,
-      message: "sessionValidation-controller에서 문제가 발생했습니다.",
     });
   }
 };
