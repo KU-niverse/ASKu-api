@@ -55,6 +55,6 @@ router.post("/findid", isNotSignedIn, findId);
 //비밀번호 찾기
 router.post("/findpw", isNotSignedIn, findPw);
 //비밀번호 변경
-router.put("/changepw", changePw);
+router.put("/changepw", isSignedIn, changePw);
 
 module.exports = router;
