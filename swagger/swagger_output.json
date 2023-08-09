@@ -1081,119 +1081,7 @@
         }
     }
     },
-    "/user/auth/pwchangesessioncheck": {
-      "post": {
-        "tags": ["user"],
-        "summary": "비밀번호 찾기 세션 확인",
-        "description": "비밀번호 찾기 api를 호출한 뒤 이메일 링크로 접속했을 때 세션 확인, 해당 결과를 통해 비밀번호 변경 페이지를 사용불가능하게 막아야 함, success가 날아온다면 세션이 생성된지 2시간이 지났는지 확인",
-        "requestBody": {
-            "required": true,
-            "content": {
-                "application/json": {
-                    "schema": {
-                        "type": "object",
-                        "properties": {
-                            "hashed_login_id": {
-                                "type": "string",
-                                "example": "DJFODdjksfojeo323oafosjkld"
-                            }
-                        },
-                        "required": ["hashed_login_id"]
-                    }
-                }
-            }
-        },
-        "responses": {
-            "200": {
-                "description": "비밀번호 변경 세션 존재, 세션 생성 시간을 확인하고 2시간이 지나지않았다면 비밀번호 변경을 허용",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": true
-                                },
-                                "message": {
-                                    "type": "string",
-                                    "example": {
-                                      "user_id": "sup1214",
-                                      "change_pw_token":"DJFODdjksfojeo323oafosjkld",
-                                      "created_at":"2021-05-20T14:48:00.000Z"
-                          
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            },
-            "400": {
-              "description": "로그인 되어있는 상태에서 해당 api호출 시도",
-              "content": {
-                  "application/json": {
-                      "schema": {
-                          "type": "object",
-                          "properties": {
-                              "success": {
-                                  "type": "boolean",
-                                  "example": false
-                              },
-                              "message": {
-                                  "type": "string",
-                                  "example": "로그인된 상태입니다."
-                              }
-                          }
-                      }
-                  }
-              }
-          },
-            
-            "401": {
-              "description": "만료되었거나 존재하지 않는 세션 접근",
-              "content": {
-                  "application/json": {
-                      "schema": {
-                          "type": "object",
-                          "properties": {
-                              "success": {
-                                  "type": "boolean",
-                                  "example": false
-                              },
-                              "message": {
-                                  "type": "string",
-                                  "example": "만료되었거나 존재하지 않는 세션 접근입니다. 다시 한 번 비밀번호 찾기를 진행해주세요."
-                              }
-                          }
-                      }
-                  }
-              }
-          },
-       
-            "500": {
-                "description": "서버 에러",
-                "content": {
-                    "application/json": {
-                        "schema": {
-                            "type": "object",
-                            "properties": {
-                                "success": {
-                                    "type": "boolean",
-                                    "example": false
-                                },
-                                "message": {
-                                    "type": "string",
-                                    "example": "sessionValidation-controller에서 문제가 발생했습니다."
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    },
+  
     "/user/auth/findid": {
       "post": {
         "tags": ["user"],
@@ -1415,7 +1303,7 @@
       "put": {
         "tags": ["user"],
         "summary": "유저 비밀번호 변경",
-        "description": "유저 비밀번호 변경을 진행합니다. 유저 비밀번호 변경은 비밀번호 찾기, 마이페이지에서 이루어집니다. 만약 마이페이지에서 진행한 비밀번호 변경이라면 hashed_login_id없이 전송하면 됩니다.",
+        "description": "로그인이 되어있는 상태인 유저가 마이페이지에서 비밀번호 변경, 기존 비밀번호와 새로운 비밀번호를 입력합니다.",
         "requestBody": {
             "required": true,
             "content": {
@@ -1423,20 +1311,16 @@
                     "schema": {
                         "type": "object",
                         "properties": {
-                            "login_id": {
-                                "type": "string",
-                                "example": "sup1214"
-                            },
-                            "hashed_login_id": {
+                            "password": {
                               "type": "string",
-                              "example": "sudhfiaeoijfoisdjfklsjfie"
-                          },
-                          "password": {
-                            "type": "string",
-                            "example": "qwer1234!"
+                              "example": "qwer1234!"
+                           },
+                            "new_password": {
+                              "type": "string",
+                              "example": "qwer2345!"
                         }
                         },
-                        "required": ["login_id", "password"]
+                        "required": ["password", "new_password"]
                     }
                 }
             }
@@ -1462,8 +1346,8 @@
                     }
                 }
             },
-            "400": {
-              "description": "해당 오류는 서버오류일 가능성이 높습니다. 관리자에게 문의해주세요.",
+            "401": {
+              "description": "유저 로그인 되어있지 않은 상태",
               "content": {
                   "application/json": {
                       "schema": {
@@ -1475,7 +1359,27 @@
                               },
                               "message": {
                                   "type": "string",
-                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                                  "example": "로그인이 필요합니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "403": {
+              "description": "유저의 기존 비밀번호가 일치하지 않습니다.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "기존 비밀번호가 일치하지 않습니다."
                               }
                           }
                       }
@@ -1496,7 +1400,7 @@
                               },
                               "message": {
                                   "type": "string",
-                                  "example": "changePw(controller)에서 문제가 발생했습니다."
+                                  "example": "서버 에러"
                               }
                           }
                       }
@@ -1506,6 +1410,138 @@
         }
     }
     },
+    "/user/auth/resetpw": {
+      "put": {
+        "tags": ["user"],
+        "summary": "유저 비밀번호 재설정",
+        "description": "비밀번호를 잊어버린 유저가 비밀번호 재설정, 새로운 비밀번호와 재설정 토큰을 입력합니다.",
+        "requestBody": {
+            "required": true,
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "hashed_login_id": {
+                              "type": "string",
+                              "example": "aesohfiojadsljfo;ij3o2aojo;fl.lzkjd;fjaiflselj"
+                           },
+                            "new_password": {
+                              "type": "string",
+                              "example": "qwer2345!"
+                        }
+                        },
+                        "required": ["hashed_login_id", "new_password"]
+                    }
+                }
+            }
+        },
+        "responses": {
+            "200": {
+                "description": "비밀번호 재설정 성공",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "type": "object",
+                            "properties": {
+                                "success": {
+                                    "type": "boolean",
+                                    "example": true
+                                },
+                                "message": {
+                                    "type": "string",
+                                    "example": "비밀번호 재설정이 완료되었습니다."
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "400": {
+              "description": "로그인 되어있는 상태에서 비밀번호 재설정 시도",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "로그인된 상태입니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "410": {
+              "description": "해당 유저가 비밀번호 변경을 시작하고 너무 늦게 비밀번호 변경을 시도했을 때, 비밀번호 변경 세션이 만료되었습니다.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "비밀번호 변경 세션의 기한이 만료되었습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            "404": {
+              "description": "해당 링크로 접근한 비밀번호 변경 세션이 존재하지 않습니다.",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "비밀번호 변경 세션이 존재하지 않습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
+            
+            "500": {
+              "description": "서버에러",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "서버 에러"
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+        }
+    }
+    },
+
     "/user/mypage/info": {
       "get": {
         "tags": ["mypage"],
