@@ -4,8 +4,12 @@ const {Question, getIdByTitle} = require("../models/questionModel.js");
 exports.questionGetMid = async (req, res) => {
   try {
     const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
-    const questions = await Question.getQuestionsAll(doc_id);
-    res.status(200).send({success: true, message: "질문 목록을 조회하였습니다.", data: questions});
+    const questions = await Question.getQuestionsAll(doc_id, req.body.flag);
+    if (!questions) {
+      res.status(400).send({success: false, message: "잘못된 flag 값입니다."});
+    } else {
+      res.status(200).send({success: true, message: "질문 목록을 조회하였습니다.", data: questions});
+    }
   } catch (err) {
     console.error(err);
     res.status(500).send({success: false, message: "오류가 발생하였습니다."});
