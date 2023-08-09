@@ -49,8 +49,6 @@ router.get("/issignedin", isSignedIn, (req, res) => {
     .json({ success: true, message: "로그인한 상태입니다." });
 });
 
-//세션 유효성 확인
-router.post("/pwchangesessioncheck", isNotSignedIn, pwFindSessionCheck);
 //아이디 찾기
 router.post("/findid", isNotSignedIn, findId);
 //비밀번호 찾기
