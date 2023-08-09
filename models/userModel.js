@@ -60,7 +60,6 @@ User.findByLoginId = async (login_id) => {
   return rows;
 };
 
-
 //nickname으로 유저 찾기
 User.findByNickname = async (nickname) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
@@ -124,10 +123,10 @@ User.tempCreate = async (newUser) => {
 };
 
 //비밀번호 변경
-User.changePw = async (login_id, hashed_new_pw) => {
-  await pool.query(`UPDATE users SET password = ? WHERE login_id = ?;`, [
+User.changePw = async (user_id, hashed_new_pw) => {
+  await pool.query(`UPDATE users SET password = ? WHERE id = ?;`, [
     hashed_new_pw,
-    login_id,
+    user_id,
   ]);
   return true;
 };
@@ -289,7 +288,6 @@ User.deactivate = async (user_id) => {
     return false;
   }
 };
-
 
 User.getConstraint = async () => {
   const [constraint] = await pool.query(
