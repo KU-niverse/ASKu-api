@@ -294,8 +294,10 @@ exports.signOut = (req, res) => {
     });
   }
 };
+
+//비밀번호를 잊어버린 상태에서 비밀번호 변경
 //FIXME: 해당 로직 취약점 많음
-exports.changePw = async (req, res) => {
+exports.resetPw = async (req, res) => {
   try {
     const { login_id, hashed_login_id, password } = req.body;
     const new_pw = password;
@@ -308,6 +310,43 @@ exports.changePw = async (req, res) => {
         await User.deletePwFindSession(hashed_login_id);
         console.log("hih");
       }
+      return res.status(200).json({
+        success: true,
+        message: "비밀번호 변경이 완료되었습니다.",
+      });
+    } else {
+      return res.status(400).json({
+        success: false,
+        message: "changePw(controller)에서 문제가 발생했습니다.",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      success: false,
+      message: "changePw(controller)에서 문제가 발생했습니다.",
+    });
+  }
+};
+//로그인 되어있는 상태에서 유저 비밀번호 변경
+exports.changePw = async (req, res) => {
+  try {
+    const { login_id, password, new_password } = req.body;
+    //기존 비밀번호와 일치하는지 확인
+    const is_password_right = await bcrypt.compare(
+      password,
+      req.user[0].password
+    );
+    if (is_password_right === false) {
+      return res.status(400).json({
+        success: false,
+        message: "기존 비밀번호가 일치하지 않습니다.",
+      });
+    }
+    //새로운 비밀번호로 변경
+    const hashed_pw = await bcrypt.hash(new_password, 12);
+    const result = User.changePw(login_id, hashed_pw);
+    if (result) {
       return res.status(200).json({
         success: true,
         message: "비밀번호 변경이 완료되었습니다.",
