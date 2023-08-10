@@ -34,15 +34,32 @@ Question.createQuestion = async (newQuestion) => {
   return getQuestion(id);
 };
 
-Question.getQuestionsAll = async (id) => {
-  const rows = await pool.query(
-    `SELECT questions.*, users.nickname 
-    FROM questions INNER JOIN users
-    ON questions.user_id = users.id 
-    WHERE questions.doc_id = ?`,
-    [id]
-  );
-  return rows[0];
+Question.getQuestionsAll = async (id, flag) => {
+  if (flag == 0) {
+    const rows = await pool.query(
+      `SELECT questions.*, users.nickname 
+      FROM questions INNER JOIN users
+      ON questions.user_id = users.id 
+      WHERE questions.doc_id = ?
+      ORDER BY questions.created_at DESC`,
+      [id]
+    );
+    return rows[0];
+  } if (flag == 1) {
+    const rows = await pool.query(
+      `SELECT questions.*, users.nickname, COUNT(question_like.id) AS like_count
+      FROM questions
+      INNER JOIN users ON questions.user_id = users.id
+      LEFT JOIN question_like ON questions.id = question_like.id
+      WHERE questions.doc_id = ?
+      GROUP BY questions.id
+      ORDER BY like_count DESC, questions.created_at DESC`,
+      [id]
+    );
+    return rows[0];
+  } else {
+    return 0;
+  }
 };
 
 Question.updateQuestion = async (question_id, user_id, new_content) => {
