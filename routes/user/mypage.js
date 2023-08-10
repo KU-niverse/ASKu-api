@@ -9,6 +9,7 @@ const {
   editInfo,
   debatetHistory,
   questionHistory,
+  getBadges,
 } = require("../../controllers/userController/myPage");
 
 const router = express.Router();
@@ -21,4 +22,6 @@ router.put("/editinfo", isSignedIn, editInfo);
 
 router.get("/debatehistory", isSignedIn, debatetHistory);
 router.get("/questionhistory", isSignedIn, questionHistory);
+router.get("/badges", getBadges);
+
 module.exports = router;
