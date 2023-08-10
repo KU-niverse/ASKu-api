@@ -2146,11 +2146,17 @@
         }
     }
 },
-    "/question/view/{title}": {
+    "/question/view/{flag}/{title}": {
       "get": {
         "tags": ["question"],
         "summary": "질문 조회",
         "parameters": [
+          {
+            "name": "flag",
+            "description": "0: 최신순 정렬, 1: 인기순 정렬",
+            "in": "path",
+            "required": true
+          },
           {
             "name": "title",
             "description": "문서 제목",
@@ -2158,24 +2164,6 @@
             "required": true
           }
         ],
-        "requestBody": {
-          "required": true,
-          "description": "0: 최신순 정렬, 1: 인기순 정렬",
-          "content": {
-              "application/json": {
-                  "schema": {
-                      "type": "object",
-                      "properties": {
-                        "flag": {
-                          "type": "integer",
-                          "example": 0
-                        }
-                      },
-                      "required": ["flag"]
-                  }
-              }
-          }
-      },
         "responses": {
           "200": {
             "description": "조회 성공",

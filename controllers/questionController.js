@@ -4,7 +4,7 @@ const {Question, getIdByTitle} = require("../models/questionModel.js");
 exports.questionGetMid = async (req, res) => {
   try {
     const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
-    const questions = await Question.getQuestionsAll(doc_id, req.body.flag);
+    const questions = await Question.getQuestionsAll(doc_id, req.params.flag);
     if (!questions) {
       res.status(400).send({success: false, message: "잘못된 flag 값입니다."});
     } else {
