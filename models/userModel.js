@@ -337,7 +337,7 @@ User.questionHistory = async (user_id, arrange) => {
   //인기순 조회
   else if (arrange == 1) {
     [rows] = await pool.query(
-      `SELECT q.*, w.id AS doc_id, w.title AS doc_title, COUNT(ql.user_id) AS like_count FROM questions q JOIN wiki_docs w ON q.doc_id = w.id LEFT JOIN question_like ql ON q.id = ql.id WHERE q.user_id = 1234 GROUP BY q.id ORDER BY like_count DESC, q.created_at DESC;;`,
+      `SELECT q.*, w.id AS doc_id, w.title AS doc_title, COUNT(ql.user_id) AS like_count FROM questions q JOIN wiki_docs w ON q.doc_id = w.id LEFT JOIN question_like ql ON q.id = ql.id WHERE q.user_id = 1234 GROUP BY q.id ORDER BY like_count DESC, q.created_at DESC;`,
       [user_id]
     );
   }
