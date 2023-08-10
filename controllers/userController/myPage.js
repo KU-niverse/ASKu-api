@@ -100,8 +100,27 @@ exports.debatetHistory = async (req, res) => {
 
 exports.questionHistory = async (req, res) => {
   try {
-    const questionHistory = await User.questionHistory(req.user[0].id);
-    return res.status(201).json({ success: true, message: questionHistory });
+    if (req.params.arrange === "latest") {
+      const questionHistory = await User.questionHistory(req.user[0].id, 0);
+      return res.status(201).json({
+        success: true,
+        data: questionHistory,
+        message: "나의 질문 리스트를 최신순으로 조회하였습니다.",
+      });
+    } else if (req.params.arrange === "popularity") {
+      const questionHistory = await User.questionHistory(req.user[0].id, 1);
+      return res.status(201).json({
+        success: true,
+        data: questionHistory,
+        message: "나의 질문 리스트를 좋아요순으로 조회하였습니다.",
+      });
+    } else {
+      return res.status(402).json({
+        success: false,
+        message:
+          "잘못된 요청입니다. arrange위치에 latest 혹은 popularity가 들어가야합니다.",
+      });
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).json({
