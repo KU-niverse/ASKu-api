@@ -2202,6 +2202,88 @@
         }
     }
 },
+
+
+"/user/mypage/badges": {
+  "get": {
+    "tags": ["mypage"],
+    "summary": "모든 배지 정보",
+    "description": "모든 배지 정보를 불러옵니다.",
+
+    "responses": {
+        "201": {
+            "description": "배지 정보를 불러오는데 성공했습니다.",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": true
+                            },
+                            "data": {
+                                "type": "array",
+                                "example": [{
+                                  "id": 1,
+                                  "name": "단군할아버지 터 잡으시고",
+                                  "image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
+                                  "description":  "서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능",
+                                  "event": 1,
+                                  "count": 0
+                                }]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        
+        "401": {
+          "description": "유저 로그인 되어있지 않은 상태",
+          "content": {
+              "application/json": {
+                  "schema": {
+                      "type": "object",
+                      "properties": {
+                          "success": {
+                              "type": "boolean",
+                              "example": false
+                          },
+                          "message": {
+                              "type": "string",
+                              "example": "로그인이 필요합니다."
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      
+        "500": {
+            "description": "서버 에러",
+            "content": {
+                "application/json": {
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "success": {
+                                "type": "boolean",
+                                "example": false
+                            },
+                            "message": {
+                                "type": "string",
+                                "example": "getBadges-controller에서 오류가 발생했습니다."
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+  }
+},
+
     "/question/view/{flag}/{title}": {
       "get": {
         "tags": ["question"],

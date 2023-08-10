@@ -194,6 +194,11 @@ User.getBadgeHistory = async (user_id) => {
   return user_badge_history;
 };
 
+User.getBadges = async () => {
+  const [badges] = await pool.query(`SELECT * FROM badges;`);
+  return badges;
+};
+
 User.setRepBadge = async (rep_badge_id, user_id) => {
   try {
     await pool.query(`UPDATE users SET rep_badge = ? WHERE id = ?`, [
