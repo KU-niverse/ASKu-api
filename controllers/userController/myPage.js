@@ -115,10 +115,10 @@ exports.questionHistory = async (req, res) => {
         message: "나의 질문 리스트를 좋아요순으로 조회하였습니다.",
       });
     } else {
-      return res.status(401).json({
+      return res.status(402).json({
         success: false,
         message:
-          "잘못된 요청입니다. arrange위치에 latest 혹은 popularity가 들어가야합니다..",
+          "잘못된 요청입니다. arrange위치에 latest 혹은 popularity가 들어가야합니다.",
       });
     }
   } catch (error) {
