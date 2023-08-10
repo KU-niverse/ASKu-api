@@ -7,8 +7,8 @@ const { recordSearch } = require("../middlewares/search.js");
 
 const router = express.Router();
 
-// GET /question/view/:title
-router.get("/view/:title", questionMid.questionGetMid);
+// GET /question/view/flag/:title
+router.get("/view/:flag/:title", questionMid.questionGetMid);
 
 // POST question/new/:title
 router.post("/new/:title", isSignedIn, questionMid.questionPostMid, newActionQuestion, newNotice);
