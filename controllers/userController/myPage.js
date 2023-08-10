@@ -110,3 +110,17 @@ exports.questionHistory = async (req, res) => {
     });
   }
 };
+
+exports.getBadges = async (req, res) => {
+  try {
+    const badges = await User.getBadges();
+    return res.status(201).json({ success: true, data: badges });
+  } catch (error) {
+    console.log(error);
+    console.log("getBadges-controller에서 오류가 발생했습니다.");
+    return res.status(500).json({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};
