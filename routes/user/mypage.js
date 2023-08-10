@@ -21,7 +21,8 @@ router.put("/setrepbadge", isSignedIn, setRepBadge);
 router.put("/editinfo", isSignedIn, editInfo);
 
 router.get("/debatehistory", isSignedIn, debatetHistory);
-router.get("/questionhistory", isSignedIn, questionHistory);
+
+router.get("/questionhistory/:arrange", isSignedIn, questionHistory);
 router.get("/badges", isSignedIn, getBadges);
 
 module.exports = router;
