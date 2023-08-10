@@ -37,10 +37,12 @@ Question.createQuestion = async (newQuestion) => {
 Question.getQuestionsAll = async (id, flag) => {
   if (flag == 0) {
     const rows = await pool.query(
-      `SELECT questions.*, users.nickname 
-      FROM questions INNER JOIN users
-      ON questions.user_id = users.id 
+      `SELECT questions.*, users.nickname, COUNT(question_like.id) AS like_count
+      FROM questions 
+      INNER JOIN users ON questions.user_id = users.id
+      LEFT JOIN question_like ON questions.id = question_like.id
       WHERE questions.doc_id = ?
+      GROUP BY questions.id
       ORDER BY questions.created_at DESC`,
       [id]
     );
