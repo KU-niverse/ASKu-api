@@ -96,7 +96,7 @@ Question.deleteQuestion = async (question_id, user_id) => {
     );
     return result;
   } else {
-    return flag;
+    return 0;
   }
 };
 
