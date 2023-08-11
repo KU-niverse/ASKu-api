@@ -197,7 +197,7 @@ User.getWikiHistory = async (user_id) => {
 
 User.getBadgeHistory = async (user_id) => {
   const [user_badge_history] = await pool.query(
-    `SELECT * FROM badge_history WHERE user_id = ?`,
+    `SELECT badge_history.*, badges.image, badges.name, badges.description FROM badge_history inner join badges on badge_history.badge_id = badges.id WHERE user_id = ? order by badge_history.created_at DESC`,
     [user_id]
   );
   return user_badge_history;

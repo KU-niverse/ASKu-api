@@ -31,11 +31,17 @@ exports.wikiHistory = async (req, res) => {
 exports.badgeHistory = async (req, res) => {
   try {
     const badgeHistory = await User.getBadgeHistory(req.user[0].id);
-    return res.status(201).json({ success: true, message: badgeHistory });
+    return res.status(201).json({
+      success: true,
+      data: badgeHistory,
+      message: "배지 히스토리를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
+    console.log(error);
+    console.log("badgeHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "badgeHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -138,13 +144,11 @@ exports.questionHistory = async (req, res) => {
 exports.getBadges = async (req, res) => {
   try {
     const badges = await User.getBadges();
-    return res
-      .status(201)
-      .json({
-        success: true,
-        data: badges,
-        message: "모든 배지정보를 불러오는데 성공했습니다.",
-      });
+    return res.status(201).json({
+      success: true,
+      data: badges,
+      message: "모든 배지정보를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
     console.log(error);
     console.log("getBadges-controller에서 오류가 발생했습니다.");
