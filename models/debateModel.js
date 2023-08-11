@@ -74,7 +74,10 @@ Debate.getAllDebateBycreate = async (title) => {
 // debate 목록을 조회하는 함수 (전체 최근 수정순)
 Debate.getAllDebateByEdit = async () => {
   const result = await pool.query(
-    `SELECT * FROM debates ORDER BY recent_edited_at DESC`
+    `SELECT debates.*, wiki_docs.title 
+    FROM debates INNER JOIN wiki_docs
+    ON debates.doc_id = wiki_docs.id
+    ORDER BY debates.recent_edited_at DESC`
   );
   return result[0];
 };
