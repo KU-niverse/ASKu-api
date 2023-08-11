@@ -2,7 +2,12 @@ const User = require("../../models/userModel");
 
 exports.info = async (req, res) => {
   try {
-    return res.status(201).json({ success: true, message: req.user[0] });
+    const user_info = await User.getUserInfo(req.user[0].id);
+    return res.status(201).json({
+      success: true,
+      data: user_info,
+      message: "유저 정보를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,

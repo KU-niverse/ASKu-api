@@ -1562,21 +1562,26 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": {
-                                      "id": 13,
-                                      "login_id": "sup1214",
+                                    "example": "유저 정보를 불러오는데 성공했습니다."
+                                },
+                                "data": {
+                                    "type": "array",
+                                    "example": [{
+                                      "id": 2,
                                       "name": "최영섭",
+                                      "login_id": "sup1214",
                                       "stu_id": "2019190530",
-                                      "email": "sup1214@naver.com",
-                                      "password": "afdsfjeioj@#io13dsiofija",
+                                      "email": "sup1214@korea.ac.kr",
+                                      "rep_badge_id": 3,
                                       "nickname": "키키",
-                                      "created_at":  "2021-05-20T14:48:00.000Z",
-                                      "point": 300,
-                                      "is_admin": false,
+                                      "created_at": "2023-07-30T08:57:27.000Z",
+                                      "point": 37760,
+                                      "is_admin": 0,
+                                      "restrict_period": null,
                                       "restrict_count": 0,
-                                      "uuid": "124dfs0d8f9uDf-dfus93fo9ds",
-                                      "is_deleted": 0
-                                    }
+                                      "rep_badge_name": "말하는 감자",
+                                      "rep_badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/3_%EC%A0%95%EB%B3%B4%20%EA%B8%B0%EB%A1%9D1.png"
+                                    }]
                                 }
                             }
                         }
