@@ -6,7 +6,7 @@ exports.info = async (req, res) => {
     return res.status(201).json({
       success: true,
       data: user_info,
-      message: "유저 정보를 성공적으로 조회하였습니다.",
+      message: "유저 정보를 불러오는데 성공했습니다.",
     });
   } catch (error) {
     return res.status(500).json({
