@@ -14,6 +14,9 @@ router.post("/:title/new/:debate", isSignedIn, debateMid.historyPostMid, newActi
 // GET /debate/list/:title
 router.get("/list/:title", debateMid.debateGetMid);
 
+// GET /debate/all/recent
+router.get("/all/recent", debateMid.debateGetAllMid);
+
 // GET /debate/view/:title/:debate
 router.get("/view/:title/:debate", debateMid.historyGetMid);
 

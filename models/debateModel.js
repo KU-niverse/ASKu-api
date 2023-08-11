@@ -62,11 +62,19 @@ History.createHistory = async (newHistory) => {
 };
 
 // debate 목록을 조회하는 함수 (최근 생성순)
-Debate.getAllDebate = async (title) => {
+Debate.getAllDebateBycreate = async (title) => {
   const doc_id = await getIdByTitle(title);
   const result = await pool.query(
-    `SELECT * FROM debates WHERE doc_id = ? ORDER BY created_at`,
+    `SELECT * FROM debates WHERE doc_id = ? ORDER BY created_at DESC`,
     [doc_id]
+  );
+  return result[0];
+};
+
+// debate 목록을 조회하는 함수 (전체 최근 수정순)
+Debate.getAllDebateByEdit = async () => {
+  const result = await pool.query(
+    `SELECT * FROM debates ORDER BY recent_edited_at DESC`
   );
   return result[0];
 };

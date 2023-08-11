@@ -41,11 +41,22 @@ exports.historyPostMid = async (req, res, next) => {
   }
 };
 
-// 토론방 목록 조회
+// 토론방 목록 조회 (문서별 최신순)
 exports.debateGetMid = async (req, res) => {
   try {
-    const debates = await Debate.getAllDebate(decodeURIComponent(req.params.title));
+    const debates = await Debate.getAllDebateBycreate(decodeURIComponent(req.params.title));
     res.status(200).send({success: true, message: "토론방 목록을 조회하였습니다.", data: debates});
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({success: false, message: "오류가 발생하였습니다."});
+  }
+};
+
+// 토론방 목록 조회 (전체 최신순)
+exports.debateGetAllMid = async (req, res) => {
+  try {
+    const debates = await Debate.getAllDebateByEdit();
+    res.status(200).send({success: true, message: "전체 최신 수정순 토론방 목록을 조회하였습니다.", data: debates});
   } catch (err) {
     console.error(err);
     res.status(500).send({success: false, message: "오류가 발생하였습니다."});
