@@ -3,7 +3,15 @@
 const {postSearch} = require("../models/searchModel");
 
 exports.recordSearch = async (req, res, next) => {
-  const keyword = req.params.query || req.params.title;
+  const regex_question = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
+  let keyword = "";
+  if (req.params.query) {
+    keyword = req.params.query.trim().replace(regex_question, '');
+  } else if (req.params.title) {
+    keyword = req.params.title.trim();
+  } else {
+    keyword = "";
+  }
   const user = (req.user && req.user[0] && req.user[0].id) ? req.user[0].id : 0;
   if (keyword) {
     try {
