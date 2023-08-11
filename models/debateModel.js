@@ -62,11 +62,19 @@ History.createHistory = async (newHistory) => {
 };
 
 // debate 목록을 조회하는 함수 (최근 생성순)
-Debate.getAllDebate = async (title) => {
+Debate.getAllDebateBycreate = async (title) => {
   const doc_id = await getIdByTitle(title);
   const result = await pool.query(
-    `SELECT * FROM debates WHERE doc_id = ? ORDER BY created_at`,
+    `SELECT * FROM debates WHERE doc_id = ? ORDER BY created_at DESC`,
     [doc_id]
+  );
+  return result[0];
+};
+
+// debate 목록을 조회하는 함수 (전체 최근 수정순)
+Debate.getAllDebateByEdit = async () => {
+  const result = await pool.query(
+    `SELECT * FROM debates ORDER BY recent_edited_at DESC`
   );
   return result[0];
 };
@@ -74,8 +82,24 @@ Debate.getAllDebate = async (title) => {
 // 특정 debate의 debate_history를 조회하는 함수
 History.getAllHistory = async (debate_id) => {
   const result = await pool.query(
-    `SELECT * FROM debate_history WHERE debate_id = ? ORDER BY created_at`,
+    `SELECT debate_history.*, users.nickname 
+    FROM debate_history 
+    INNER JOIN users ON debate_history.user_id = users.id
+    WHERE debate_id = ? 
+    ORDER BY created_at`,
     [debate_id]
+  );
+  return result[0];
+};
+
+// debate 목록을 검색하는 함수
+Debate.searchDebate = async (title, query) => {
+  const doc_id = await getIdByTitle(title);
+  const result = await pool.query(
+    `SELECT * FROM debates
+    WHERE doc_id = ? AND subject LIKE ?
+    ORDER BY created_at DESC`,
+    [doc_id, `%${query}%`]
   );
   return result[0];
 };
