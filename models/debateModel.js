@@ -82,7 +82,11 @@ Debate.getAllDebateByEdit = async () => {
 // 특정 debate의 debate_history를 조회하는 함수
 History.getAllHistory = async (debate_id) => {
   const result = await pool.query(
-    `SELECT * FROM debate_history WHERE debate_id = ? ORDER BY created_at`,
+    `SELECT debate_history.*, users.nickname 
+    FROM debate_history 
+    INNER JOIN users ON debate_history.user_id = users.id
+    WHERE debate_id = ? 
+    ORDER BY created_at`,
     [debate_id]
   );
   return result[0];
