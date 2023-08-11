@@ -22,6 +22,7 @@ jobs:
             cd /var/www/ASKu-api
             git reset --hard HEAD
             git pull origin develop
+            npm install
             cd swagger
             sed -i 's|http://localhost:8080|http://118.67.130.57:8080|g' swagger_output.json
             sed -i 's|http://localhost:8080|http://118.67.130.57:8080|g' swagger.js
