@@ -214,10 +214,12 @@ exports.contentsGetMid = async (req, res) => {
 
     jsonData["version"] = version;
     jsonData["text"] = text;
+    jsonData["contents"] = [];
 
     const sections = [];
     let current_section = null;
-    let current_content = null;
+    let current_content = "";
+    let is_started = false;
     const numbers = [];
 
     // 파일 읽고 section 나누기
@@ -229,6 +231,11 @@ exports.contentsGetMid = async (req, res) => {
         if (current_section !== null) {
           current_section.content.push(current_content);
           sections.push(current_section);
+        } else {  // 목차 없이 그냥 글만 있는 경우
+          is_started = true;
+          if(current_content.trim() !== ""){
+            jsonData.contents.push({"section": "0", "index": "0", "title": "들어가며", "content": current_content});
+          }
         }
         current_section = {
           title: matches[2],
@@ -244,14 +251,15 @@ exports.contentsGetMid = async (req, res) => {
         current_content += line;
       }
     }
-
     if (current_section !== null) {
       // 마지막 섹션 push
       current_section.content.push(current_content);
       sections.push(current_section);
+    } else if (current_content !== null && !is_started) { // 목차가 아예 없는 경우
+      jsonData.contents.push({"section": "0", "index": "0", "title": "들어가며", "content": current_content});
     }
 
-    jsonData["contents"] = indexing(numbers, sections);
+    jsonData.contents.push(indexing(numbers, sections));
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
       const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
