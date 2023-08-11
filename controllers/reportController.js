@@ -7,8 +7,7 @@ exports.reportPostMid = async (req, res, next) => {
       user_id: req.user[0].id,
       type_id: req.params.type,
       target: req.body.target,
-      reason_id: req.body.reason_id,
-      comment: req.body.comment,
+      reason_id: req.body.reason_id
     });
     req.data = await Report.createReport(newReport);
     req.message = "신고를 생성하였습니다.";
@@ -23,7 +22,7 @@ exports.reportPostMid = async (req, res, next) => {
 // 신고 확인하기
 exports.reportCheckPostMid = async (req, res, next) => {
   try {
-    if (req.body.is_checked != 1 || req.body.is_checked != 1) {
+    if (req.body.is_checked != 1) {
       res.status(406).send({success: false, message: "잘못된 확인값입니다."});
     } else {
       const result = await Report.checkReport(req.body.report_id, req.body.is_checked);
