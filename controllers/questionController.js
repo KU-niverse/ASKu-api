@@ -95,10 +95,12 @@ exports.questionLikeMid = async (req, res, next) => {
 // 질문 제목 기반으로 검색하기
 exports.questionSearchGetMid = async (req, res) => {
   try {
-    if (!req.params.query || req.params.query == " ") {
-      res.status(400).send({success: false, message: "검색어를 입력해주세요."});
+    const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
+    const query = req.params.query.trim().replace(regex, '');
+    if (!query) {
+      res.status(400).send({success: false, message: "잘못된 검색어입니다."});
     } else {
-      const questions = await Question.getQuestionSearchByQuery(decodeURIComponent(req.params.query));
+      const questions = await Question.getQuestionSearchByQuery(decodeURIComponent(query));
       res.status(200).send({success: true, message: "질문을 검색하였습니다", data: questions});
     }
   } catch (err) {
