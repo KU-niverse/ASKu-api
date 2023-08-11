@@ -92,6 +92,18 @@ History.getAllHistory = async (debate_id) => {
   return result[0];
 };
 
+// debate 목록을 검색하는 함수
+Debate.searchDebate = async (title, query) => {
+  const doc_id = await getIdByTitle(title);
+  const result = await pool.query(
+    `SELECT * FROM debates
+    WHERE doc_id = ? AND subject LIKE ?
+    ORDER BY created_at DESC`,
+    [doc_id, `%${query}%`]
+  );
+  return result[0];
+};
+
 // debate를 종료시키는 함수
 Debate.endDebate = async (id) => {
   const flag = await pool.query(
