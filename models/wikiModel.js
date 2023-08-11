@@ -95,7 +95,7 @@ class Wiki_history {
   // wiki_history 내림차순으로 정렬해서 반환해주는 함수(doc_id로)
   static async getWikiHistorysById(doc_id) {
     const [rows] = await pool.query(
-      `SELECT wh.*, u.name AS nick
+      `SELECT wh.*, u.nickname AS nick
       FROM wiki_history wh
       JOIN users u ON wh.user_id = u.id
       WHERE wh.doc_id = ?
@@ -125,7 +125,7 @@ class Wiki_history {
       wh.diff,
       wh.is_rollback,
       wd.title AS doc_title,
-      u.name AS nick
+      u.nickname AS nick
     FROM wiki_history wh
     JOIN wiki_docs wd ON wh.doc_id = wd.id
     JOIN users u ON wh.user_id = u.id
