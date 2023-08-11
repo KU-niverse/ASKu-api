@@ -2227,6 +2227,10 @@
                                 "type": "boolean",
                                 "example": true
                             },
+                            "message": {
+                              "type": "string",
+                              "example": "배지 정보를 불러오는데 성공했습니다."
+                            },
                             "data": {
                                 "type": "array",
                                 "example": [{
@@ -2235,7 +2239,8 @@
                                   "image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                                   "description":  "서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능",
                                   "event": 1,
-                                  "count": 0
+                                  "count": 0,
+                                  "history_count": 4
                                 }]
                             }
                         }
