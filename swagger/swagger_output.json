@@ -5318,6 +5318,11 @@
                             "type": "boolean",
                             "description": "롤백인지 여부",
                             "example": "0"
+                          },
+                          "nick": {
+                            "type": "string",
+                            "description": "수정한 유저 닉네임",
+                            "example": "jaemin"
                           }
                         }
                       }
@@ -5426,6 +5431,11 @@
                             "type": "string",
                             "description": "위키 문서 제목",
                             "example": "위키 문서 제목"
+                          },
+                          "nick": {
+                            "type": "string",
+                            "description": "수정한 유저 닉네임",
+                            "example": "jaemin"
                           }
                         }
                       }
