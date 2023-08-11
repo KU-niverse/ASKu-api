@@ -95,7 +95,11 @@ class Wiki_history {
   // wiki_history 내림차순으로 정렬해서 반환해주는 함수(doc_id로)
   static async getWikiHistorysById(doc_id) {
     const [rows] = await pool.query(
-      "SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC",
+      `SELECT wh.*, u.name AS nick
+      FROM wiki_history wh
+      JOIN users u ON wh.user_id = u.id
+      WHERE wh.doc_id = ?
+      ORDER BY wh.created_at DESC`,
       [doc_id]
     );
     return rows;
@@ -120,9 +124,11 @@ class Wiki_history {
       wh.created_at,
       wh.diff,
       wh.is_rollback,
-      wd.title AS doc_title
+      wd.title AS doc_title,
+      u.name AS nick
     FROM wiki_history wh
     JOIN wiki_docs wd ON wh.doc_id = wd.id
+    JOIN users u ON wh.user_id = u.id
     WHERE
       (CASE
         WHEN ? = 'create' THEN wh.version = 1
