@@ -15,7 +15,7 @@ async function getKeywordRank() {
      WHERE TIMESTAMPDIFF(HOUR, search_time, NOW()) <= 24
      GROUP BY keyword 
      ORDER BY count DESC 
-     LIMIT 10`
+     LIMIT 5`
   );
   return rows;
 }
