@@ -138,7 +138,13 @@ exports.questionHistory = async (req, res) => {
 exports.getBadges = async (req, res) => {
   try {
     const badges = await User.getBadges();
-    return res.status(201).json({ success: true, data: badges });
+    return res
+      .status(201)
+      .json({
+        success: true,
+        data: badges,
+        message: "모든 배지정보를 불러오는데 성공했습니다.",
+      });
   } catch (error) {
     console.log(error);
     console.log("getBadges-controller에서 오류가 발생했습니다.");

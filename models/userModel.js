@@ -204,7 +204,17 @@ User.getBadgeHistory = async (user_id) => {
 };
 
 User.getBadges = async () => {
-  const [badges] = await pool.query(`SELECT * FROM badges;`);
+  const [badges] = await pool.query(`SELECT 
+  badges.*,
+  COUNT(badge_history.id) AS history_count
+FROM
+  badges
+LEFT JOIN 
+  badge_history ON badges.id = badge_history.badge_id
+GROUP BY 
+  badges.id, badges.name, badges.image, badges.description, badges.event, badges.cont
+ORDER BY 
+  history_count ASC, badges.id ASC;`);
   return badges;
 };
 
