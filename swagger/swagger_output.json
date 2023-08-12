@@ -1623,7 +1623,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "info-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
@@ -1654,22 +1654,56 @@
                                     "example": true
                                 },
                                 "message": {
+                                    "type": "string",
+                                    "example": "위키 히스토리를 불러오는데 성공했습니다."
+                                },
+                                
+                                "data": {
                                     "type": "array",
                                     "example": [{
-                                      "id": 1,
-                                      "title": "위키 문서 제목",
-                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki",
-                                      "version": 14,
-                                      "type": "doc",
-                                      "is_deleted": false
+                                      "id": 73,
+                                      "user_id": 2,
+                                      "doc_id": 6,
+                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/멀틱스/r63.wiki",
+                                      "version": 63,
+                                      "summary": "version 61으로 롤백",
+                                      "created_at": "2023-08-10T13:20:31.000Z",
+                                      "count": 641,
+                                      "diff": 265,
+                                      "is_bad": 0,
+                                      "is_rollback": 1,
+                                      "is_q_based": 0,
+                                      "title": "멀틱스"
                                     },
                                     {
-                                      "id": 2,
-                                      "title": "위키 문서 제목2",
-                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r15.wiki",
+                                      "id": 72,
+                                      "user_id": 2,
+                                      "doc_id": 6,
+                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/멀틱스/r62.wiki",
+                                      "version": 62,
+                                      "summary": "멀틱스 개요 내용 추가",
+                                      "created_at": "2023-08-10T13:19:18.000Z",
+                                      "count": 376,
+                                      "diff": -265,
+                                      "is_bad": 0,
+                                      "is_rollback": 0,
+                                      "is_q_based": 0,
+                                      "title": "멀틱스"
+                                    },
+                                    {
+                                      "id": 71,
+                                      "user_id": 2,
+                                      "doc_id": 14,
+                                      "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/오버워치/r1.wiki",
                                       "version": 1,
-                                      "type": "doc",
-                                      "is_deleted": false
+                                      "summary": "새 위키 문서 생성",
+                                      "created_at": "2023-08-10T13:16:20.000Z",
+                                      "count": 1870,
+                                      "diff": 1870,
+                                      "is_bad": 0,
+                                      "is_rollback": 0,
+                                      "is_q_based": 0,
+                                      "title": "오버워치"
                                     }
   
                                   ]
@@ -1714,7 +1748,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "wikiHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -1847,7 +1881,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "commentHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -1924,7 +1958,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "debateHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -1957,18 +1991,30 @@
                                     "example": true
                                 },
                                 "message": {
+                                  "type": "string",
+                                  "example": "배지 히스토리를 불러오는데 성공했습니다."
+                                },
+                                "data": {
                                     "type": "array",
                                     "example": [{
-                                      "id": 1,
-                                      "user_id": 1,
-                                      "badge_id": 1,
-                                      "created_at":"2021-05-20T14:48:00.000Z"
+                                      "id": 31,
+                                      "user_id": 2,
+                                      "badge_id": 21,
+                                      "created_at": "2023-08-10T20:06:00.000Z",
+                                      "is_bad": 0,
+                                      "image": "https://kr.object.ncloudstorage.com/image-bucket/badge/21_%ED%86%A0%EB%A1%A02.png",
+                                      "name": "변론가",
+                                      "description": "누적 토론글 10개 작성"
                                     },
                                     {
-                                      "id": 2,
-                                      "user_id": 1,
-                                      "badge_id": 2,
-                                      "created_at":"2021-05-20T14:48:00.000Z"
+                                      "id": 28,
+                                      "user_id": 2,
+                                      "badge_id": 18,
+                                      "created_at": "2023-08-10T15:31:54.000Z",
+                                      "is_bad": 0,
+                                      "image": "https://kr.object.ncloudstorage.com/image-bucket/badge/18_%EC%B6%9C%EC%84%9D3.png",
+                                      "name": "나는 오늘도 asku",
+                                      "description": "연속 10일 출석"
                                     }
   
                                   ]
@@ -2013,7 +2059,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "badgeHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -2101,7 +2147,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "badgeHistory-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
@@ -2111,12 +2157,12 @@
         }
     }
 },
-    "/user/mypage/editinfo": {
+    "/user/mypage/editnick": {
       "put": {
         "tags": ["mypage"],
-        "summary":"유저 정보 수정",
+        "summary":"유저 닉네임 수정",
 
-        "description": "유저의 대표배지를 변경",
+        "description": "유저의 닉네임을 변경",
         "requestBody": {
             "required": true,
             "content": {
@@ -2124,27 +2170,19 @@
                     "schema": {
                         "type": "object",
                         "properties": {
-                          "name": {
-                            "type": "string",
-                            "example": "영섭2"
-                          },
-                          "stu_id": {
-                            "type": "string",
-                            "example": "2019190530"
-                          },
                           "nickname": {
                             "type": "string",
                             "example": "키키2"
                           }
                         },
-                        "required": ["stu_id", "nick_name"]
+                        "required": ["nick_name"]
                     }
                 }
             }
         },
         "responses": {
             "200": {
-                "description": "유저 정보 수정 성공",
+                "description": "유저 닉네임 수정 성공",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -2156,13 +2194,33 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "정보가 수정되었습니다."
+                                    "example": "닉네임이 \"키키2\"으로 수정되었습니다."
                                 }
                             }
                         }
                     }
                 }
             },
+            "401": {
+              "description": "빈 문자열을 입력",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "닉네임은 빈 문자열이 될 수 없습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
             "400": {
               "description": "존재하지 않는 유저의 정보를 수정하려 했거나 중복된 항목이 존재",
               "content": {
@@ -2197,7 +2255,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "editInfo-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
@@ -2227,6 +2285,10 @@
                                 "type": "boolean",
                                 "example": true
                             },
+                            "message": {
+                              "type": "string",
+                              "example": "배지 정보를 불러오는데 성공했습니다."
+                            },
                             "data": {
                                 "type": "array",
                                 "example": [{
@@ -2235,7 +2297,8 @@
                                   "image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                                   "description":  "서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능",
                                   "event": 1,
-                                  "count": 0
+                                  "count": 0,
+                                  "history_count": 4
                                 }]
                             }
                         }
@@ -2278,7 +2341,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "getBadges-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }

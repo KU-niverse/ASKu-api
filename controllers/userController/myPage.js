@@ -9,9 +9,11 @@ exports.info = async (req, res) => {
       message: "유저 정보를 불러오는데 성공했습니다.",
     });
   } catch (error) {
+    console.log(error);
+    console.log("info-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "info-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -19,11 +21,17 @@ exports.info = async (req, res) => {
 exports.wikiHistory = async (req, res) => {
   try {
     const wikiHistory = await User.getWikiHistory(req.user[0].id);
-    return res.status(201).json({ success: true, message: wikiHistory });
+    return res.status(201).json({
+      success: true,
+      data: wikiHistory,
+      message: "위키 히스토리를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
+    console.log(error);
+    console.log("wikiHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "wikiHistory-controller에서 오류가 발생했습니다.",
+      message: "서버에러",
     });
   }
 };
@@ -31,11 +39,17 @@ exports.wikiHistory = async (req, res) => {
 exports.badgeHistory = async (req, res) => {
   try {
     const badgeHistory = await User.getBadgeHistory(req.user[0].id);
-    return res.status(201).json({ success: true, message: badgeHistory });
+    return res.status(201).json({
+      success: true,
+      data: badgeHistory,
+      message: "배지 히스토리를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
+    console.log(error);
+    console.log("badgeHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "badgeHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -58,19 +72,28 @@ exports.setRepBadge = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
+    console.log("setRepBadge-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "badgeHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
-//TODO: 프로필 변경에서 이름 항목 삭제
-exports.editInfo = async (req, res) => {
+
+exports.editNick = async (req, res) => {
   try {
-    const { name, stu_id, nickname } = req.body;
+    const { nickname } = req.body;
+    //닉네임이 빈 문자열이라면
+    if (nickname === "") {
+      return res.status(401).json({
+        success: false,
+        message: `닉네임은 빈 문자열이 될 수 없습니다.`,
+      });
+    }
 
     //변경될 정보의 중복체크는 프론트에서 진행
-    const result = await User.editInfo(name, stu_id, nickname, req.user[0].id);
+    const result = await User.editNick(nickname, req.user[0].id);
     if (!result) {
       return res.status(400).json({
         success: false,
@@ -79,13 +102,15 @@ exports.editInfo = async (req, res) => {
     } else {
       return res.status(201).json({
         success: true,
-        message: `정보가 수정되었습니다.`,
+        message: `닉네임이 "${nickname}"으로 수정되었습니다.`,
       });
     }
   } catch (error) {
+    console.log(error);
+    console.log("editNick-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "editInfo-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -96,9 +121,10 @@ exports.debatetHistory = async (req, res) => {
     return res.status(201).json({ success: true, message: commentHistory });
   } catch (error) {
     console.log(error);
+    console.log("debatetHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "debatetHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -128,9 +154,10 @@ exports.questionHistory = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    console.log("questionHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "questionHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -138,7 +165,11 @@ exports.questionHistory = async (req, res) => {
 exports.getBadges = async (req, res) => {
   try {
     const badges = await User.getBadges();
-    return res.status(201).json({ success: true, data: badges });
+    return res.status(201).json({
+      success: true,
+      data: badges,
+      message: "모든 배지정보를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
     console.log(error);
     console.log("getBadges-controller에서 오류가 발생했습니다.");
