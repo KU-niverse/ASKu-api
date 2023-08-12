@@ -19,7 +19,13 @@ exports.info = async (req, res) => {
 exports.wikiHistory = async (req, res) => {
   try {
     const wikiHistory = await User.getWikiHistory(req.user[0].id);
-    return res.status(201).json({ success: true, message: wikiHistory });
+    return res
+      .status(201)
+      .json({
+        success: true,
+        data: wikiHistory,
+        message: "위키 히스토리를 불러오는데 성공했습니다.",
+      });
   } catch (error) {
     return res.status(500).json({
       success: false,
