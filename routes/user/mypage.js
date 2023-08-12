@@ -6,7 +6,7 @@ const {
   wikiHistory,
   badgeHistory,
   setRepBadge,
-  editInfo,
+  editNick,
   debatetHistory,
   questionHistory,
   getBadges,
@@ -18,7 +18,7 @@ router.get("/info", isSignedIn, info);
 router.get("/wikihistory", isSignedIn, wikiHistory);
 router.get("/badgehistory", isSignedIn, badgeHistory);
 router.put("/setrepbadge", isSignedIn, setRepBadge);
-router.put("/editinfo", isSignedIn, editInfo);
+router.put("/editnick", isSignedIn, editNick);
 
 router.get("/debatehistory", isSignedIn, debatetHistory);
 

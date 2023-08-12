@@ -231,12 +231,12 @@ User.setRepBadge = async (rep_badge_id, user_id) => {
   }
 };
 
-User.editInfo = async (name, stu_id, nickname, user_id) => {
+User.editNick = async (nickname, user_id) => {
   try {
-    await pool.query(
-      `UPDATE users SET name = ?, stu_id = ?, nickname = ? WHERE id = ?`,
-      [name, stu_id, nickname, user_id]
-    );
+    await pool.query(`UPDATE users SET nickname = ? WHERE id = ?`, [
+      nickname,
+      user_id,
+    ]);
     return true;
   } catch (err) {
     console.log(err);

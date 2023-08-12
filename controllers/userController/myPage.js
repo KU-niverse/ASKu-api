@@ -19,13 +19,11 @@ exports.info = async (req, res) => {
 exports.wikiHistory = async (req, res) => {
   try {
     const wikiHistory = await User.getWikiHistory(req.user[0].id);
-    return res
-      .status(201)
-      .json({
-        success: true,
-        data: wikiHistory,
-        message: "위키 히스토리를 불러오는데 성공했습니다.",
-      });
+    return res.status(201).json({
+      success: true,
+      data: wikiHistory,
+      message: "위키 히스토리를 불러오는데 성공했습니다.",
+    });
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -77,12 +75,12 @@ exports.setRepBadge = async (req, res) => {
   }
 };
 //TODO: 프로필 변경에서 이름 항목 삭제
-exports.editInfo = async (req, res) => {
+exports.editNick = async (req, res) => {
   try {
-    const { name, stu_id, nickname } = req.body;
+    const { nickname } = req.body;
 
     //변경될 정보의 중복체크는 프론트에서 진행
-    const result = await User.editInfo(name, stu_id, nickname, req.user[0].id);
+    const result = await User.editNick(nickname, req.user[0].id);
     if (!result) {
       return res.status(400).json({
         success: false,
@@ -91,13 +89,15 @@ exports.editInfo = async (req, res) => {
     } else {
       return res.status(201).json({
         success: true,
-        message: `정보가 수정되었습니다.`,
+        message: `닉네임이 "${nickname}"으로 수정되었습니다.`,
       });
     }
   } catch (error) {
+    console.log(error);
+    console.log("editNick-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "editInfo-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };

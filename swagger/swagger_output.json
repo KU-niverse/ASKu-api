@@ -2152,12 +2152,12 @@
         }
     }
 },
-    "/user/mypage/editinfo": {
+    "/user/mypage/editnick": {
       "put": {
         "tags": ["mypage"],
-        "summary":"유저 정보 수정",
+        "summary":"유저 닉네임 수정",
 
-        "description": "유저의 대표배지를 변경",
+        "description": "유저의 닉네임을 변경",
         "requestBody": {
             "required": true,
             "content": {
@@ -2165,27 +2165,19 @@
                     "schema": {
                         "type": "object",
                         "properties": {
-                          "name": {
-                            "type": "string",
-                            "example": "영섭2"
-                          },
-                          "stu_id": {
-                            "type": "string",
-                            "example": "2019190530"
-                          },
                           "nickname": {
                             "type": "string",
                             "example": "키키2"
                           }
                         },
-                        "required": ["stu_id", "nick_name"]
+                        "required": ["nick_name"]
                     }
                 }
             }
         },
         "responses": {
             "200": {
-                "description": "유저 정보 수정 성공",
+                "description": "유저 닉네임 수정 성공",
                 "content": {
                     "application/json": {
                         "schema": {
@@ -2197,7 +2189,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "정보가 수정되었습니다."
+                                    "example": "닉네임이 \"키키2\"으로 수정되었습니다."
                                 }
                             }
                         }
@@ -2238,7 +2230,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "editInfo-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
