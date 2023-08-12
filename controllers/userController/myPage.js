@@ -9,9 +9,11 @@ exports.info = async (req, res) => {
       message: "유저 정보를 불러오는데 성공했습니다.",
     });
   } catch (error) {
+    console.log(error);
+    console.log("info-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "info-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -25,9 +27,11 @@ exports.wikiHistory = async (req, res) => {
       message: "위키 히스토리를 불러오는데 성공했습니다.",
     });
   } catch (error) {
+    console.log(error);
+    console.log("wikiHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "wikiHistory-controller에서 오류가 발생했습니다.",
+      message: "서버에러",
     });
   }
 };
@@ -68,13 +72,15 @@ exports.setRepBadge = async (req, res) => {
       });
     }
   } catch (error) {
+    console.log(error);
+    console.log("setRepBadge-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "badgeHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
-//TODO: 프로필 변경에서 이름 항목 삭제
+
 exports.editNick = async (req, res) => {
   try {
     const { nickname } = req.body;
@@ -108,9 +114,10 @@ exports.debatetHistory = async (req, res) => {
     return res.status(201).json({ success: true, message: commentHistory });
   } catch (error) {
     console.log(error);
+    console.log("debatetHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "debatetHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -140,9 +147,10 @@ exports.questionHistory = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    console.log("questionHistory-controller에서 오류가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "questionHistory-controller에서 오류가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };

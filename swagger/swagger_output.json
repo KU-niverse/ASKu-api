@@ -1623,7 +1623,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "info-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
@@ -1654,6 +1654,11 @@
                                     "example": true
                                 },
                                 "message": {
+                                    "type": "string",
+                                    "example": "위키 히스토리를 불러오는데 성공했습니다."
+                                },
+                                
+                                "data": {
                                     "type": "array",
                                     "example": [{
                                       "id": 73,
@@ -1743,7 +1748,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "wikiHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -1876,7 +1881,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "commentHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -1953,7 +1958,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "debateHistory-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
@@ -2142,7 +2147,7 @@
                                 },
                                 "message": {
                                     "type": "string",
-                                    "example": "badgeHistory-controller에서 오류가 발생했습니다."
+                                    "example": "서버 에러"
                                 }
                             }
                         }
@@ -2316,7 +2321,7 @@
                             },
                             "message": {
                                 "type": "string",
-                                "example": "getBadges-controller에서 오류가 발생했습니다."
+                                "example": "서버 에러"
                             }
                         }
                     }
