@@ -2201,6 +2201,26 @@
                     }
                 }
             },
+            "401": {
+              "description": "빈 문자열을 입력",
+              "content": {
+                  "application/json": {
+                      "schema": {
+                          "type": "object",
+                          "properties": {
+                              "success": {
+                                  "type": "boolean",
+                                  "example": false
+                              },
+                              "message": {
+                                  "type": "string",
+                                  "example": "닉네임은 빈 문자열이 될 수 없습니다."
+                              }
+                          }
+                      }
+                  }
+              }
+          },
             "400": {
               "description": "존재하지 않는 유저의 정보를 수정하려 했거나 중복된 항목이 존재",
               "content": {

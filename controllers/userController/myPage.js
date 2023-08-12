@@ -84,6 +84,13 @@ exports.setRepBadge = async (req, res) => {
 exports.editNick = async (req, res) => {
   try {
     const { nickname } = req.body;
+    //닉네임이 빈 문자열이라면
+    if (nickname === "") {
+      return res.status(401).json({
+        success: false,
+        message: `닉네임은 빈 문자열이 될 수 없습니다.`,
+      });
+    }
 
     //변경될 정보의 중복체크는 프론트에서 진행
     const result = await User.editNick(nickname, req.user[0].id);
