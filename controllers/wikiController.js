@@ -259,7 +259,10 @@ exports.contentsGetMid = async (req, res) => {
       jsonData.contents.push({"section": "0", "index": "0", "title": "들어가며", "content": current_content});
     }
 
-    jsonData.contents.push(indexing(numbers, sections));
+    indexing(numbers, sections).forEach(obj => {
+      jsonData.contents.push(obj);
+    });
+    
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
       const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
