@@ -4,7 +4,7 @@
   "description": "ASKu 위키 api",
   "main": "app.js",
   "scripts": {
-    "start": "pm2 start app.js --watch --ignore-watch='logs/*",
+    "start": "pm2 start app.js --watch --ignore-watch='logs/*'",
     "dev": "nodemon app"
   },
   "repository": {
