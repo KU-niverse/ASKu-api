@@ -189,7 +189,7 @@ User.deletePwFindSession = async (hashed_login_id) => {
 
 User.getWikiHistory = async (user_id) => {
   const [user_wiki_history] = await pool.query(
-    `SELECT * FROM wiki_history WHERE user_id = ? ORDER BY created_at DESC`,
+    `SELECT wiki_history.*, wiki_docs.title FROM wiki_history inner join wiki_docs on wiki_history.doc_id = wiki_docs.id WHERE user_id = ? ORDER BY created_at DESC`,
     [user_id]
   );
   return user_wiki_history;
@@ -197,14 +197,24 @@ User.getWikiHistory = async (user_id) => {
 
 User.getBadgeHistory = async (user_id) => {
   const [user_badge_history] = await pool.query(
-    `SELECT * FROM badge_history WHERE user_id = ?`,
+    `SELECT badge_history.*, badges.image, badges.name, badges.description FROM badge_history inner join badges on badge_history.badge_id = badges.id WHERE user_id = ? order by badge_history.created_at DESC`,
     [user_id]
   );
   return user_badge_history;
 };
 
 User.getBadges = async () => {
-  const [badges] = await pool.query(`SELECT * FROM badges;`);
+  const [badges] = await pool.query(`SELECT 
+  badges.*,
+  COUNT(badge_history.id) AS history_count
+FROM
+  badges
+LEFT JOIN 
+  badge_history ON badges.id = badge_history.badge_id
+GROUP BY 
+  badges.id, badges.name, badges.image, badges.description, badges.event, badges.cont
+ORDER BY 
+  history_count ASC, badges.id ASC;`);
   return badges;
 };
 
@@ -221,12 +231,12 @@ User.setRepBadge = async (rep_badge_id, user_id) => {
   }
 };
 
-User.editInfo = async (name, stu_id, nickname, user_id) => {
+User.editNick = async (nickname, user_id) => {
   try {
-    await pool.query(
-      `UPDATE users SET name = ?, stu_id = ?, nickname = ? WHERE id = ?`,
-      [name, stu_id, nickname, user_id]
-    );
+    await pool.query(`UPDATE users SET nickname = ? WHERE id = ?`, [
+      nickname,
+      user_id,
+    ]);
     return true;
   } catch (err) {
     console.log(err);
