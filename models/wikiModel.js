@@ -239,7 +239,23 @@ class Wiki_point {
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
   static async getContributors(doc_id) {
-    const [rows] = await pool.query("SELECT user_id, SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) AS point FROM wiki_history WHERE doc_id = ? AND is_bad = 0 AND is_rollback = 0 GROUP BY user_id ORDER BY point DESC", [doc_id]);
+    const [rows] = await pool.query(`
+      SELECT
+        wh.user_id,
+        u.nickname,
+        SUM(
+            CASE
+                WHEN wh.diff > 0 AND wh.is_q_based = 1 THEN wh.diff * 5
+                WHEN wh.diff > 0 THEN wh.diff * 4
+                ELSE 0
+            END
+        ) AS point
+      FROM wiki_history wh
+      JOIN users u ON wh.user_id = u.id
+      WHERE wh.doc_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
+      GROUP BY wh.user_id, u.nickname
+      ORDER BY point DESC;
+    `, [doc_id]);
     return rows;
   }
 
