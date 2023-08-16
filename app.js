@@ -41,13 +41,6 @@ const swaggerFile = require("./swagger/swagger_output.json");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: true,
-    credentials: true,
-  })
-);
-
 passportConfig(); // 패스포트 설정
 
 app.use(bodyParser.json());
@@ -64,6 +57,17 @@ if (process.env.NODE_ENV === "production") {
 } else {
   app.use(morgan("dev"));
 }
+
+let corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+if (process.env.NODE_ENV === "production") {
+  corsOptions.origin = process.env.ORIGIN_URL;
+}
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
