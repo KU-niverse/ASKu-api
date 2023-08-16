@@ -123,7 +123,11 @@ Question.likeQuestion = async (id, user_id) => {
 };
 
 Question.getQuestionSearchByQuery = async (query) => {
-  const result = await pool.query(`SELECT * FROM questions WHERE content LIKE ?`, [`%${query}%`]);
+  const result = await pool.query(
+    `SELECT questions.*, users.nickname  
+    FROM questions INNER JOIN users ON questions.user_id = users.id
+    WHERE content LIKE ?`, [`%${query}%`]
+  );
   return result[0];
 };
 
