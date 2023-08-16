@@ -1,4 +1,5 @@
 const Wiki = require("../models/wikiModel.js");
+const { getWikiContent } = require("../controllers/wikiController.js");
 
 // 위키 히스토리 생성 미들웨어
 exports.createHistoryMid = async (req, res, next) => {
@@ -63,5 +64,24 @@ exports.wikiPointMid = async (req, res, next) => {
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "위키 작성 기여도 지급 중 오류" });
+  }
+};
+
+// 위키 최신 내용 db 업데이트 미들웨어
+exports.wikiChangeRecentContentMid = async (req, res, next) => {
+  try {
+    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const title = req.params.title.replace(/\/+/g, "_");
+    const version = rows[0].version;
+    let text = "";
+    
+    text = await getWikiContent(res, title, version);
+
+    await Wiki.Wiki_docs.updateRecentContent(doc_id, text);
+    next();
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "최신 내용 업데이트 중 오류" });
   }
 };

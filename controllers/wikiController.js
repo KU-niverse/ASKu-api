@@ -40,6 +40,8 @@ const getWikiContent = (res, title, version) => {
   });
 };
 
+exports.getWikiContent = getWikiContent;
+
 // 새 위키 파일을 저장하는 함수
 const saveWikiContent = (res, title, version, content) => {
   return new Promise((resolve, reject) => {
