@@ -286,6 +286,7 @@ CREATE TABLE
         `id` int NOT NULL AUTO_INCREMENT,
         `title` varchar(100) NOT NULL,
         `text_pointer` text NOT NULL,
+        `recent_filtered_content` text NOT NULL,
         `latest_ver` int NOT NULL,
         `type` enum('doc', 'list') NOT NULL,
         -- [문서 타입] doc: 목차형, list: 나열형

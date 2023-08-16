@@ -74,7 +74,32 @@ class Wiki_docs {
     const [rows] = await pool.query(
       `SELECT * FROM wiki_docs WHERE is_deleted = 0 ORDER BY created_at DESC`
     );
+
     return rows;
+  }
+
+  static async updateRecentContent(doc_id, text) {
+    // 위키 문법 필터링
+    text = text.replace(/\n([^=].*?)\n/g, '$1 ');
+    text = text.replace(/'''([^=].*?)'''/g, '$1');
+    text = text.replace(/''(.+?)''/g, '$1');
+    text = text.replace(/--(.+?)--/g, '$1');
+    text = text.replace(/&amp;/g, '&');
+    text = text.replace(/={2,}/g, '');
+    text = text.replace(/={2,}/g, '');
+    text = text.replace(/\n/g, ' ');
+    text = text.replace(/\n/g, ' ');
+    text = text.replace(/\[\[.*http.*\]\]/g, '');  // Remove [[...http...]]
+    text = text.replace(/\[\[(.+?)\]\]/g, '$1');  // Remove brackets from [[...]]
+
+  
+    // 필터링 한 내용을 recent_filtered_content에 업데이트
+    const [result] = await pool.query(
+      `UPDATE wiki_docs SET recent_filtered_content = ? WHERE id = ?`,
+      [text, doc_id]
+    );
+
+    return result.changedRows;
   }
 }
 

@@ -11,7 +11,7 @@ const { recordSearch } = require("../middlewares/search.js");
 const router = express.Router();
 
 // 새 위키 문서 생성하기 [기여도 지급]
-router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
+router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
 // 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
 router.get('/contents/:title(*)/version/:version', (req, res, next)=>{req.calltype = 2; next();}, wikiCont.contentsGetMid);
@@ -20,7 +20,7 @@ router.get('/contents/:title(*)/version/:version', (req, res, next)=>{req.callty
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
 
 // 특정 섹션의 글 수정하기
-router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
+router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
 // 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
 router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
@@ -29,7 +29,7 @@ router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMid
 router.get('/contents/:title(*)', (req, res, next)=>{req.calltype = 1; next();}, wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
-router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
+router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
 
 // 모든 글 제목 조회
 router.get('/titles', wikiCont.titlesGetMid);
@@ -52,7 +52,7 @@ router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
 router.get('/historys/:title(*)/version/:version', wikiCont.historyRawGetMid);
 
 // 특정 버전으로 롤백하기
-router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.historyVersionPostMid, wikiMid.createHistoryMid, newNotice, (req, res) => {
+router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.historyVersionPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, newNotice, (req, res) => {
   res.status(200).json({ success: true, message: '위키 롤백 성공' });
 }); // 뒤에 알림 넣어야함
 
