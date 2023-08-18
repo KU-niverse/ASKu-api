@@ -5,6 +5,7 @@ class Wiki_docs {
   constructor(wiki_docs) {
     this.title = wiki_docs.title;
     this.text_pointer = wiki_docs.text_pointer;
+    this.recent_filtered_content = wiki_docs.recent_filtered_content;
     this.type = wiki_docs.type;
     this.latest_ver = wiki_docs.latest_ver;
   }
