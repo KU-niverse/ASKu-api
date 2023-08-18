@@ -148,6 +148,7 @@ exports.newWikiPostMid = async (req, res, next) => {
     const new_wiki_docs = new Wiki.Wiki_docs({
       title: req.params.title,
       text_pointer: `${edp}/wiki-bucket/${title}/r${version}.wiki`,
+      recent_filtered_content: text,
       type: type,
       latest_ver: version,
     });
