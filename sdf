@@ -1,0 +1,32 @@
+DELIMITER //
+CREATE PROCEDURE test_insert_sending_tikkle(IN desired_tikkling_id INT, IN sending_user_id INT, IN sending_quantity INT, IN sending_message TEXT)
+BEGIN
+    DECLARE total_tikkle_quantity INT;
+    DECLARE received_tikkle_count INT;
+    DECLARE new_received_tikkle_count INT;
+    DECLARE tikkling_state_id INT;
+
+    START TRANSACTION;
+    
+    SELECT tikkle_quantity, state_id INTO total_tikkle_quantity, tikkling_state_id FROM tikkling WHERE id = desired_tikkling_id FOR UPDATE;
+
+    SELECT COALESCE(SUM(quantity), 0) INTO received_tikkle_count FROM sending_tikkle WHERE tikkling_id = desired_tikkling_id;
+
+    IF received_tikkle_count + sending_quantity <= total_tikkle_quantity AND tikkling_state_id = 1 THEN
+        INSERT INTO sending_tikkle (tikkling_id, user_id, quantity, message) VALUES (desired_tikkling_id, sending_user_id, sending_quantity, sending_message);
+    ELSE
+        -- 디버그 출력문 추가
+        SELECT CONCAT('Insert skipped. received_tikkle_count:', received_tikkle_count, ', sending_quantity:', sending_quantity, ', tikkle_quantity:', total_tikkle_quantity, ', tikkling_state_id:', tikkling_state_id) AS debug_message;
+    END IF;
+
+    SELECT COALESCE(SUM(quantity), 0) INTO new_received_tikkle_count FROM sending_tikkle WHERE tikkling_id = desired_tikkling_id;
+
+    IF new_received_tikkle_count >= total_tikkle_quantity THEN
+        UPDATE tikkling SET state_id = 4 WHERE id = desired_tikkling_id AND state_id = 1;
+        INSERT INTO notification (user_id, message, notification_type_id, deep_link, link) VALUES ((SELECT user_id FROM tikkling WHERE id = desired_tikkling_id), "이제 티클을 상품으로 바꿀 수 있어요", 6, NULL, NULL);
+    END IF;
+
+    COMMIT;
+END //
+
+DELIMITER ;
