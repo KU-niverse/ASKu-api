@@ -396,6 +396,7 @@ CREATE TABLE
     `ai_session` (
         `id` int NOT NULL AUTO_INCREMENT,
         `user_id` int NOT NULL,
+        `is_questioning` INT NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
