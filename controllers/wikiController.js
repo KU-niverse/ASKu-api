@@ -633,7 +633,7 @@ exports.wikiDeleteMid = async (req, res) => {
 // 위키 제목 기반으로 문서 검색하기
 exports.wikiSearchGetMid = async (req, res) => {
   try{
-    const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(req.params.title);
+    const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(decodeURIComponent(req.params.title));
     res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
