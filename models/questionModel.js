@@ -124,12 +124,16 @@ Question.likeQuestion = async (id, user_id) => {
 
 Question.getQuestionSearchByQuery = async (query) => {
   const result = await pool.query(
-    `SELECT questions.*, users.nickname  
-    FROM questions INNER JOIN users ON questions.user_id = users.id
-    WHERE content LIKE ?`, [`%${query}%`]
+    `SELECT questions.*, users.nickname, wiki_docs.title 
+    FROM questions 
+    INNER JOIN users ON questions.user_id = users.id
+    INNER JOIN wiki_docs ON questions.doc_id = wiki_docs.id
+    WHERE content LIKE ?
+    ORDER BY questions.created_at DESC`, [`%${query}%`]
   );
   return result[0];
 };
+
 
 Question.getQuestionsPopular = async () => {
   const rows = await pool.query(

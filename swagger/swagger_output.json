@@ -2841,26 +2841,28 @@
                       "type": "array",
                       "example": [
                         {
-                          "id": 1,
+                          "id": 7,
                           "doc_id": 1,
-                          "user_id": 1,
+                          "user_id": 2,
                           "index_title": "1. 개요",
-                          "content": "고양이는 얼마나 귀여운가요?",
-                          "created_at": "2023-07-18T12:32:18.000Z",
+                          "content": "고양이는 귀엽다고 생각해요",
+                          "created_at": "2023-07-19T12:37:40.000Z",
                           "answer_or_not": 0,
                           "is_bad": 0,
-                          "nickname": "고양이좋아"
+                          "nickname": "test",
+                          "title": "고양이"
                         },
                         {
-                          "id": 2,
+                          "id": 6,
                           "doc_id": 1,
-                          "user_id": 1,
+                          "user_id": 2,
                           "index_title": "1. 개요",
-                          "content": "고양이는 얼마나 귀여운가요?",
-                          "created_at": "2023-07-18T12:35:35.000Z",
+                          "content": "고양이는 귀엽다고 생각해요",
+                          "created_at": "2023-07-18T12:36:32.000Z",
                           "answer_or_not": 0,
-                          "is_bad": 1,
-                          "nickname": "test"
+                          "is_bad": 0,
+                          "nickname": "test",
+                          "title": "고양이"
                         }
                       ]
                     }

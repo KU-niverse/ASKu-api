@@ -95,8 +95,7 @@ exports.questionLikeMid = async (req, res, next) => {
 // 질문 제목 기반으로 검색하기
 exports.questionSearchGetMid = async (req, res) => {
   try {
-    const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
-    const query = req.params.query.trim().replace(regex, '');
+    const query = req.params.query;
     if (!query) {
       res.status(400).send({success: false, message: "잘못된 검색어입니다."});
     } else {
