@@ -633,7 +633,13 @@ exports.wikiDeleteMid = async (req, res) => {
 // 위키 제목 기반으로 문서 검색하기
 exports.wikiSearchGetMid = async (req, res) => {
   try{
-    const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(decodeURIComponent(req.params.title));
+    console.log("req.params.title : ", req.params.title);
+    let title = decodeURIComponent(req.params.title);
+    console.log("title: ", title);
+    if (title.includes("%") || title.includes("_")) {
+      title = title.replace(/%/g, "\\%").replace(/_/g, "\\_");
+    }
+    const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(title);
     res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
