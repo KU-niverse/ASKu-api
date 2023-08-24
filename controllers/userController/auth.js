@@ -431,12 +431,12 @@ exports.findPw = async (req, res) => {
       attachments: [
         {
           filename: "pw_change_email_auth_cut.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/pw_change_email_auth.png",
+          path: "./pw_change_email_auth.png",
           cid: "unique@cid",
         },
         {
           filename: "pw_change_email_auth_cut2.png",
-          path: "/Users/youngsup/Desktop/ASKu-api/email_auth_cut2.png",
+          path: "./email_auth_cut2.png",
           cid: "unique@cid2",
         },
       ],
