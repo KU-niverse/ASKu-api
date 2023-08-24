@@ -479,9 +479,10 @@ exports.findPw = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    console.log("findPw-controller에서 문제가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "findPw-controller에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -513,9 +514,10 @@ exports.signUpEmailCheck = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    console.log("signUpEmailCheck-controller에서 문제가 발생했습니다.")
     return res.status(500).json({
       success: false,
-      message: "signUpEmailCheck-controller에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
