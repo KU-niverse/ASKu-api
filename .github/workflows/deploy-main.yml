@@ -25,6 +25,7 @@ jobs:
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
             cd /var/www/ASKu-api
+            git reset --hard HEAD
             git pull origin develop
             npm install
             cd swagger
