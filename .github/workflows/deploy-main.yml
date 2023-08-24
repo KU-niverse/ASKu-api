@@ -28,5 +28,5 @@ jobs:
             git pull origin develop
             npm install
             cd swagger
-            sed -i 's|http://localhost:8080|https://asku.wiki|g' swagger_output.json
-            sed -i 's|http://localhost:8080|https://asku.wiki|g' swagger.js
+            sed -i 's|http://localhost:8080|https://asku.wiki:8080|g' swagger_output.json
+            sed -i 's|http://localhost:8080|https://asku.wiki:8080|g' swagger.js
