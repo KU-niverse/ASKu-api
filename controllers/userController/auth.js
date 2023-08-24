@@ -8,9 +8,6 @@ const moment = require("moment");
 
 const nodemailer = require("nodemailer");
 
-/* const { isSignedIn, isNotSignedIn } = require("../../middlewares/sign_in");
-const { signUp, signIn, signOut } = require("../../controllers/user/auth"); */
-
 exports.idDupCheck = async (req, res) => {
   const login_id = req.params.loginid;
   try {
@@ -152,7 +149,7 @@ exports.signUp = async (req, res) => {
     });
 
     const mailOptions = {
-      to: email,
+      to: "sup1214@korea.ac.kr",
       subject: "ASKu 회원가입",
       attachments: [
         {
@@ -496,7 +493,7 @@ exports.signUpEmailCheck = async (req, res) => {
 
     if (user_id) {
       //user attend_check 데이터 생성
-      await User.initAttend(user_id);
+      await User.init(user_id);
 
       //user_action 데이터 생성
       await Action.initAction(user_id);
