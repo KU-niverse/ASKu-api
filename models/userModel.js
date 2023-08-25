@@ -246,10 +246,9 @@ User.editNick = async (nickname, user_id) => {
 
 User.init = async (user_id) => {
   await pool.query(
-    `INSERT INTO user_attend (user_id) VALUES (?);
-  INSERT INTO ai_session (user_id) values (?);
-  INSERT INTO badge_history (user_id, badge_id) VALUES (?, 16);
-  UPDATE users SET rep_badge = 16 WHERE id = ?;`,
+    `
+    INSERT INTO user_attend (user_id) VALUES (?);
+    INSERT INTO ai_session (user_id) VALUES (?);`,
     [user_id, user_id, user_id, user_id]
   );
   return true;
