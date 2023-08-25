@@ -2936,7 +2936,8 @@
                           "created_at": "2023-07-24T12:52:42.000Z",
                           "answer_or_not": 0,
                           "is_bad": 0,
-                          "like_count": 1
+                          "like_count": 1,
+                          "title": "고려대학교"
                         },
                         {
                           "id": 9,
@@ -2947,7 +2948,8 @@
                           "created_at": "2023-07-24T13:27:43.000Z",
                           "answer_or_not": 0,
                           "is_bad": 0,
-                          "like_count": 1
+                          "like_count": 1,
+                          "title": "고려대학교"
                         },
                         {
                           "id": 1,
@@ -2958,7 +2960,8 @@
                           "created_at": "2023-07-18T12:32:18.000Z",
                           "answer_or_not": 0,
                           "is_bad": 0,
-                          "like_count": 0
+                          "like_count": 0,
+                          "title": "고양이"
                         },
                         {
                           "id": 2,
@@ -2969,7 +2972,8 @@
                           "created_at": "2023-07-18T12:35:35.000Z",
                           "answer_or_not": 0,
                           "is_bad": 1,
-                          "like_count": 0
+                          "like_count": 0,
+                          "title": "고양이"
                         },
                         {
                           "id": 3,
@@ -2980,7 +2984,8 @@
                           "created_at": "2023-07-18T12:36:43.000Z",
                           "answer_or_not": 0,
                           "is_bad": 0,
-                          "like_count": 0
+                          "like_count": 0,
+                          "title": "고양이"
                         }
                       ]
                     }
