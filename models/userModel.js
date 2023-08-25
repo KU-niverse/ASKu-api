@@ -244,8 +244,13 @@ User.editNick = async (nickname, user_id) => {
   }
 };
 
-User.initAttend = async (user_id) => {
-  await pool.query(`INSERT INTO user_attend (user_id) VALUES (?)`, [user_id]);
+User.init = async (user_id) => {
+  await pool.query(
+    `
+    INSERT INTO user_attend (user_id) VALUES (?);
+    INSERT INTO ai_session (user_id) VALUES (?);`,
+    [user_id, user_id, user_id, user_id]
+  );
   return true;
 };
 

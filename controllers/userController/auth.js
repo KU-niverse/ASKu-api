@@ -8,9 +8,6 @@ const moment = require("moment");
 
 const nodemailer = require("nodemailer");
 
-/* const { isSignedIn, isNotSignedIn } = require("../../middlewares/sign_in");
-const { signUp, signIn, signOut } = require("../../controllers/user/auth"); */
-
 exports.idDupCheck = async (req, res) => {
   const login_id = req.params.loginid;
   try {
@@ -482,9 +479,10 @@ exports.findPw = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
+    console.log("findPw-controller에서 문제가 발생했습니다.");
     return res.status(500).json({
       success: false,
-      message: "findPw-controller에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
@@ -496,7 +494,7 @@ exports.signUpEmailCheck = async (req, res) => {
 
     if (user_id) {
       //user attend_check 데이터 생성
-      await User.initAttend(user_id);
+      await User.init(user_id);
 
       //user_action 데이터 생성
       await Action.initAction(user_id);
@@ -516,9 +514,10 @@ exports.signUpEmailCheck = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
+    console.log("signUpEmailCheck-controller에서 문제가 발생했습니다.")
     return res.status(500).json({
       success: false,
-      message: "signUpEmailCheck-controller에서 문제가 발생했습니다.",
+      message: "서버 에러",
     });
   }
 };
