@@ -5735,6 +5735,23 @@
               }
             }
           },
+          "400": {
+            "description": "잘못된 검색어",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "success": {
+                    "type": "boolean",
+                    "example": false
+                  }, 
+                  "message": {
+                    "type": "string",
+                    "example": "잘못된 검색어"
+                  }
+                }
+              }
+            }
+          },
           "500": {
             "description": "위키 문서 검색 중 오류",
             "content": {
