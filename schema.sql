@@ -1007,26 +1007,31 @@ DELIMITER //
 
 CREATE TRIGGER CHECK_ATTEND_UPDATE_01 AFTER UPDATE 
 ON USER_ATTEND FOR EACH ROW BEGIN DECLARE 
-	badge_exists INT;
-	SELECT
-	    COUNT(*) INTO badge_exists
-	FROM badge_history
-	WHERE
-	    user_id = NEW.user_id
-	    AND badge_id = 16
-	    AND is_bad = 0;
-	IF NEW.cont_attend >= 1
-	AND badge_exists = 0 THEN
-	INSERT INTO
-	    badge_history(user_id, badge_id)
-	VALUES (NEW.user_id, 16);
-	END IF;
-	END;
+    badge_exists INT;
+    SELECT 
+        COUNT(*) INTO badge_exists
+    FROM badge_history
+    WHERE 
+        user_id = NEW.user_id
+        AND badge_id = 16
+        AND is_bad = 0;
+    IF NEW.cont_attend >= 1 
+    AND badge_exists = 0 THEN
+    INSERT INTO 
+        badge_history(user_id, badge_id)
+    VALUES (NEW.user_id, 16);
+        
+    UPDATE users
+    SET rep_badge = 16
+    WHERE user_id = NEW.user_id;
+    END IF;
 
+END;
 
 //
 
 DELIMITER ;
+
 
 -- 17. (출석) 작심삼일을 이겨내고
 
