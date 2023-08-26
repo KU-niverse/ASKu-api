@@ -137,9 +137,10 @@ Question.getQuestionSearchByQuery = async (query) => {
 
 Question.getQuestionsPopular = async () => {
   const rows = await pool.query(
-    `SELECT q.id, q.doc_id, q.user_id, q.index_title, q.content, q.created_at, q.answer_or_not, q.is_bad, COUNT(ql.id) AS like_count
+    `SELECT q.*, COUNT(ql.id) AS like_count, wd.title
     FROM questions q
     LEFT JOIN question_like ql ON q.id = ql.id
+    INNER JOIN wiki_docs wd ON q.doc_id = wd.id
     WHERE q.answer_or_not = 0
     GROUP BY q.id
     ORDER BY like_count DESC
