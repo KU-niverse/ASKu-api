@@ -397,6 +397,7 @@ CREATE TABLE
         `id` int NOT NULL AUTO_INCREMENT,
         `user_id` int NOT NULL,
         `is_questioning` INT NOT NULL DEFAULT 0,
+        `processing_q` TEXT NULL,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
@@ -437,6 +438,7 @@ CREATE TABLE
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `is_deleted` bool NOT NULL DEFAULT 0,
         -- [히스토리 초기화 여부] 0: 존재 1: 삭제(초기화)된 히스토리
+        `has_feedback` bool NOT NULL DEFAULT 0,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`session_id`) REFERENCES `ai_session` (`id`)
     );
