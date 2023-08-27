@@ -397,6 +397,7 @@ CREATE TABLE
         `id` int NOT NULL AUTO_INCREMENT,
         `user_id` int NOT NULL,
         `is_questioning` INT NOT NULL DEFAULT 0,
+        `processing_q` TEXT NULL,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
