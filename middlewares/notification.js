@@ -4,9 +4,9 @@
 /*
 <type_id 목록>
 1. 즐겨찾기한 문서에 질문 달림 (V)
-2. 좋아요한 질문에 답변 달림(질문 기반 수정) -> wikiModel.js 수정 후 반영
-3. 자기가 한 질문에 답변 등록됨(질문 기반 수정) -> wikiModel.js 수정 후 반영
-4. 새로운 배지가 부여됨 -> 배지 부여 로직 필요
+2. 좋아요한 질문에 답변 달림(질문 기반 수정) (V)
+3. 자기가 한 질문에 답변 등록됨(질문 기반 수정) (V)
+4. 새로운 배지가 부여됨 -> 트리거로 구현 완료 (V)
 5. (관리자) 특정 토큰 이상의 데이터 수정 (diff 100자) (V)
 6. (관리자) 새로운 문서 생성됨 (V)
 7. (관리자) 새로운 신고 생성됨 (V)
@@ -58,31 +58,31 @@ exports.newNotice = async(req, res, next) => {
       let message = "";
       switch(type_id) {
       case 1:
-        message = `즐겨찾기한 ${info} 문서에 질문이 있습니다.`;
+        message = `즐겨찾기한 ${info.result} 문서에 질문이 있습니다.`;
         break;
       case 2:
-        message = `좋아요를 누른 ${info} 질문에 답변이 있습니다.`;
+        message = `좋아요를 누른 ${info.title} 문서의 ${info.result} 질문에 답변이 있습니다.`;
         break;
       case 3:
-        message = `${info} 질문에 답변이 있습니다.`;
+        message = `${info.title} 문서의 ${info.result} 질문에 답변이 있습니다.`;
         break;
       case 4:
-        message = `새로운 뱃지를 획득했습니다.: ${info}`;
+        message = `새로운 뱃지 ${info.result}를 획득했습니다.`;
         break;
       case 5:
-        message = `[관리자] 100자 이상의 문서 수정 발생: ${info}`;
+        message = `[관리자] 100자 이상의 문서 수정 발생: ${info.title} 문서의 ${info.result}`;
         break;
       case 6:
-        message = `[관리자] 새로운 문서 생성: ${info}`;
+        message = `[관리자] 새로운 문서 생성: ${info.result}`;
         break;
       case 7:
-        message = `[관리자] 새로운 신고 발생: ${info}`;
+        message = `[관리자] 새로운 신고 발생: ${info.result}`;
         break;
       case 8:
         if (!info) {
           break;
         } else{
-          message = `비정상/반복적 글 수정 발생: ${info}`;
+          message = `비정상/반복적 글 수정 발생: ${info.title} 문서의 ${info.result}`;
           break;
         }
       default:
