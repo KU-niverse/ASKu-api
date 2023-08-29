@@ -67,7 +67,7 @@ async function getUsers(type_id, condition_id) {
   // 5-8: is_admin이 1인 유저들
 }
 
-// 조건에 해당하는 message에 필요한 값을 반환하는 함수
+// 조건에 해당하는 message에 필요한 값을 반환하는 함수 => message와 link에 필요한 값을 반환
 async function getInfo(type_id, condition_id) {
   let info;
   switch(type_id) {
@@ -77,15 +77,21 @@ async function getInfo(type_id, condition_id) {
       [condition_id]
     );
     break;
-  case 2: // question_id로 질문 내용 찾기
+  case 2: // question_id로 질문 내용, 해당 문서명 찾기
     info = await pool.query(
-      `SELECT content AS result FROM questions WHERE id = ?`,
+      `SELECT questions.content AS result, wiki_docs.title
+      FROM questions
+      JOIN wiki_docs ON questions.doc_id = wiki_docs.id 
+      WHERE questions.id = ?`,
       [condition_id]
     );
     break;
-  case 3: // question_id로 질문 내용 찾기
+  case 3: // question_id로 질문 내용, 해당 문서명 찾기
     info = await pool.query(
-      `SELECT content AS result FROM questions WHERE id = ?`,
+      `SELECT questions.content AS result, wiki_docs.title
+      FROM questions
+      JOIN wiki_docs ON questions.doc_id = wiki_docs.id 
+      WHERE questions.id = ?`,
       [condition_id]
     );
     break;
@@ -96,9 +102,14 @@ async function getInfo(type_id, condition_id) {
       [condition_id]
     );
     break;
-  case 5: // wiki_history에서 diff가 100보다 큰 history id
+  case 5: // wiki_history에서 diff가 100보다 큰 history id, 해당 문서명
     info = await pool.query(
-      `SELECT id AS result FROM wiki_history WHERE diff > 100 ORDER BY created_at DESC LIMIT 1`
+      `SELECT wiki_history.id AS result, wiki_docs.title
+      FROM wiki_history 
+      LEFT JOIN wiki_docs ON wiki_history.doc_id = wiki_docs.id
+      WHERE wiki_history.diff > 100 
+      ORDER BY wiki_history.created_at DESC 
+      LIMIT 1;`
     );
     break;
   case 6: // wiki_docs에서 가장 최근 생성된 문서 제목
@@ -112,23 +123,21 @@ async function getInfo(type_id, condition_id) {
       `SELECT LAST_INSERT_ID() AS result FROM reports ORDER BY id DESC LIMIT 1`
     );
     break;
-  case 8: // 비정상/반복적 위키 수정 히스토리 id
+  case 8: // 비정상/반복적 위키 수정 히스토리 id, 해당 문서명
     info = await pool.query(
-      `SELECT MAX(id) AS result
+      `SELECT MAX(wiki_history.id) AS result, wiki_docs.title
       FROM wiki_history
-      WHERE created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR) 
-      GROUP BY doc_id, user_id 
-      HAVING COUNT(id) >= 5;
-      `
+      LEFT JOIN wiki_docs ON wiki_history.doc_id = wiki_docs.id
+      WHERE wiki_history.created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR) 
+      GROUP BY wiki_history.doc_id, wiki_history.user_id
+      HAVING COUNT(wiki_history.id) >= 5;`
     );
     break;
   default:
     info = -1;
     break;
   }
-  
-  
-  return info[0] && info[0][0] ? info[0][0].result : 0;
+  return info[0] && info[0][0] ? info[0][0] : 0;
 }
 
 // 새로운 notification을 생성해주는 함수

@@ -1438,6 +1438,22 @@ user_action FOR EACH ROW BEGIN DECLARE
 
 DELIMITER ;
 
+-- 뱃지 부여 알림 트리거
+
+DELIMITER //
+
+CREATE TRIGGER Notice_Badge AFTER INSERT ON
+badge_history FOR EACH ROW 
+BEGIN 
+    DECLARE message varchar(255);
+    SELECT name INTO message FROM badges WHERE id = NEW.badge_id;
+    INSERT INTO notifications(user_id, type_id, message)
+    VALUES (NEW.user_id, 4, CONCAT("새로운 뱃지 ", message,"를 획득했습니다."));
+END;
+//
+
+DELIMITER ;
+
 CREATE TABLE
     `temp_users` (
         `login_id` varchar(30) NOT NULL UNIQUE,
