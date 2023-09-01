@@ -2773,7 +2773,7 @@
               }
             }
           },
-          "401": {
+          "403": {
             "description": "잘못된 입력",
             "content": {
               "application/json": {

@@ -81,7 +81,7 @@ exports.questionLikeMid = async (req, res, next) => {
     if (result == 0) {
       res.status(400).send({success: false, message: "이미 좋아요를 눌렀습니다."});
     } else if (result == -1) {
-      res.status(401).send({success: false, message: "본인의 질문에는 좋아요를 누를 수 없습니다."});
+      res.status(403).send({success: false, message: "본인의 질문에는 좋아요를 누를 수 없습니다."});
     } else {
       next();
     }
