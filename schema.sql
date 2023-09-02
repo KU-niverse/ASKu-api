@@ -484,21 +484,22 @@ CREATE TABLE
         PRIMARY KEY(`id`)
     );
 
-insert into `report_reason` (description) values ('상업적 광고 및 판매');
 
-insert into `report_reason` (description) values ('정치인 비하 및 선거운동');
+insert into `report_reason` (id, description) values (1, '상업적 광고 및 판매');
 
-insert into `report_reason` (description) values ('게시판 성격에 부적절함');
+insert into `report_reason` (id, description) values (2, '정치인 비하 및 선거운동');
 
-insert into `report_reason` (description) values ('음란물');
+insert into `report_reason` (id, description) values (3, '게시판 성격에 부적절함');
 
-insert into `report_reason` (description) values ('낚시/놀람/도배');
+insert into `report_reason` (id, description) values (4, '음란물');
 
-insert into `report_reason` (description) values ('사칭/사기');
+insert into `report_reason` (id, description) values (5, '낚시/놀람/도배');
 
-insert into `report_reason` (description) values ('욕설/비하');
+insert into `report_reason` (id, description) values (6, '사칭/사기');
 
-insert into `report_reason` (description) values ('기타 사유');
+insert into `report_reason` (id, description) values (7, '욕설/비하');
+
+insert into `report_reason` (id, description) values (8, '기타 사유');
 
 CREATE TABLE
     `reports` (
