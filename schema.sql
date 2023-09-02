@@ -469,13 +469,13 @@ CREATE TABLE
         FOREIGN KEY (`feedback_id`) REFERENCES `feedback` (`id`)
     );
 
-insert into `report_type` (description) values ('위키 히스토리');
+insert into `report_type` (id, description) values (1, '위키 히스토리');
 
-insert into `report_type` (description) values ('질문');
+insert into `report_type` (id, description) values (2, '질문');
 
-insert into `report_type` (description) values ('토론방');
+insert into `report_type` (id, description) values (3, '토론방');
 
-insert into `report_type` (description) values ('토론 메시지');
+insert into `report_type` (id, description) values (4, '토론 메시지');
 
 CREATE TABLE
     `report_reason` (
