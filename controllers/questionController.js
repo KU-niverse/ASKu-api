@@ -161,7 +161,7 @@ exports.questionAnswerGetMid = async (req, res) => {
   try {
     const answers = await Question.getQuestionsAnswer(req.params.question);
 
-    res.status(200).send({
+    return res.status(200).send({
       success: true,
       message: "답변을 조회하였습니다.",
       data: answers,
