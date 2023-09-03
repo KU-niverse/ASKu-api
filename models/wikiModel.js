@@ -61,10 +61,20 @@ class Wiki_docs {
     return rows[0].id;
   }
   // wiki_docs 테이블에서 title을 통해 like 기반으로 문서를 찾아주는 함수, 나중에 업데이트 예정
-  static async searchWikiDocsByTitle(title) {
+  static async searchWikiDocsByTitle(title, user_id) {
     const [rows] = await pool.query(
-      `SELECT * FROM wiki_docs WHERE title LIKE ?`,
-      [`%${title}%`]
+      `
+      SELECT wiki_docs.*, IF(wiki_favorites.user_id IS NOT NULL, 1, 0) AS is_favorite
+      FROM wiki_docs
+      LEFT JOIN (
+          SELECT user_id, doc_id
+          FROM wiki_favorites
+          WHERE user_id = ?  -- 여기에 현재 사용자의 ID를 삽입
+      ) AS wiki_favorites
+      ON wiki_docs.id = wiki_favorites.doc_id
+      WHERE wiki_docs.title LIKE ?;
+      `,
+      [user_id, `%${title}%`]
     );
 
     return rows;
