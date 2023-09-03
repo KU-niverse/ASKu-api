@@ -2402,7 +2402,8 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "액션4",
-                            "like_count": 1
+                            "like_count": 1,
+                            "answer_count": 2
                           },
                           {
                             "id": 8,
@@ -2414,7 +2415,8 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "action1",
-                            "like_count": 1
+                            "like_count": 1,
+                            "answer_count": 1
                           },
                           {
                             "id": 15,
@@ -2426,7 +2428,8 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "고양이좋아",
-                            "like_count": 0
+                            "like_count": 0,
+                            "answer_count": 33
                           }
                         ]
                       }
