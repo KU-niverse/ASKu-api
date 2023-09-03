@@ -6904,7 +6904,9 @@
                         "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r14.wiki",
                         "version": 14,
                         "type": "doc",
-                        "is_deleted": false
+                        "is_deleted": false,
+                        "created_at": "2023-07-24T22:49:48.000Z",
+                        "is_favorite": 1
                       },
                       {
                         "id": 2,
@@ -6912,7 +6914,9 @@
                         "text_pointer": "https://kr.object.ncloudstorage.com/wiki-bucket/복돌이/r15.wiki",
                         "version": 1,
                         "type": "doc",
-                        "is_deleted": false
+                        "is_deleted": false,
+                        "created_at": "2023-07-24T22:49:48.000Z",
+                        "is_favorite": 0
                       }
 
                     ]

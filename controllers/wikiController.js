@@ -640,7 +640,8 @@ exports.wikiSearchGetMid = async (req, res) => {
     if (!title) {
       res.status(400).send({success: false, message: "잘못된 검색어"});
     } else {
-      const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(title);
+      const user_id = (req.user && req.user[0] && req.user[0].id) ? req.user[0].id : 0;
+      const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(title, user_id);
       res.status(200).send({ success: true, message: rows });
     }
   } catch (err) {
