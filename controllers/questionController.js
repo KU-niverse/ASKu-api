@@ -1,4 +1,12 @@
 const { Question, getIdByTitle } = require("../models/questionModel.js");
+//questionAnswerGetMid에서 사용
+const diff = require("diff");
+const { getWikiContent } = require("./wikiController.js");
+const dotenv = require("dotenv");
+const AWS = require("aws-sdk");
+const edp = "https://kr.object.ncloudstorage.com/";
+const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
+const region = "kr-standard";
 
 // 질문 조회하기
 exports.questionGetMid = async (req, res) => {
@@ -160,11 +168,43 @@ exports.questionPopularGetMid = async (req, res) => {
 exports.questionAnswerGetMid = async (req, res) => {
   try {
     const answers = await Question.getQuestionsAnswer(req.params.question);
+    let updatedAnswers;
+    // 답변이 존재할 경우
+    if (answers.length != 0) {
+      updatedAnswers = await Promise.all(
+        answers.map(async (item) => {
+          // 두 버전의 콘텐츠 가져오기
+          const [post_version, current_version] = await Promise.all([
+            getWikiContent(res, item.title, item.version - 1),
+            getWikiContent(res, item.title, item.version),
+          ]);
+
+          // 두 버전의 콘텐츠 비교하기
+          const diffResult = diff.diffChars(post_version, current_version);
+
+          // added 속성이 true인 항목만 필터링하고, 문자열로 합치기
+          const content = diffResult
+            .filter((change) => change.added)
+            .map((change) => change.value)
+            .join("\n")
+            .trimEnd();
+
+          // 합쳐진 문자열을 answer의 content 속성으로 추가하기
+          return {
+            ...item,
+            content,
+          };
+        })
+      );
+    } else {
+      // 답변이 존재하지 않을 경우
+      updatedAnswers = [];
+    }
 
     return res.status(200).send({
       success: true,
-      message: "답변을 조회하였습니다.",
-      data: answers,
+      message: "성공적으로 답변을 조회하였습니다.",
+      data: updatedAnswers,
     });
   } catch (err) {
     console.error(err);
