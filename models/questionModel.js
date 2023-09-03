@@ -30,28 +30,42 @@ Question.createQuestion = async (newQuestion) => {
 Question.getQuestionsAll = async (id, flag) => {
   if (flag == 0) {
     const rows = await pool.query(
-      `SELECT questions.*, users.nickname, COUNT(question_like.id) AS like_count, COUNT(answers.id) AS answer_count
-      FROM questions 
-      INNER JOIN users ON questions.user_id = users.id
-      LEFT JOIN question_like ON questions.id = question_like.id
-      LEFT JOIN answers ON questions.id = answers.question_id
-      WHERE questions.doc_id = ?
-      GROUP BY questions.id
-      ORDER BY questions.created_at DESC`,
+      `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
+      FROM questions q
+      INNER JOIN users ON q.user_id = users.id
+      LEFT JOIN (
+          SELECT id, COUNT(*) as like_count 
+          FROM question_like 
+          GROUP BY id
+      ) ql ON q.id = ql.id
+      LEFT JOIN (
+          SELECT question_id, COUNT(*) as answer_count 
+          FROM answers 
+          GROUP BY question_id
+      ) a ON q.id = a.question_id
+      WHERE q.doc_id = ?
+      ORDER BY q.created_at DESC`,
       [id]
     );
     return rows[0];
   }
   if (flag == 1) {
     const rows = await pool.query(
-      `SELECT questions.*, users.nickname, COUNT(question_like.id) AS like_count, COUNT(answers.id) AS answer_count
-      FROM questions
-      INNER JOIN users ON questions.user_id = users.id
-      LEFT JOIN question_like ON questions.id = question_like.id
-      LEFT JOIN answers ON questions.id = answers.question_id
-      WHERE questions.doc_id = ?
-      GROUP BY questions.id
-      ORDER BY like_count DESC, questions.created_at DESC`,
+      `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
+      FROM questions q
+      INNER JOIN users ON q.user_id = users.id
+      LEFT JOIN (
+          SELECT id, COUNT(*) as like_count 
+          FROM question_like 
+          GROUP BY id
+      ) ql ON q.id = ql.id
+      LEFT JOIN (
+          SELECT question_id, COUNT(*) as answer_count 
+          FROM answers 
+          GROUP BY question_id
+      ) a ON q.id = a.question_id
+      WHERE q.doc_id = ?
+      ORDER BY like_count DESC, q.created_at DESC`,
       [id]
     );
     return rows[0];
