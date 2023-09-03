@@ -1,12 +1,7 @@
 const { Question, getIdByTitle } = require("../models/questionModel.js");
-//questionAnswerGetMid에서 사용
+
 const diff = require("diff");
 const { getWikiContent } = require("./wikiController.js");
-const dotenv = require("dotenv");
-const AWS = require("aws-sdk");
-const edp = "https://kr.object.ncloudstorage.com/";
-const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
-const region = "kr-standard";
 
 // 질문 조회하기
 exports.questionGetMid = async (req, res) => {
