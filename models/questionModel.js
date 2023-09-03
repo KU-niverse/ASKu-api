@@ -148,9 +148,13 @@ Question.getQuestionsPopular = async () => {
 
 Question.getQuestionsAnswer = async (question_id) => {
   const rows = await pool.query(
-    `SELECT answers.*, wiki_history.user_id
+    `SELECT answers.*, wiki_history.user_id,
+    users.nickname, users.rep_badge,
+    badges.image AS badge_image
     FROM wiki_history
     INNER JOIN answers ON wiki_history.id = answers.wiki_history_id
+    INNER JOIN users ON wiki_history.user_id = users.id
+    INNER JOIN badges ON users.rep_badge = badges.id
     WHERE answers.question_id = ?
     ORDER BY created_at ASC;`,
     [question_id]
