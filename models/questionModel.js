@@ -1,7 +1,7 @@
 const pool = require("../config/db.js");
 
 // questions 테이블의 column을 가지는 객체
-const Question = function (question)  {
+const Question = function (question) {
   this.doc_id = question.doc_id;
   this.user_id = question.user_id;
   this.index_title = question.index_title;
@@ -9,27 +9,20 @@ const Question = function (question)  {
 };
 
 async function getQuestion(id) {
-  const [rows] = await pool.query(
-    `SELECT * FROM questions WHERE id = ?`,
-    [id]
-  );
+  const [rows] = await pool.query(`SELECT * FROM questions WHERE id = ?`, [id]);
   return rows[0];
 }
 
 // wiki_docs의 title을 입력하면 해당 문서의 id 반환하는 함수
 async function getIdByTitle(title) {
-  const result = await pool.query(
-    `SELECT id FROM wiki_docs WHERE title = ?`,
-    [title]
-  );
+  const result = await pool.query(`SELECT id FROM wiki_docs WHERE title = ?`, [
+    title,
+  ]);
   return result[0][0].id;
 }
 
 Question.createQuestion = async (newQuestion) => {
-  const [result] = await pool.query(
-    `INSERT INTO questions SET ?`,
-    newQuestion
-  );
+  const [result] = await pool.query(`INSERT INTO questions SET ?`, newQuestion);
   const id = result.insertId;
   return getQuestion(id);
 };
@@ -48,7 +41,8 @@ Question.getQuestionsAll = async (id, flag) => {
       [id]
     );
     return rows[0];
-  } if (flag == 1) {
+  }
+  if (flag == 1) {
     const rows = await pool.query(
       `SELECT questions.*, users.nickname, COUNT(question_like.id) AS like_count, COUNT(answers.id) AS answer_count
       FROM questions
@@ -91,11 +85,14 @@ Question.deleteQuestion = async (question_id, user_id) => {
     `SELECT id FROM question_like WHERE id = ?`,
     [question_id]
   );
-  if (!flag[0][0].answer_or_not && !flag_like[0][0] && flag[0][0].user_id == user_id) {
-    const result = await pool.query(
-      `DELETE FROM questions WHERE id = ?`,
-      [question_id]
-    );
+  if (
+    !flag[0][0].answer_or_not &&
+    !flag_like[0][0] &&
+    flag[0][0].user_id == user_id
+  ) {
+    const result = await pool.query(`DELETE FROM questions WHERE id = ?`, [
+      question_id,
+    ]);
     return result;
   } else {
     return 0;
@@ -113,7 +110,7 @@ Question.likeQuestion = async (id, user_id) => {
   );
   if (flag_like[0].length) {
     return 0;
-  } else if (flag_writer[0][0].user_id == user_id){
+  } else if (flag_writer[0][0].user_id == user_id) {
     return -1;
   } else {
     const result = await pool.query(
@@ -131,11 +128,11 @@ Question.getQuestionSearchByQuery = async (query) => {
     INNER JOIN users ON questions.user_id = users.id
     INNER JOIN wiki_docs ON questions.doc_id = wiki_docs.id
     WHERE content LIKE ?
-    ORDER BY questions.created_at DESC`, [`%${query}%`]
+    ORDER BY questions.created_at DESC`,
+    [`%${query}%`]
   );
   return result[0];
 };
-
 
 Question.getQuestionsPopular = async () => {
   const rows = await pool.query(
@@ -151,4 +148,20 @@ Question.getQuestionsPopular = async () => {
   return rows[0];
 };
 
-module.exports = {Question, getIdByTitle, getQuestion};
+Question.getQuestionsAnswer = async (question_id) => {
+  const rows = await pool.query(
+    `SELECT answers.*, wiki_history.user_id, wiki_history.version,
+    users.nickname, users.rep_badge,
+    badges.image AS badge_image
+    FROM wiki_history
+    INNER JOIN answers ON wiki_history.id = answers.wiki_history_id
+    INNER JOIN users ON wiki_history.user_id = users.id
+    INNER JOIN badges ON users.rep_badge = badges.id
+    WHERE answers.question_id = ?
+    ORDER BY created_at ASC;`,
+    [question_id]
+  );
+  return rows[0];
+};
+
+module.exports = { Question, getIdByTitle, getQuestion };
