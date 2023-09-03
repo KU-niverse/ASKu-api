@@ -148,7 +148,7 @@ Question.getQuestionsPopular = async () => {
 
 Question.getQuestionsAnswer = async (question_id) => {
   const rows = await pool.query(
-    `SELECT answers.*, wiki_history.user_id,
+    `SELECT answers.*, wiki_history.user_id, wiki_history.version,
     users.nickname, users.rep_badge,
     badges.image AS badge_image
     FROM wiki_history
