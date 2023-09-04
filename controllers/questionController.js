@@ -183,7 +183,9 @@ exports.questionAnswerGetMid = async (req, res) => {
             .map((change) => change.value)
             .join("\n")
             .trimEnd()
-            .replace(/\[\[File:.*?\]\]/g, "[이미지]");
+            .replace(/\[\[File:.*?\]\]/g, "[이미지]")
+            .replace(/\[\[(https?:\/\/[^\]|]+)(?:\|([^\]]+))?\]\]/g, "$1")
+            .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, doc, alias) => alias || doc);
 
           // 합쳐진 문자열을 answer의 content 속성으로 추가하기
           return {
