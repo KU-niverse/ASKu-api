@@ -23,6 +23,9 @@ router.get("/view/:title/:debate", debateMid.historyGetMid);
 // GET /debate/search/:title/:query
 router.get("/search/:title/:query", debateMid.debateSearchGetMid);
 
+// GET /debate/searchall/:query
+router.get("/searchall/:query", debateMid.debateSearchAllGetMid);
+
 // POST /debate/end/:title/:debate
 router.post("/end/:title/:debate", isSignedIn, debateMid.debateEndPostMid);
 
