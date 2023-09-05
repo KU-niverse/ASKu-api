@@ -95,14 +95,25 @@ History.getAllHistory = async (debate_id) => {
   return result[0];
 };
 
-// debate 목록을 검색하는 함수
-Debate.searchDebate = async (title, query) => {
+// debate 목록을 검색하는 함수 (한 문서 내부)
+Debate.searchDebateWithDoc = async (title, query) => {
   const doc_id = await getIdByTitle(title);
   const result = await pool.query(
     `SELECT * FROM debates
     WHERE doc_id = ? AND subject LIKE ?
     ORDER BY created_at DESC`,
     [doc_id, `%${query}%`]
+  );
+  return result[0];
+};
+
+// debate 목록을 검색하는 함수 (전체)
+Debate.searchDebate = async (query) => {
+  const result = await pool.query(
+    `SELECT * FROM debates
+    WHERE subject LIKE ?
+    ORDER BY created_at DESC`,
+    [`%${query}%`]
   );
   return result[0];
 };

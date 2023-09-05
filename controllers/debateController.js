@@ -75,7 +75,7 @@ exports.historyGetMid = async (req, res) => {
   }
 };
 
-// 토론방 검색
+// 토론방 검색 (특정 문서 안)
 exports.debateSearchGetMid = async (req, res) => {
   try {
     const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
@@ -83,7 +83,24 @@ exports.debateSearchGetMid = async (req, res) => {
     if (!query) {
       res.status(400).send({success: false, message: "잘못된 검색어입니다."});
     } else {
-      const debates = await Debate.searchDebate(decodeURIComponent(req.params.title), decodeURIComponent(query));
+      const debates = await Debate.searchDebateWithDoc(decodeURIComponent(req.params.title), decodeURIComponent(query));
+      res.status(200).send({success: true, message: "토론방 검색에 성공하였습니다.", data: debates});
+    }
+  } catch(err) {
+    console.error(err);
+    res.status(500).send({success: false, message: "오류가 발생하였습니다."});
+  }
+};
+
+// 토론방 검색 (전체)
+exports.debateSearchAllGetMid = async (req, res) => {
+  try {
+    const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
+    const query = req.params.query.trim().replace(regex, '');
+    if (!query) {
+      res.status(400).send({success: false, message: "잘못된 검색어입니다."});
+    } else {
+      const debates = await Debate.searchDebate(decodeURIComponent(query));
       res.status(200).send({success: true, message: "토론방 검색에 성공하였습니다.", data: debates});
     }
   } catch(err) {
