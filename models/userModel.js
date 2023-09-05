@@ -354,9 +354,11 @@ User.questionHistory = async (user_id, arrange) => {
   let rows;
   if (arrange == 0) {
     [rows] = await pool.query(
-      `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
+      `SELECT q.*, users.nickname, users.rep_badge, badges.image as badge_image, wiki_docs.title as doc_title,  COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
       FROM questions q
       INNER JOIN users ON q.user_id = users.id
+      INNER JOIN badges ON users.rep_badge = badges.id
+      INNER JOIN wiki_docs ON q.doc_id = wiki_docs.id
       LEFT JOIN (
           SELECT id, COUNT(*) as like_count 
           FROM question_like 
@@ -375,9 +377,11 @@ User.questionHistory = async (user_id, arrange) => {
   //인기순 조회
   else if (arrange == 1) {
     [rows] = await pool.query(
-      `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
+      `SELECT q.*, users.nickname, users.rep_badge, badges.image as badge_image, wiki_docs.title as doc_title,  COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
       FROM questions q
       INNER JOIN users ON q.user_id = users.id
+      INNER JOIN badges ON users.rep_badge = badges.id
+      INNER JOIN wiki_docs ON q.doc_id = wiki_docs.id
       LEFT JOIN (
           SELECT id, COUNT(*) as like_count 
           FROM question_like 
