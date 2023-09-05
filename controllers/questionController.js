@@ -183,7 +183,6 @@ exports.questionAnswerGetMid = async (req, res) => {
             .map((change) => change.value)
             .join("\n")
             .trimEnd()
-            .replace("../wiki/", "")
             .replace(/\[\[File:.*?\]\]/g, "[이미지]")
             .replace(/\[\[(https?:\/\/[^\]|]+)(?:\|([^\]]+))?\]\]/g, "$1")
             .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, doc, alias) => alias || doc)
