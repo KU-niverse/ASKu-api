@@ -110,9 +110,12 @@ Debate.searchDebateWithDoc = async (title, query) => {
 // debate 목록을 검색하는 함수 (전체)
 Debate.searchDebate = async (query) => {
   const result = await pool.query(
-    `SELECT * FROM debates
-    WHERE subject LIKE ?
-    ORDER BY created_at DESC`,
+    `SELECT debates.*, wiki_docs.title 
+    FROM debates
+    INNER JOIN wiki_docs
+    ON debates.doc_id = wiki_docs.id
+    WHERE debates.subject LIKE ?
+    ORDER BY debates.created_at DESC`,
     [`%${query}%`]
   );
   return result[0];
