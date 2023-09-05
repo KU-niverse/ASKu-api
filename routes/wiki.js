@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
 // 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
-router.get('/contents/:title(*)/version/:version', (req, res, next)=>{req.calltype = 2; next();}, wikiCont.contentsGetMid);
+router.get('/contents/:title(*)/version/:version', (req, res, next) => { req.calltype = 2; next(); }, wikiCont.contentsGetMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
@@ -26,7 +26,7 @@ router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.content
 router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
-router.get('/contents/:title(*)', (req, res, next)=>{req.calltype = 1; next();}, wikiCont.contentsGetMid);
+router.get('/contents/:title(*)', (req, res, next) => { req.calltype = 1; next(); }, wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
@@ -37,15 +37,24 @@ router.get('/titles', wikiCont.titlesGetMid);
 // 랜덤 글 제목 조회
 router.get('/random', wikiCont.randomTitleGetMid);
 
+const upload = imageMid.imageUploader.single('image');
 // 이미지 업로드
-router.post('/image', imageMid.imageUploader.single('image'), (req, res) => {
-  try{
-    console.log(req.file);
-    res.json({ success: true, url: req.file.location });
-  } catch (err) {
-    console.log(err);
-    res.status(500).json({ success: false, message: "이미지 업로드 중 오류" });
-  }
+router.post('/image', function (req, res) {
+  upload(req, res, function (err) {
+    try {
+      if(err) {
+        if (err.message === "Wrong extension") return res.status(400).json({ success: false, message: "지원하지 않는 확장자입니다." });
+        if (err.message === "File too large") return res.status(400).json({ success: false, message: "파일 크기가 너무 큽니다. 5MB 이하의 파일을 올려주세요." });
+      }
+      // 아래는 문제 없을 때
+      console.log(req.file);
+      res.json({ success: true, url: req.file.location }); 
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({ success: false, message: "이미지 업로드 중 오류" });
+    }
+    
+  });
 });
 
 // 특정 버전의 위키 raw data 불러오기
