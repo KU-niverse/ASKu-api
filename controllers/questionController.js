@@ -186,7 +186,8 @@ exports.questionAnswerGetMid = async (req, res) => {
             .replace("../wiki/", "")
             .replace(/\[\[File:.*?\]\]/g, "[이미지]")
             .replace(/\[\[(https?:\/\/[^\]|]+)(?:\|([^\]]+))?\]\]/g, "$1")
-            .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, doc, alias) => alias || doc);
+            .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_, doc, alias) => alias || doc)
+            .replace(/..\/wiki\//g, "");
 
           // 합쳐진 문자열을 answer의 content 속성으로 추가하기
           return {
