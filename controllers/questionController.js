@@ -168,13 +168,13 @@ exports.questionAnswerGetMid = async (req, res) => {
     if (answers.length != 0) {
       updatedAnswers = await Promise.all(
         answers.map(async (item) => {
-          // 두 버전의 콘텐츠 가져오기
+          // 두 버전의 컨텐츠 가져오기
           const [post_version, current_version] = await Promise.all([
             getWikiContent(res, item.title, item.version - 1),
             getWikiContent(res, item.title, item.version),
           ]);
 
-          // 두 버전의 콘텐츠 비교하기
+          // 두 버전의 컨텐츠 비교하기
           const diffResult = diff.diffChars(post_version, current_version);
 
           // added 속성이 true인 항목만 필터링하고, 문자열로 합치기
