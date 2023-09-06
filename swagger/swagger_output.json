@@ -2721,7 +2721,8 @@
                           "rep_badge": 1,
                           "title": "멀틱스",
                           "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
-                          "content": "잘알겠네"
+                          "content": "잘알겠네",
+                          "index_title":"2 배포 언제해~~~~"
                         },
                         {
                           "id": 5,
@@ -2734,7 +2735,8 @@
                           "rep_badge": 1,
                           "title": "멀틱스",
                           "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
-                          "content": "모르겠네"
+                          "content": "모르겠네",
+                          "index_title":"1.1.1 BSD"
                         },
                         {
                           "id": 6,
@@ -2747,7 +2749,8 @@
                           "rep_badge": 1,
                           "title": "멀틱스",
                           "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
-                          "content": "바뀌나?"
+                          "content": "바뀌나?",
+                          "index_title": "전체"
                         }
                       ]
                     }
@@ -4674,6 +4677,11 @@
                     "type": "integer",
                     "description": "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)",
                     "example": 1
+                  },
+                  "index_title": {
+                    "type": "string",
+                    "description": "질문 당시의 index_title",
+                    "example": "1. 개요"
                   }
                 }
               }
@@ -5040,6 +5048,11 @@
                     "type": "integer",
                     "description": "질문 id(질문 기반 답변인 경우에만, 이외엔 0으로 보내도 됨)",
                     "example": 1
+                  },
+                  "index_title": {
+                    "type": "string",
+                    "description": "질문시의 index_title, 전체 문서일 경우 `전체` ",
+                    "example": "전체"
                   }
                 }
               }

@@ -10,6 +10,10 @@ exports.createHistoryMid = async (req, res, next) => {
         ? req.body.is_q_based
         : 0;
     const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
+    console.log(
+      "🚀 ~ file: wiki.js:13 ~ exports.createHistoryMid= ~ req:",
+      req.body
+    );
 
     const new_wiki_history = new Wiki.Wiki_history({
       user_id: req.user[0].id,
@@ -21,7 +25,7 @@ exports.createHistoryMid = async (req, res, next) => {
       version: req.version,
       is_q_based: is_q_based,
       is_rollback: is_rollback,
-      index_title: req.index_title,
+      index_title: req.body.index_title,
     });
 
     const wiki_history_id = await Wiki.Wiki_history.create(new_wiki_history);
