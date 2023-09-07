@@ -58,16 +58,16 @@ exports.newNotice = async(req, res, next) => {
       let message = "";
       switch(type_id) {
       case 1:
-        message = `즐겨찾기한 ${info.result} 문서에 질문이 있습니다.`;
+        message = `[즐겨찾기] ${info.result} 문서에 질문이 있습니다.`;
         break;
       case 2:
-        message = `좋아요를 누른 ${info.title} 문서의 ${info.result} 질문에 답변이 있습니다.`;
+        message = `[좋아요] ${info.title} 문서의 ${info.result} 질문(${info.id})에 답변이 있습니다.`;
         break;
       case 3:
-        message = `${info.title} 문서의 ${info.result} 질문에 답변이 있습니다.`;
+        message = `[질문] ${info.title} 문서의 ${info.result} 질문(${info.id})에 답변이 있습니다.`;
         break;
       case 4:
-        message = `새로운 뱃지 ${info.result}를 획득했습니다.`;
+        message = `[뱃지] ${info.result}를 획득했습니다.`;
         break;
       case 5:
         message = `[관리자] 100자 이상의 문서 수정 발생: ${info.title} 문서의 ${info.result}`;
