@@ -77,18 +77,18 @@ async function getInfo(type_id, condition_id) {
       [condition_id]
     );
     break;
-  case 2: // question_id로 질문 내용, 해당 문서명 찾기
+  case 2: // question_id로 질문 id, 질문 내용, 해당 문서명 찾기
     info = await pool.query(
-      `SELECT questions.content AS result, wiki_docs.title
+      `SELECT questions.id AS id, questions.content AS result, wiki_docs.title
       FROM questions
       JOIN wiki_docs ON questions.doc_id = wiki_docs.id 
       WHERE questions.id = ?`,
       [condition_id]
     );
     break;
-  case 3: // question_id로 질문 내용, 해당 문서명 찾기
+  case 3: // question_id로 질문 id, 질문 내용, 해당 문서명 찾기
     info = await pool.query(
-      `SELECT questions.content AS result, wiki_docs.title
+      `SELECT questions.id AS id, questions.content AS result, wiki_docs.title
       FROM questions
       JOIN wiki_docs ON questions.doc_id = wiki_docs.id 
       WHERE questions.id = ?`,
