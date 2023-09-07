@@ -32,13 +32,13 @@ INSERT INTO
 VALUES (
         '단군할아버지 터 잡으시고',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png',
-        '서비스 출시 한 달 내 새로운 문서 생성 후 세부 내용 입력 시 획득 가능',
+        '서비스 출시 한 달 내 새로운 문서 생성',
         1,
         0
     ), (
         '개국공신',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/2_%EA%B0%9C%EA%B5%AD%EA%B3%B5%EC%8B%A0.png',
-        '서비스 출시 한 달 내 다량의 정보(페이지당 500자 or 누적 1000자) 업데이트 시 획득 가능',
+        '서비스 출시 한 달 내 500자 이상 문서 작성',
         1,
         0
     ), (
@@ -74,7 +74,7 @@ VALUES (
     ), (
         '오류 발견!',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/8_%EB%AC%B8%EC%84%9C%20%EC%88%98%EC%A0%951.png',
-        '문서 1회 이상 수정',
+        '첫 문서 수정',
         0,
         1
     ), (
@@ -122,7 +122,7 @@ VALUES (
     ), (
         '똑똑똑… 여기가 asku인가요?',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/16_%EC%B6%9C%EC%84%9D1.png',
-        '첫 가입 시 획득, 1일 출석',
+        '가입 시 획득',
         0,
         1
     ), (
@@ -146,73 +146,73 @@ VALUES (
     ), (
         '제 목소리가 들리시나요?',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/20_%ED%86%A0%EB%A1%A01.png',
-        '첫 토론글(메시지) 작성',
+        '첫 토론 메시지 작성',
         0,
         1
     ), (
         '변론가',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/21_%ED%86%A0%EB%A1%A02.png',
-        '누적 토론글 10개 작성',
+        '누적 토론 메시지 10개 작성',
         0,
         1
     ), (
         '필리버스터🔥',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/22_%ED%86%A0%EB%A1%A03.png',
-        '누적 토론글 30개 작성',
+        '누적 토론 메시지 30개 작성',
         0,
         1
     ), (
         '내공냠냠 신고합니다',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/23_%EC%A7%88%EB%AC%B81.png',
-        '첫 질문글 작성',
+        '첫 질문 작성',
         0,
         1
     ), (
         '이 시대의 질문왕!',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/24_%EC%A7%88%EB%AC%B82.png',
-        '누적 질문글 10개 작성',
+        '누적 질문 10개 작성',
         0,
         1
     ), (
         '물음표 살인마',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/25_%EC%A7%88%EB%AC%B83.png',
-        '누적 질문글 30개 작성',
+        '누적 질문 30개 작성',
         0,
         1
     ), (
         'asku의 답변은 문서 기여',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/26_%EB%8B%B5%EB%B3%801.png',
-        '첫 댓글 작성',
+        '첫 답변 작성',
         0,
         1
     ), (
         '이젠 좀 익숙해졌을지도…',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/27_%EB%8B%B5%EB%B3%802.png',
-        '누적 댓글 30개 작성',
+        '누적 답변 30개 작성',
         0,
         1
     ), (
         '고인물을 향해서',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/28_%EB%8B%B5%EB%B3%803.png',
-        '누적 댓글 100개 작성',
+        '누적 답변 100개 작성',
         0,
         1
     ), (
         '문서 지박령',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/29_%EB%8B%B5%EB%B3%804.png',
-        '누적 댓글 200개 작성',
+        '누적 답변 200개 작성',
         0,
         1
     ), (
         'ㄹㅇㅋㅋ',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/30_%EC%B6%94%EC%B2%9C1.png',
-        '추천 10개 이상',
+        '질문 추천 10개 이상',
         0,
         1
     ), (
         '당신은 추천왕!',
         'https://kr.object.ncloudstorage.com/image-bucket/badge/31_%EC%B6%94%EC%B2%9C2.png',
-        '추천 50개 이상',
+        '질문 추천 50개 이상',
         0,
         1
     );
@@ -641,8 +641,8 @@ ON user_action FOR EACH ROW BEGIN DECLARE
 	    user_id = NEW.user_id
 	    AND badge_id = 2
 	    AND is_bad = 0;
-	IF NEW.record_count > 0
-	AND badge_exists = 0 THEN -- 결정 후 수정 필요
+	IF NEW.record_count > 500
+	AND badge_exists = 0 THEN
 	INSERT INTO
 	    badge_history(user_id, badge_id)
 	VALUES (NEW.user_id, 2);
