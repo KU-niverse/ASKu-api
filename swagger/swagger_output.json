@@ -5330,6 +5330,33 @@
               }
             }
           },
+          "400":{
+            "description":"이미지 파일이 아니거나 파일 크기가 큼",
+            "content":{
+              "application/json":{
+                "schema":{
+                  "type":"object",
+                  "properties":{
+                    "status":{
+                      "type":"integer",
+                      "description":"400",
+                      "example":"400"
+                    },
+                    "success":{
+                      "type":"boolean",
+                      "description":"false",
+                      "example":false
+                    },
+                    "message":{
+                      "type":"string",
+                      "description":"오류를 알려줍니다.",
+                      "example":"지원하지 않는 확장자입니다. or 파일 크기가 너무 큽니다. 5MB 이하의 파일을 올려주세요."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "401":{
             "description":"로그인이 필요한 서비스입니다.",
             "content":{
@@ -5341,7 +5368,7 @@
             }
           },
           "500":{
-            "description":"이미지 업로드 중 오류, File too large일 경우도 있음",
+            "description":"이미지 업로드 중 오류",
             "content":{
               "application/json":{
                 "schema":{
