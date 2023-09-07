@@ -5728,6 +5728,11 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "integer",
+                            "description": "히스토리 id",
+                            "example": "1"
+                          },
                           "user_id": {
                             "type": "integer",
                             "description": "수정한 유저 id",

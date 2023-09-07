@@ -158,6 +158,7 @@ class Wiki_history {
     const [rows] = await pool.query(
       `
     SELECT
+      wh.id,
       wh.user_id,
       wh.doc_id,
       wh.version,
