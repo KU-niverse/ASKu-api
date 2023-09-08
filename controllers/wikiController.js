@@ -588,6 +588,14 @@ exports.comparisonGetMid = async (req, res) => {
     let text = "";
     let lines = [];
 
+    if (oldrev <= 0) {
+      res.status(400).send({
+        success: false,
+        message: "잘못된 요청입니다.",
+      });
+      return;
+    }
+
     if (oldrev >= rev) {
       res.status(432).send({
         success: false,
