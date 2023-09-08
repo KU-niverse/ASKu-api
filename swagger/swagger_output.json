@@ -2977,6 +2977,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "nickname": "test",
+                          "like_count": 0,
+                          "answer_count": 4,
                           "title": "고양이"
                         },
                         {
@@ -2989,6 +2991,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "nickname": "test",
+                          "like_count": 3,
+                          "answer_count": 0,
                           "title": "고양이"
                         }
                       ]
