@@ -3068,7 +3068,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "like_count": 1,
-                          "title": "고려대학교"
+                          "title": "고려대학교",
+                          "nickname": "고양이조아"
                         },
                         {
                           "id": 9,
@@ -3080,7 +3081,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "like_count": 1,
-                          "title": "고려대학교"
+                          "title": "고려대학교",
+                          "nickname": "강아지조아"
                         },
                         {
                           "id": 1,
@@ -3092,7 +3094,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "like_count": 0,
-                          "title": "고양이"
+                          "title": "고양이",
+                          "nickname": "연세대학교"
                         },
                         {
                           "id": 2,
@@ -3104,7 +3107,8 @@
                           "answer_or_not": 0,
                           "is_bad": 1,
                           "like_count": 0,
-                          "title": "고양이"
+                          "title": "고양이",
+                          "nickname": "고양이조아"
                         },
                         {
                           "id": 3,
@@ -3116,7 +3120,8 @@
                           "answer_or_not": 0,
                           "is_bad": 0,
                           "like_count": 0,
-                          "title": "고양이"
+                          "title": "고양이",
+                          "nickname": "고양이조아"
                         }
                       ]
                     }
