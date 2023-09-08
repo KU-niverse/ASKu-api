@@ -5891,6 +5891,33 @@
               }
             }
           },
+          "400": {
+            "description": "잘못된 oldrev, rev 요청",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "description": "400",
+                      "example": "400"
+                    },
+                    "success": {
+                      "type": "boolean",
+                      "description": "false",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "description": "사용자에게 전달하는 메시지",
+                      "example": "잘못된 요청입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
           "404": {
             "description": "존재하지 않는 위키 문서 혹은 버전",
             "content": {
@@ -5927,7 +5954,6 @@
                 }
               }
             }
-
           },
           "500": {
             "description": "두 버전 비교 중 오류",
