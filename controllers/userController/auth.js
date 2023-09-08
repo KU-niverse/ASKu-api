@@ -461,7 +461,7 @@ exports.findPw = async (req, res) => {
   text-decoration: none;
   cursor: pointer;
   margin-left: calc(max(-450px, -100vw + 350px));">
-  <a href="https://asku.wiki/resetpw/${hashed_login_id}" style="color: white; text-decoration: none;">비밀번호 재설정하기</a>
+  <a href="https://asku.wiki/resetpw/${code}" style="color: white; text-decoration: none;">비밀번호 재설정하기</a>
 </div>
     </td>
   </tr>
