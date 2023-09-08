@@ -408,9 +408,9 @@ exports.findPw = async (req, res) => {
     }
     //아이디 암호화
     const hashed_login_id = await bcrypt.hash(login_id, 12);
-    const code = hashed_login_id.replace(/[?&#%:/@\[\]!*'().+]/g, "");
+    const code = await hashed_login_id.replace(/[?&#%:/@\[\]!*'().+]/g, "");
     //비밀번호 변경 세션 생성
-    User.createChangePwSession(login_id, code);
+    await User.createChangePwSession(login_id, code);
 
     //메일 전송
     const transporter = await nodemailer.createTransport({
