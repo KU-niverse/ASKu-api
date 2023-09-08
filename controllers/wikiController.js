@@ -568,6 +568,7 @@ exports.historyVersionPostMid = async (req, res, next) => {
     req.diff = text.length - rows[0].count;
     req.version = new_version;
     req.is_rollback = 1;
+    req.body.index_title = rows[0].index_title;
 
     // 히스토리 생성 -> 알림
     next();
