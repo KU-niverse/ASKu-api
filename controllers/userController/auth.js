@@ -117,17 +117,18 @@ exports.signUp = async (req, res) => {
     const hash = await bcrypt.hash(password, 12);
     const uuid = uuidv4();
     const auth_uuid = uuidv4();
-    const result = await User.tempCreate({
-      login_id,
-      name,
-      stu_id,
-      email,
-      password: hash,
-      nickname,
-      uuid,
-      auth_uuid,
-    });
-    if (!result) {
+    try {
+      const result = await User.tempCreate({
+        login_id,
+        name,
+        stu_id,
+        email,
+        password: hash,
+        nickname,
+        uuid,
+        auth_uuid,
+      });
+    } catch (error) {
       return res.status(401).json({
         success: false,
         maessage: "회원가입에 실패하였습니다. 중복된 항목이 있습니다.",
@@ -149,7 +150,7 @@ exports.signUp = async (req, res) => {
     });
 
     const mailOptions = {
-      to: email,
+      to: "sup1214@korea.ac.kr",
       subject: "ASKu 회원가입",
       attachments: [
         {
@@ -514,7 +515,7 @@ exports.signUpEmailCheck = async (req, res) => {
     }
   } catch (error) {
     console.log(error);
-    console.log("signUpEmailCheck-controller에서 문제가 발생했습니다.")
+    console.log("signUpEmailCheck-controller에서 문제가 발생했습니다.");
     return res.status(500).json({
       success: false,
       message: "서버 에러",
