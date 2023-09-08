@@ -204,8 +204,7 @@ exports.signUp = async (req, res) => {
     //회원가입로직 return
     return res.status(201).json({
       success: true,
-      message:
-        "임시 회원가입을 하였습니다. 04:00까지 이메일인증을 완료해주세요.",
+      message: "이메일인증을 마치면 회원가입이 완료됩니다.",
       login_id: login_id,
       nickname,
       name,
@@ -314,6 +313,7 @@ exports.resetPw = async (req, res) => {
         EXPIRATION_TIME_MILLISECONDS <
       Date.now()
     ) {
+      User.deletePwFindSession(hashed_login_id);
       return res.status(410).json({
         success: false,
         message: "비밀번호 변경 세션의 기한이 만료되었습니다.",
@@ -408,8 +408,9 @@ exports.findPw = async (req, res) => {
     }
     //아이디 암호화
     const hashed_login_id = await bcrypt.hash(login_id, 12);
+    const code = hashed_login_id.replace(/[?&#%:/@\[\]!*'().+]/g, "");
     //비밀번호 변경 세션 생성
-    User.createChangePwSession(login_id, hashed_login_id);
+    User.createChangePwSession(login_id, code);
 
     //메일 전송
     const transporter = await nodemailer.createTransport({
