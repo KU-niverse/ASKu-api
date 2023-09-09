@@ -150,7 +150,7 @@ exports.signUp = async (req, res) => {
     });
 
     const mailOptions = {
-      to: "sup1214@korea.ac.kr",
+      to: email,
       subject: "ASKu 회원가입",
       attachments: [
         {
