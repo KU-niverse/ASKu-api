@@ -1027,7 +1027,7 @@ ON user_attend FOR EACH ROW BEGIN DECLARE
         
     UPDATE users
     SET rep_badge = 16
-    WHERE user_id = NEW.user_id;
+    WHERE id = NEW.user_id;
     END IF;
 
 END;
