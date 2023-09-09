@@ -227,7 +227,7 @@ CREATE TABLE
         `email` varchar(255) NOT NULL UNIQUE,
         `password` varchar(255) NOT NULL,
         `nickname` varchar(20) NOT NULL UNIQUE,
-        `rep_badge` int NULL,
+        `rep_badge` int NULL DEFAULT 16,
         -- 대표 배지
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `point` int NOT NULL DEFAULT 0,
