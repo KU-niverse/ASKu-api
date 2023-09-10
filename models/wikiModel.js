@@ -335,6 +335,14 @@ class Wiki_point {
     const userPoint = rows2[0].user_point;
 
     const ranking_percentage = (userRanking / totalUsers) * 100;
+    if(userPoint == 0) {
+      return {
+        count: totalUsers,
+        ranking: userRanking,
+        point: userPoint,
+        ranking_percentage: 100,
+      };
+    }
 
     return {
       count: totalUsers,

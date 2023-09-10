@@ -281,7 +281,6 @@ exports.signIn = async (req, res, next) => {
 exports.signOut = (req, res) => {
   try {
     req.logout(() => {
-      console.log("로그아웃 되었습니다.");
       res.status(200).send({ success: true, message: "로그아웃 되었습니다." });
     });
   } catch (error) {
@@ -501,13 +500,11 @@ exports.signUpEmailCheck = async (req, res) => {
       //user_action 데이터 생성
       await Action.initAction(user_id);
 
-      console.log("회원가입을 성공적으로 완료하였습니다.");
       return res.status(200).json({
         success: true,
         message: "회원가입을 성공적으로 완료하였습니다.",
       });
     } else {
-      console.log("회원가입 세션이 만료되었습니다.");
       return res.status(400).json({
         success: false,
         message:
@@ -530,7 +527,7 @@ exports.deactivate = async (req, res) => {
     if (result) {
       //로그아웃 처리
       req.logout(() => {
-        console.log("로그아웃 되었습니다.");
+        console.log("회원 탈퇴 후 로그아웃 되었습니다.");
       });
       return res.status(200).json({
         success: true,
