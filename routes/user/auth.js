@@ -42,7 +42,6 @@ router.get("/emaildupcheck/:email", isNotSignedIn, emailDupCheck);
 //로그인여부 확인
 //TODO: 서버 에러 처리
 router.get("/issignedin", isSignedIn, (req, res) => {
-  console.log("로그인한 상태입니다.");
   return res
     .status(201)
     .json({ success: true, message: "로그인한 상태입니다." });
