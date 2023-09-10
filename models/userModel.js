@@ -103,7 +103,6 @@ User.tempCreate = async (newUser) => {
     [newUser.login_id, newUser.email, newUser.nickname]
   );
   if (dup_user.length > 0) {
-    console.log("중복된 항목이 있습니다.");
     return false;
   }
   await pool.query(
@@ -154,7 +153,6 @@ User.register_auth = async (auth_uuid) => {
     ]);
     return user.id;
   } else {
-    console.log("해당 회원가입의 세션이 만료되었습니다.");
     return null;
   }
 };
@@ -259,9 +257,9 @@ User.markAttend = async (user_id) => {
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
   );
-
   //오늘 첫 출석이라면
-  if (!attend_info.today_attend) {
+
+  if (!attend_info[0].today_attend) {
     //연속 출석일수가 최대 연속 출석일수보다 크다면 최대 연속 출석일수를 업데이트
     let max_attend = 0;
     if (attend_info.max_attend) {
@@ -270,9 +268,14 @@ User.markAttend = async (user_id) => {
           ? attend_info.cont_attend + 1
           : attend_info.max_attend;
     }
-
     await pool.query(
-      `UPDATE user_attend SET today_attend = true, cont_attend = cont_attend + 1, total_attend = total_attend + 1, max_attend = ? WHERE user_id = ? `,
+      `UPDATE user_attend 
+      SET 
+        cont_attend = CASE WHEN today_attend = false THEN cont_attend + 1 ELSE cont_attend END, 
+        total_attend = CASE WHEN today_attend = false THEN total_attend + 1 ELSE total_attend END, 
+        max_attend = CASE WHEN today_attend = false THEN ? ELSE max_attend END,
+        today_attend = true
+      WHERE user_id = ? and today_attend = false;`,
       [max_attend, user_id]
     );
     return true;
