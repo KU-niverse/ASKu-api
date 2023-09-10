@@ -82,7 +82,7 @@ exports.newNotice = async(req, res, next) => {
         if (!info) {
           break;
         } else{
-          message = `비정상/반복적 글 수정 발생: ${info.title} 문서의 ${info.result}`;
+          message = `[관리자] 비정상/반복적 글 수정 발생: ${info.title} 문서의 ${info.result}`;
           break;
         }
       default:
