@@ -334,7 +334,7 @@ CREATE TABLE
         -- [부적절한 히스토리인지 여부] 0: 적절, 1: 부적절
         `is_rollback` bool NOT NULL DEFAULT 0,
         -- [롤백 히스토리인지 여부] 0: 일반, 1: 롤백
-        'index_title' varchar(255) NOT NULL DEFAULT '전체', 
+        `index_title` varchar(255) NOT NULL DEFAULT '전체', 
         PRIMARY KEY(`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
         FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`)
@@ -1478,7 +1478,7 @@ CREATE TABLE
 DROP EVENT IF EXISTS reset_temp_users;
 
 CREATE EVENT RESET_TEMP_USERS 
-	RESET_TEMP_USERS RESET_TEMP_USERS reset_temp_users ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
+	ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
 	DO
 	DELETE FROM temp_users
 	WHERE
@@ -1499,7 +1499,7 @@ CREATE TABLE
 DROP EVENT IF EXISTS reset_change_pw_session;
 
 CREATE EVENT RESET_CHANGE_PW_SESSION 
-	RESET_CHANGE_PW_SESSION RESET_CHANGE_PW_SESSION reset_change_pw_session ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
+	ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
 	DO
 	DELETE FROM
 	    change_pw_session
