@@ -1455,7 +1455,7 @@ BEGIN
     DECLARE message varchar(255);
     SELECT name INTO message FROM badges WHERE id = NEW.badge_id;
     INSERT INTO notifications(user_id, type_id, message)
-    VALUES (NEW.user_id, 4, CONCAT("새로운 뱃지 ", message,"를 획득했습니다."));
+    VALUES (NEW.user_id, 4, CONCAT("[뱃지] ", message,"를 획득했습니다."));
 END;
 //
 
