@@ -166,7 +166,8 @@ Notice.getNoticeByRole = async (user_id, is_admin) => {
     FROM notifications N 
     INNER JOIN notification_type T 
     ON N.type_id = T.id 
-    WHERE N.user_id = ? AND T.is_admin = ?;`,
+    WHERE N.user_id = ? AND T.is_admin = ?
+    ORDER BY created_at DESC;`,
     [user_id, is_admin]
   );
   return rows;
