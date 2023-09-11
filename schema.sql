@@ -281,6 +281,9 @@ UPDATE `asku_api`.`users`
 SET `id` = '0'
 WHERE (`id` = last_insert_id());
 
+ALTER TABLE `users` auto_increment=1; 
+
+
 CREATE TABLE
     `wiki_docs` (
         `id` int NOT NULL AUTO_INCREMENT,
