@@ -3,8 +3,23 @@ const { Question, getIdByTitle } = require("../models/questionModel.js");
 const diff = require("diff");
 const { getWikiContent } = require("./wikiController.js");
 
-// 질문 조회하기
+// 질문 조회하기 (id)
 exports.questionGetMid = async (req, res) => {
+  try {
+    const question = await Question.getQuestionOne(req.params.id);
+    if (!question) {
+      res.status(400).send({success: false, message: "잘못된 id입니다."});
+    } else {
+      res.status(200).send({success: true, message: "질문을 조회하였습니다.", data: question});
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({ success: false, message: "오류가 발생하였습니다." });
+  }
+};
+
+// 질문 조회하기 (doc_id)
+exports.questionGetAllMid = async (req, res) => {
   try {
     const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
     const questions = await Question.getQuestionsAll(doc_id, req.params.flag);

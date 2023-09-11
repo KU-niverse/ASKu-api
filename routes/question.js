@@ -11,8 +11,11 @@ const { recordSearch } = require("../middlewares/search.js");
 
 const router = express.Router();
 
-// GET /question/view/flag/:title
-router.get("/view/:flag/:title", questionMid.questionGetMid);
+// GET /question/view/:flag/:title
+router.get("/view/:flag/:title", questionMid.questionGetAllMid);
+
+// GET question/lookup/:id
+router.get("/lookup/:id", questionMid.questionGetMid);
 
 // POST question/new/:title
 router.post(
@@ -48,6 +51,7 @@ router.get("/query/:query(*)", recordSearch, questionMid.questionSearchGetMid);
 // GET question/popular
 router.get("/popular", questionMid.questionPopularGetMid);
 
+// GET question/answer/:question
 router.get("/answer/:question", questionMid.questionAnswerGetMid); // 답변 조회
 
 module.exports = router;

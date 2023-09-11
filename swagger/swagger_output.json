@@ -2496,6 +2496,94 @@
         }
       }
     },
+    "/question/lookup/{id}": {
+      "get": {
+        "tags": ["question"],
+        "summary": "질문 조회(id 사용)",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "질문 id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "질문 목록을 조회하였습니다."
+                    },
+                    "data": {
+                      "type": "array",
+                      "example": {
+                        "success": true,
+                        "message": "질문 목록을 조회하였습니다.",
+                        "data": [
+                          {
+                            "id": 9,
+                            "doc_id": 1,
+                            "user_id": 8,
+                            "index_title": "1. 개요",
+                            "content": "고려대학교은 몇 년도에 창립되었나요?",
+                            "created_at": "2023-07-24T13:27:43.000Z",
+                            "answer_or_not": 0,
+                            "is_bad": 0,
+                            "nickname": "액션4",
+                            "like_count": 1,
+                            "answer_count": 2
+                          }
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "잘못된 id 값",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "잘못된 id 값입니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "오류 발생",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/question/new/{title}": {
       "post": {
         "tags": ["question"],

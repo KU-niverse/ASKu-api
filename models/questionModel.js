@@ -27,6 +27,27 @@ Question.createQuestion = async (newQuestion) => {
   return getQuestion(id);
 };
 
+Question.getQuestionOne = async (id) => {
+  const rows = await pool.query(
+    `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
+      FROM questions q
+      INNER JOIN users ON q.user_id = users.id
+      LEFT JOIN (
+          SELECT id, COUNT(*) as like_count 
+          FROM question_like 
+          GROUP BY id
+      ) ql ON q.id = ql.id
+      LEFT JOIN (
+          SELECT question_id, COUNT(*) as answer_count 
+          FROM answers 
+          GROUP BY question_id
+      ) a ON q.id = a.question_id
+      WHERE q.id = ?`,
+    [id]
+  );
+  return rows[0];
+};
+
 Question.getQuestionsAll = async (id, flag) => {
   if (flag == 0) {
     const rows = await pool.query(
