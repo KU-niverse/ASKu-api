@@ -402,6 +402,7 @@ CREATE TABLE
         `user_id` int NOT NULL,
         `is_questioning` INT NOT NULL DEFAULT 0,
         `processing_q` TEXT NULL,
+        `question_limit` INT NOT NULL DEFAULT 5,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
@@ -1525,3 +1526,10 @@ CREATE EVENT RESET_TODAY_ATTENDANCE_FOR_ALL_USERS
 	DO
 	UPDATE `user_attend`
 	SET `today_attend` = 0;
+
+CREATE EVENT RESET_AI_QUESTION_LIMIT
+    ON SCHEDULE EVERY 1 DAY STARTS '2023-07-24 00:00:01' -- 1초 뒤에 실행
+    DO
+    UPDATE `ai_session`
+    SET `question_limit` = 5;
+
