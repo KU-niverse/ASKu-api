@@ -7,7 +7,8 @@ exports.reportPostMid = async (req, res, next) => {
       user_id: req.user[0].id,
       type_id: req.params.type,
       target: req.body.target,
-      reason_id: req.body.reason_id
+      reason_id: req.body.reason_id,
+      comment: req.body.comment
     });
     req.data = await Report.createReport(newReport);
     req.message = "신고를 생성하였습니다.";
