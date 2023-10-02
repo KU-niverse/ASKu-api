@@ -7,6 +7,7 @@ const Report = function (report) {
   this.type_id = report.type_id;
   this.target = report.target;
   this.reason_id = report.reason_id;
+  this.comment = report.comment;
 };
 
 async function getReport(id) {

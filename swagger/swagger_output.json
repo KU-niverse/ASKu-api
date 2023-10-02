@@ -4233,6 +4233,11 @@
                     "type": "integer",
                     "description": "reason_id - 1: 상업적 광고 및 판매, 2: 정치인 비하 및 선거운동, 3: 게시판 성격에 부적절함, 4: 음란물, 5: 낚시/놀람/도배, 6: 사칭/사기, 7: 욕설/비하, 8: 기타 사유",
                     "example": "1"
+                  },
+                  "comment": {
+                    "type": "string",
+                    "description": "기타 사유",
+                    "example": "스팸 링크 의심됨"
                   }
                 }
               }
