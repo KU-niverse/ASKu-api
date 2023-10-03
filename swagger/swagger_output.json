@@ -2426,6 +2426,7 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "액션4",
+                            "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                             "like_count": 1,
                             "answer_count": 2
                           },
@@ -2439,6 +2440,7 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "action1",
+                            "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                             "like_count": 1,
                             "answer_count": 1
                           },
@@ -2452,6 +2454,7 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "고양이좋아",
+                            "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                             "like_count": 0,
                             "answer_count": 33
                           }
@@ -2540,6 +2543,7 @@
                             "answer_or_not": 0,
                             "is_bad": 0,
                             "nickname": "액션4",
+                            "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png",
                             "like_count": 1,
                             "answer_count": 2
                           }
@@ -3633,7 +3637,8 @@
                           "content": "교양이라는 방언은 없습니다.",
                           "created_at": "2023-08-05T11:54:04.000Z",
                           "is_bad": 0,
-                          "nickname": "고양이조아"
+                          "nickname": "고양이조아",
+                          "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png"
                         },
                         {
                           "id": 5,
@@ -3642,7 +3647,8 @@
                           "content": "그렇네요 수정하겠습니다",
                           "created_at": "2023-08-05T11:57:04.000Z",
                           "is_bad": 0,
-                          "nickname": "강아지조아"
+                          "nickname": "강아지조아",
+                          "badge_image": "https://kr.object.ncloudstorage.com/image-bucket/badge/1_%EB%8B%A8%EA%B5%B0%ED%95%A0%EC%95%84%EB%B2%84%EC%A7%80%20%ED%84%B0%20%EC%9E%A1%EC%9C%BC%EC%8B%9C%EA%B3%A0.png"
                         }
                       ]
                     }

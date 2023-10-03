@@ -85,9 +85,10 @@ Debate.getAllDebateByEdit = async () => {
 // 특정 debate의 debate_history를 조회하는 함수
 History.getAllHistory = async (debate_id) => {
   const result = await pool.query(
-    `SELECT debate_history.*, users.nickname 
+    `SELECT debate_history.*, users.nickname, badges.image AS badge_image
     FROM debate_history 
     INNER JOIN users ON debate_history.user_id = users.id
+    INNER JOIN badges ON users.rep_badge = badges.id
     WHERE debate_id = ? 
     ORDER BY created_at`,
     [debate_id]
