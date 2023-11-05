@@ -30,7 +30,7 @@ exports.historyPostMid = async (req, res, next) => {
       const newHistory = new History({
         debate_id: req.params.debate,
         user_id: req.user[0].id,
-        content: req.body.content,
+        content: decodeURIComponent(req.body.content),
       });
       req.debate_message = await History.createHistory(newHistory);
       next();
