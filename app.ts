@@ -1,3 +1,4 @@
+import { SessionOptions } from "express-session";
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -72,7 +73,8 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
-const sessionOption = {
+
+const sessionOption: SessionOptions = {
   resave: false,
   saveUninitialized: false,
   secret: process.env.COOKIE_SECRET,
@@ -82,12 +84,17 @@ const sessionOption = {
     sameSite: "lax",
   },
   store: new RedisStore({ client: redisClient, prefix: "session: ", db: 0 }),
+  proxy: false,
 };
+
 if (process.env.NODE_ENV === "production") {
   sessionOption.proxy = true;
   sessionOption.cookie.secure = true;
 }
+
+
 app.use(session(sessionOption));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
