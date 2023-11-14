@@ -1,7 +1,49 @@
-const pool = require("../config/db.js");
+import pool from "../config/db";
 
 class User {
-  constructor(user) {
+  id: any;
+  login_id: any;
+  name: any;
+  stu_id: any;
+  email: any;
+  password: any;
+  nickname: any;
+  rep_badge: any;
+  created_at: any;
+  point: any;
+  is_admin: any;
+  restrict_period: any;
+  restrict_count: any;
+  uuid: any;
+  is_deleted: any;
+  static findByLoginIdTemp: any;
+  static findByNicknameTemp: any;
+  static findByEmailTemp: any;
+  static findById: any;
+  static findByLoginId: any;
+  static findByNickname: any;
+  static findByEmail: any;
+  static create: any;
+  static tempCreate: (newUser: any) => Promise<boolean>;
+  static changePw: (user_id: any, hashed_new_pw: any) => Promise<boolean>;
+  static getUserInfo: any;
+  static register_auth: (auth_uuid: any) => Promise<any>;
+  static createChangePwSession: (login_id: any, hashed_login_id: any) => Promise<boolean>;
+  static checkPwChangeSession: any;
+  static deletePwFindSession: (hashed_login_id: any) => Promise<boolean>;
+  static getWikiHistory: any;
+  static getBadgeHistory: any;
+  static getBadges: any;
+  static setRepBadge: (rep_badge_id: any, user_id: any) => Promise<boolean>;
+  static editNick: (nickname: any, user_id: any) => Promise<boolean>;
+  static init: (user_id: any) => Promise<boolean>;
+  static markAttend: (user_id: any) => Promise<boolean>;
+  static setConstraint: (user_id: any, restrict_period: any) => Promise<boolean>;
+  static deactivate: (user_id: any) => Promise<boolean>;
+  static getConstraint: any;
+  static debatetHistory: any;
+  static questionHistory: (user_id: any, arrange: any) => Promise<any>;
+  constructor(user: { id: any; login_id: any; name: any; stu_id: any; email: any; password: any; nickname: any; rep_badge: any; created_at: any; point: any; is_admin: any; restrict_period: any; restrict_count: any; uuid: any; is_deleted: any; }) {
     this.id = user.id;
     this.login_id = user.login_id;
     this.name = user.name;
@@ -21,7 +63,7 @@ class User {
 }
 
 //temp에서 login_id로 유저 찾기
-User.findByLoginIdTemp = async (login_id) => {
+User.findByLoginIdTemp = async (login_id: any) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE login_id = ?`,
     [login_id]
@@ -30,7 +72,7 @@ User.findByLoginIdTemp = async (login_id) => {
 };
 
 //temp에서 nickname으로 유저 찾기
-User.findByNicknameTemp = async (nickname) => {
+User.findByNicknameTemp = async (nickname: any) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE nickname = ?`,
     [nickname]
@@ -38,7 +80,7 @@ User.findByNicknameTemp = async (nickname) => {
   return rows;
 };
 //temp에서 email로 유저 찾기
-User.findByEmailTemp = async (email) => {
+User.findByEmailTemp = async (email: any) => {
   const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
     email,
   ]);
@@ -47,13 +89,13 @@ User.findByEmailTemp = async (email) => {
 };
 
 //user_id로 유저 찾기
-User.findById = async (id) => {
+User.findById = async (id: any) => {
   const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
   return user;
 };
 
 //login_id로 유저 찾기
-User.findByLoginId = async (login_id) => {
+User.findByLoginId = async (login_id: any) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
   ]);
@@ -61,14 +103,14 @@ User.findByLoginId = async (login_id) => {
 };
 
 //nickname으로 유저 찾기
-User.findByNickname = async (nickname) => {
+User.findByNickname = async (nickname: any) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
     nickname,
   ]);
   return rows;
 };
 //email로 유저 찾기
-User.findByEmail = async (email) => {
+User.findByEmail = async (email: any) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
   ]);
@@ -77,7 +119,7 @@ User.findByEmail = async (email) => {
 };
 
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
-User.create = async (newUser) => {
+User.create = async (newUser: { login_id: any; name: any; stu_id: any; email: any; password: any; nickname: any; uuid: any; }) => {
   await pool.query(
     `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?);`,
     [
@@ -102,7 +144,7 @@ User.tempCreate = async (newUser) => {
     `SELECT * FROM users where login_id = ? or email = ? or nickname = ?`,
     [newUser.login_id, newUser.email, newUser.nickname]
   );
-  if (dup_user.length > 0) {
+  if (Array.isArray(dup_user) && dup_user.length > 0) {
     return false;
   }
   await pool.query(
@@ -131,7 +173,7 @@ User.changePw = async (user_id, hashed_new_pw) => {
 };
 
 //회원정보 변경
-User.getUserInfo = async (user_id) => {
+User.getUserInfo = async (user_id: any) => {
   const [user] = await pool.query(
     `SELECT users.id, users.name, users.login_id, users.stu_id, users.email, users.rep_badge as rep_badge_id, users.nickname, users.created_at, users.point, users.is_admin, users.restrict_period, users.restrict_count, badges.name as rep_badge_name, badges.image as rep_badge_image FROM users left join badges on users.rep_badge = badges.id WHERE users.id = ?`,
     [user_id]
@@ -146,7 +188,7 @@ User.register_auth = async (auth_uuid) => {
     `SELECT * FROM temp_users WHERE auth_uuid = ?;`,
     [auth_uuid]
   );
-  if (temp_user.length == 1) {
+  if (Array.isArray(temp_user) && temp_user.length === 1) {
     const [user] = await User.create(temp_user[0]);
     await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [
       auth_uuid,
@@ -168,7 +210,7 @@ User.createChangePwSession = async (login_id, hashed_login_id) => {
   return true;
 };
 
-User.checkPwChangeSession = async (hashed_login_id) => {
+User.checkPwChangeSession = async (hashed_login_id: any) => {
   const [pw_session] = await pool.query(
     `SELECT * FROM change_pw_session WHERE change_pw_token = ?`,
     [hashed_login_id]
@@ -185,7 +227,7 @@ User.deletePwFindSession = async (hashed_login_id) => {
 
 //user mypage models
 
-User.getWikiHistory = async (user_id) => {
+User.getWikiHistory = async (user_id: any) => {
   const [user_wiki_history] = await pool.query(
     `SELECT wiki_history.*, wiki_docs.title FROM wiki_history inner join wiki_docs on wiki_history.doc_id = wiki_docs.id WHERE user_id = ? ORDER BY created_at DESC`,
     [user_id]
@@ -193,7 +235,7 @@ User.getWikiHistory = async (user_id) => {
   return user_wiki_history;
 };
 
-User.getBadgeHistory = async (user_id) => {
+User.getBadgeHistory = async (user_id: any) => {
   const [user_badge_history] = await pool.query(
     `SELECT badge_history.*, badges.image, badges.name, badges.description FROM badge_history inner join badges on badge_history.badge_id = badges.id WHERE user_id = ? order by badge_history.created_at DESC`,
     [user_id]
@@ -283,7 +325,7 @@ User.markAttend = async (user_id) => {
 //user_id와 restrict_period(제한 하고 싶은 일수)를 받아서 제약을 설정
 User.setConstraint = async (user_id, restrict_period) => {
   let date = new Date();
-  let formattedDate;
+  let formattedDate: string;
 
   //restrict_period가 0이라면 제약을 해제한다.
   if (restrict_period == 0) {
@@ -325,7 +367,7 @@ User.getConstraint = async () => {
   return constraint;
 };
 
-User.debatetHistory = async (user_id) => {
+User.debatetHistory = async (user_id: any) => {
   const [rows] = await pool.query(
     `SELECT 
       debates.id AS debate_id,
@@ -351,7 +393,7 @@ User.debatetHistory = async (user_id) => {
 
 User.questionHistory = async (user_id, arrange) => {
   //최신순 조회
-  let rows;
+  let rows: any;
   if (arrange == 0) {
     [rows] = await pool.query(
       `SELECT q.*, users.nickname, users.rep_badge, badges.image as badge_image, wiki_docs.title as doc_title,  COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
@@ -401,4 +443,4 @@ User.questionHistory = async (user_id, arrange) => {
   return rows;
 };
 
-module.exports = User;
+export default User;

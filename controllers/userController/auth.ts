@@ -1,12 +1,11 @@
-/* const express = require("express"); */
-const bcrypt = require("bcrypt");
-const User = require("../../models/userModel");
-const Action = require("../../models/actionModel");
-const { v4: uuidv4 } = require("uuid");
-const passport = require("passport");
-const moment = require("moment");
+import * as bcrypt from "bcrypt";
+import User from "../../models/userModel";
+import Action from "../../models/actionModel";
+import { v4 as uuidv4 } from "uuid";
+import * as passport from "passport";
+import * as moment from "moment";
+import * as nodemailer from "nodemailer";
 
-const nodemailer = require("nodemailer");
 
 exports.idDupCheck = async (req, res) => {
   const login_id = req.params.loginid;

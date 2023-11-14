@@ -1,4 +1,4 @@
-const express = require("express");
+import * as express from "express";
 
 const auth = require("./auth");
 const mypage = require("./mypage");

@@ -2,7 +2,7 @@ const Report = require("../models/reportModel");
 const Wiki = require("../models/wikiModel.js");
 const User = require("../models/userModel.js");
 // admin 위키 히스토리 조회
-exports.wikiHistory = async (req, res) => {
+export const wikiHistory = async (req, res) => {
   try {
     const wiki_history = await Wiki.Wiki_history.getAllWikiHistory();
     return res
@@ -19,7 +19,7 @@ exports.wikiHistory = async (req, res) => {
   }
 };
 
-exports.newDoc = async (req, res) => {
+export const newDoc = async (req, res) => {
   try {
     const wiki_docs = await Wiki.Wiki_docs.getAllDoc();
     return res.status(200).send({
@@ -34,7 +34,7 @@ exports.newDoc = async (req, res) => {
   }
 };
 
-exports.report = async (req, res) => {
+export const report = async (req, res) => {
   try {
     const reports = await Report.getAllReport();
     console.log(typeof reports);
@@ -53,7 +53,7 @@ exports.report = async (req, res) => {
   }
 };
 
-exports.setConstraint = async (req, res) => {
+export const setConstraint = async (req, res) => {
   try {
     const { target_user_id, restrict_period } = req.body;
     const user = await User.findById(target_user_id);
@@ -89,7 +89,7 @@ exports.setConstraint = async (req, res) => {
   }
 };
 
-exports.getConstraint = async (req, res) => {
+export const getConstraint = async (req, res) => {
   try {
     const result = await User.getConstraint();
     return res.status(200).send({

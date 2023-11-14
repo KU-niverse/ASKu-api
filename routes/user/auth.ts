@@ -1,4 +1,4 @@
-const express = require("express");
+import * as express from "express";
 
 const { isSignedIn, isNotSignedIn } = require("../../middlewares/sign_in");
 const {

@@ -1,5 +1,5 @@
 //admin인지 확인
-exports.isAdmin = (req, res, next) => {
+export const isAdmin = (req, res, next) => {
   if (req.user[0].is_admin == true) {
     next();
   } else {
