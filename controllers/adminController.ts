@@ -1,6 +1,7 @@
-const Report = require("../models/reportModel");
-const Wiki = require("../models/wikiModel.js");
-const User = require("../models/userModel.js");
+import {Report} from "../models/reportModel";
+import {Wiki_docs, Wiki_history} from "../models/wikiModel";
+import User from "../models/userModel";
+
 // admin 위키 히스토리 조회
 export const wikiHistory = async (req, res) => {
   try {

@@ -1,4 +1,4 @@
-const User = require("../models/userModel");
+import User from "../models/userModel";
 
 export const isSignedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
