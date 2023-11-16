@@ -63,7 +63,7 @@ exports.createHistoryMid = async (req, res, next) => {
 };
 
 // 위키 작성 기여도 지급 미들웨어
-exports.wikiPointMid = async (req, res, next) => {
+export const wikiPointMid = async (req, res, next) => {
   try {
     Wiki.Wiki_point.givePoint(req.user[0].id, req.diff, req.is_q_based);
     // 알림
