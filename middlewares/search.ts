@@ -2,7 +2,7 @@
 
 const {postSearch} = require("../models/searchModel");
 
-exports.recordSearch = async (req, res, next) => {
+exports.recordSearch = async (req: { params: { query: string; title: string; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   let keyword = "";
   if (req.params.query) {
     keyword = req.params.query.trim();

@@ -1,5 +1,4 @@
-import { SessionOptions } from "express-session";
-const express = require("express");
+import * as express from "express";
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
@@ -74,18 +73,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 
-const sessionOption: SessionOptions = {
-  resave: false,
-  saveUninitialized: false,
-  secret: process.env.COOKIE_SECRET,
-  cookie: {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax",
-  },
-  store: new RedisStore({ client: redisClient, prefix: "session: ", db: 0 }),
-  proxy: false,
-};
+
 
 if (process.env.NODE_ENV === "production") {
   sessionOption.proxy = true;

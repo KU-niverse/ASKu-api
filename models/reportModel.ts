@@ -1,8 +1,7 @@
-const pool = require("../config/db.js");
 const { Wiki_point } = require("../models/wikiModel.js");
 
 // reports 테이블의 column을 가지는 객체
-const Report = function (report) {
+const Report = function (report: { user_id: any; type_id: any; target: any; reason_id: any; comment: any; }) {
   this.user_id = report.user_id;
   this.type_id = report.type_id;
   this.target = report.target;
@@ -10,7 +9,7 @@ const Report = function (report) {
   this.comment = report.comment;
 };
 
-async function getReport(id) {
+async function getReport(id: any) {
   const [rows] = await pool.query(`SELECT * FROM reports WHERE id = ?`, [id]);
   return rows;
 }
@@ -22,19 +21,19 @@ Report.getAllReport = async () => {
   return rows;
 };
 
-Report.createReport = async (newReport) => {
+Report.createReport = async (newReport: any) => {
   const result = await pool.query(`INSERT INTO reports SET ?`, newReport);
   const id = result[0].insertId;
   return getReport(id);
 };
 
-Report.checkReport = async (report_id, is_checked) => {
+Report.checkReport = async (report_id: any, is_checked: number) => {
   if (is_checked == 1) {
     const report = await getReport(report_id);
     const type_id = report[0].type_id;
     const target = report[0].target;
     const user_id = report[0].user_id;
-    let sql, result;
+    let sql: string, result: any[][];
 
     switch (type_id) {
     case 1: {
@@ -94,7 +93,7 @@ Report.checkReport = async (report_id, is_checked) => {
     // 재계산된 카운트가 현재 부여된 뱃지의 기준을 충족하지 않을 경우, 해당하는 badge_history의 is_bad 컬럼을 1로 만듦
     sql = "SELECT badge_id FROM badge_history WHERE user_id = ? AND is_bad = 0";
     result = await pool.query(sql, [user_id]);
-    const badge_ids = result[0].map((row) => row.badge_id);
+    const badge_ids = result[0].map((row: { badge_id: any; }) => row.badge_id);
 
     sql = "SELECT * FROM user_action WHERE user_id = ?";
     result = await pool.query(sql, [user_id]);

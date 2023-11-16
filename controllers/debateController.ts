@@ -1,7 +1,7 @@
 const {Debate, History, getIdByTitle} = require("../models/debateModel");
 
 // 토론 생성하기
-exports.debatePostMid = async (req, res) => {
+exports.debatePostMid = async (req: { body: { subject: any; }; params: { title: string; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     if (!req.body.subject) {
       res.status(400).send({success: false, message: "토론 제목을 입력하세요."});
@@ -22,7 +22,7 @@ exports.debatePostMid = async (req, res) => {
 };
 
 // 토론방에서 메시지 입력
-exports.historyPostMid = async (req, res, next) => {
+exports.historyPostMid = async (req: { body: { content: string; }; params: { debate: any; }; user: { id: any; }[]; debate_message: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     if (!req.body.content) {
       res.status(400).send({success: false, message: "메시지 내용을 입력하세요."});
@@ -42,7 +42,7 @@ exports.historyPostMid = async (req, res, next) => {
 };
 
 // 토론방 목록 조회 (문서별 최신순)
-exports.debateGetMid = async (req, res) => {
+exports.debateGetMid = async (req: { params: { title: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const debates = await Debate.getAllDebateBycreate(decodeURIComponent(req.params.title));
     res.status(200).send({success: true, message: "토론방 목록을 조회하였습니다.", data: debates});
@@ -53,7 +53,7 @@ exports.debateGetMid = async (req, res) => {
 };
 
 // 토론방 목록 조회 (전체 최신순)
-exports.debateGetAllMid = async (req, res) => {
+exports.debateGetAllMid = async (req: any, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const debates = await Debate.getAllDebateByEdit();
     res.status(200).send({success: true, message: "전체 최신 수정순 토론방 목록을 조회하였습니다.", data: debates});
@@ -65,7 +65,7 @@ exports.debateGetAllMid = async (req, res) => {
 
 
 // 토론방 메시지 조회
-exports.historyGetMid = async (req, res) => {
+exports.historyGetMid = async (req: { params: { debate: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const histories = await History.getAllHistory(req.params.debate);
     res.status(200).send({success: true, message: "토론 메시지를 조회하였습니다.", data: histories});
@@ -76,7 +76,7 @@ exports.historyGetMid = async (req, res) => {
 };
 
 // 토론방 검색 (특정 문서 안)
-exports.debateSearchGetMid = async (req, res) => {
+exports.debateSearchGetMid = async (req: { params: { query: string; title: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
     const query = req.params.query.trim().replace(regex, '');
@@ -93,7 +93,7 @@ exports.debateSearchGetMid = async (req, res) => {
 };
 
 // 토론방 검색 (전체)
-exports.debateSearchAllGetMid = async (req, res) => {
+exports.debateSearchAllGetMid = async (req: { params: { query: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const regex = /[\{\}\[\]?.,;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/g; // eslint-disable-line
     const query = req.params.query.trim().replace(regex, '');
@@ -111,7 +111,7 @@ exports.debateSearchAllGetMid = async (req, res) => {
 
 
 // 토론방 종결
-exports.debateEndPostMid = async (req, res) => {
+exports.debateEndPostMid = async (req: { params: { debate: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }) => {
   try {
     const result = await Debate.endDebate(req.params.debate);
     if (!result) {

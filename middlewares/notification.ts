@@ -35,7 +35,7 @@
 const {getUsers, getInfo, Notice} = require("../models/notificationModel");
 
 // 알림 생성
-exports.newNotice = async(req, res, next) => {
+exports.newNotice = async(req: { body: { types_and_conditions: any; user_id: any; }; is_rollback: any; message: any; data: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: any; data?: any; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     const typesAndConditions = req.body.types_and_conditions; // [[type_id, condition_id], ...]
     const result = []; // 알림 생성 결과

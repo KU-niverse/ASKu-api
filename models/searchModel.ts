@@ -1,5 +1,3 @@
-const pool = require("../config/db.js");
-
 async function postSearch(user_id, keyword) {
   const isOften = await pool.query(
     `SELECT * FROM search_history 
