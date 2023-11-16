@@ -1,4 +1,4 @@
-const pool = require("../config/db.js");
+import * as pool from "../config/db.js";
 
 // wiki_docs 테이블의 column을 가지는 객체
 class Wiki_docs {
