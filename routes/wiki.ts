@@ -7,14 +7,18 @@ import { isAdmin } from "../middlewares/admin";
 import { newNotice } from "../middlewares/notification";
 import { newActionRevise, newActionRecord, newActionAnswer } from "../middlewares/user_action";
 import { recordSearch } from "../middlewares/search.js";
+import { Request, Response, NextFunction } from "express";
 
 const router = express.Router();
 
 // 새 위키 문서 생성하기 [기여도 지급]
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
+interface CalltypeRequest extends Request {
+  calltype: number;
+};
 // 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
-router.get('/contents/:title(*)/version/:version', (req: { calltype: number; }, res: any, next: () => void) => { req.calltype = 2; next(); }, wikiCont.contentsGetMid);
+router.get('/contents/:title(*)/version/:version', (req:CalltypeRequest, res: Response, next: NextFunction) => { req.calltype = 2; next(); }, wikiCont.contentsGetMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);
@@ -26,7 +30,7 @@ router.post('/contents/:title(*)/section/:section', isSignedIn, wikiCont.content
 router.get('/contents/question/:qid', isSignedIn, wikiCont.contentsSectionGetMidByIndex);
 
 // 전체 글 불러오기 / 전체 글 수정시 사용
-router.get('/contents/:title(*)', (req, res, next) => { req.calltype = 1; next(); }, wikiCont.contentsGetMid);
+router.get('/contents/:title(*)', (req: CalltypeRequest, res: Response, next: NextFunction) => { req.calltype = 1; next(); }, wikiCont.contentsGetMid);
 
 // 전체 글 수정하기
 router.post('/contents/:title(*)', isSignedIn, wikiCont.contentsPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newActionRevise, newActionAnswer, newNotice);
@@ -37,10 +41,18 @@ router.get('/titles', wikiCont.titlesGetMid);
 // 랜덤 글 제목 조회
 router.get('/random', wikiCont.randomTitleGetMid);
 
-const upload = imageMid.imageUploader.single('image');
+interface ImageRequest extends Request {
+  file: {
+    location: string;
+  }
+};
+interface ImageErr extends Error {
+  message: string;
+};
+const upload: any = imageMid.imageUploader.single('image');
 // 이미지 업로드
-router.post('/image', function (req, res) {
-  upload(req, res, function (err) {
+router.post('/image', function (req: ImageRequest, res: Response) {
+  upload(req, res, function (err: ImageErr) {
     try {
       if(err) {
         if (err.message === "Wrong extension") return res.status(400).json({ success: false, message: "지원하지 않는 확장자입니다." });
@@ -61,7 +73,7 @@ router.post('/image', function (req, res) {
 router.get('/historys/:title(*)/version/:version', wikiCont.historyRawGetMid);
 
 // 특정 버전으로 롤백하기
-router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.historyVersionPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, newNotice, (req, res) => {
+router.post('/historys/:title(*)/version/:version', isSignedIn, wikiCont.historyVersionPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, newNotice, (req: Request, res:Response) => {
   res.status(200).json({ success: true, message: '위키 롤백 성공' });
 }); // 뒤에 알림 넣어야함
 

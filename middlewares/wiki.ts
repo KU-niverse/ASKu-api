@@ -1,8 +1,43 @@
-const Wiki = require("../models/wikiModel.js");
-const { getWikiContent } = require("../controllers/wikiController.js");
+import * as Wiki from "../models/wikiModel.js";
+import { getWikiContent } from "../controllers/wikiController.js";
+import { Request, Response, NextFunction } from "express";
+
+interface CreateHistoryMidRequest extends Request {
+  body: {
+    is_q_based?: number;
+    is_rollback?: number;
+    index_title?: string;
+    qid?: number;
+    types_and_conditions?: any;
+  };
+  user: Array<{ id: number;
+    login_id: string;
+    name: string;
+    stu_id: string;
+    email: string;
+    password: string;
+    nickname: string;
+    rep_badge?: number | null;
+    created_at: string;
+    point: number;
+    is_admin: boolean;
+    restrict_period?: string | null;
+    restrict_count: number;
+    uuid: string;
+    is_deleted: boolean;  }>; 
+  doc_id: number; 
+  text_pointer: string;
+  summary: string; 
+  count: number; 
+  diff: number; 
+  version: number;
+  is_rollback: number;
+  is_q_based: number; 
+  message: string;
+};
 
 // 위키 히스토리 생성 미들웨어
-export const createHistoryMid = async (req: { body: { is_q_based: number; index_title: any; types_and_conditions: any[][]; qid: any; }; is_rollback: any; user: { id: any; }[]; doc_id: any; text_pointer: any; summary: any; count: any; diff: number; version: any; is_q_based: any; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
     const is_q_based =
@@ -63,7 +98,7 @@ export const createHistoryMid = async (req: { body: { is_q_based: number; index_
 };
 
 // 위키 작성 기여도 지급 미들웨어
-export const wikiPointMid = async (req: { user: { id: any; }[]; diff: any; is_q_based: number; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const wikiPointMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
   try {
     Wiki.Wiki_point.givePoint(req.user[0].id, req.diff, req.is_q_based);
     // 알림
@@ -78,7 +113,7 @@ export const wikiPointMid = async (req: { user: { id: any; }[]; diff: any; is_q_
 };
 
 // 위키 최신 내용 db 업데이트 미들웨어
-export const wikiChangeRecentContentMid = async (req: { params: { title: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const wikiChangeRecentContentMid = async (req:Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);

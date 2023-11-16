@@ -1,13 +1,13 @@
 import * as pool from "../config/db.js";
 
 // wiki_docs 테이블의 column을 가지는 객체
-class Wiki_docs {
-  title: any;
+export class Wiki_docs {
+  title: string;
   text_pointer: any;
   recent_filtered_content: any;
   type: any;
   latest_ver: any;
-  constructor(wiki_docs: { title: any; text_pointer: any; recent_filtered_content: any; type: any; latest_ver: any; }) {
+  constructor(wiki_docs: { title: string; text_pointer: any; recent_filtered_content: any; type: any; latest_ver: any; }) {
     this.title = wiki_docs.title;
     this.text_pointer = wiki_docs.text_pointer;
     this.recent_filtered_content = wiki_docs.recent_filtered_content;
@@ -123,7 +123,7 @@ class Wiki_docs {
 }
 
 // wiki_history 테이블의 column을 가지는 객체
-class Wiki_history {
+export class Wiki_history {
   user_id: any;
   doc_id: any;
   text_pointer: any;
@@ -271,7 +271,7 @@ class Wiki_history {
 }
 
 // 기여도 관련 함수들을 가지는 객체
-class Wiki_point {
+export class Wiki_point {
   // 기여도를 지급해주는 함수 (그냥 위키 수정 diff * 4, 질문 기반 작성일 시 diff * 5)
   static async givePoint(user_id: any, point: number, is_q_based: number) {
     if (point <= 0) {
@@ -392,7 +392,7 @@ class Wiki_point {
 }
 
 // 위키 즐겨찾기
-class Wiki_favorite {
+export class Wiki_favorite {
   doc_id: any;
   user_id: any;
   constructor(wiki_favorite: { doc_id: any; user_id: any; }) {
@@ -460,5 +460,3 @@ class Wiki_favorite {
     return rows;
   }
 }
-
-module.exports = { Wiki_history, Wiki_docs, Wiki_point, Wiki_favorite };
