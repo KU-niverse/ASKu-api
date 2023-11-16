@@ -1,21 +1,21 @@
 import pool from "../config/db";
 
 class User {
-  id: any;
-  login_id: any;
-  name: any;
-  stu_id: any;
-  email: any;
-  password: any;
-  nickname: any;
-  rep_badge: any;
+  id: number;
+  login_id: string;
+  name: string;
+  stu_id: string;
+  email: string;
+  password: string;
+  nickname: string;
+  rep_badge: number;
   created_at: any;
-  point: any;
-  is_admin: any;
+  point: number;
+  is_admin: boolean;
   restrict_period: any;
-  restrict_count: any;
-  uuid: any;
-  is_deleted: any;
+  restrict_count: boolean;
+  uuid: string;
+  is_deleted: boolean;
   static findByLoginIdTemp: any;
   static findByNicknameTemp: any;
   static findByEmailTemp: any;
@@ -63,7 +63,7 @@ class User {
 }
 
 //temp에서 login_id로 유저 찾기
-User.findByLoginIdTemp = async (login_id: any) => {
+User.findByLoginIdTemp = async (login_id: string) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE login_id = ?`,
     [login_id]
@@ -72,7 +72,7 @@ User.findByLoginIdTemp = async (login_id: any) => {
 };
 
 //temp에서 nickname으로 유저 찾기
-User.findByNicknameTemp = async (nickname: any) => {
+User.findByNicknameTemp = async (nickname: string) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE nickname = ?`,
     [nickname]
@@ -80,7 +80,7 @@ User.findByNicknameTemp = async (nickname: any) => {
   return rows;
 };
 //temp에서 email로 유저 찾기
-User.findByEmailTemp = async (email: any) => {
+User.findByEmailTemp = async (email: string) => {
   const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
     email,
   ]);
@@ -89,13 +89,13 @@ User.findByEmailTemp = async (email: any) => {
 };
 
 //user_id로 유저 찾기
-User.findById = async (id: any) => {
+User.findById = async (id: number) => {
   const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
   return user;
 };
 
 //login_id로 유저 찾기
-User.findByLoginId = async (login_id: any) => {
+User.findByLoginId = async (login_id: string) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
   ]);
@@ -103,14 +103,14 @@ User.findByLoginId = async (login_id: any) => {
 };
 
 //nickname으로 유저 찾기
-User.findByNickname = async (nickname: any) => {
+User.findByNickname = async (nickname: string) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
     nickname,
   ]);
   return rows;
 };
 //email로 유저 찾기
-User.findByEmail = async (email: any) => {
+User.findByEmail = async (email: string) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
   ]);
@@ -119,7 +119,7 @@ User.findByEmail = async (email: any) => {
 };
 
 //#TODO:변수 전달 방식에서 개선의 여지가 있음
-User.create = async (newUser: { login_id: any; name: any; stu_id: any; email: any; password: any; nickname: any; uuid: any; }) => {
+User.create = async (newUser: { login_id: string; name: string; stu_id: string; email: string; password: string; nickname: string; uuid: string; }) => {
   await pool.query(
     `INSERT INTO users  (login_id, name, stu_id, email, password, nickname, uuid) values (?, ?, ?, ?, ?, ?, ?);`,
     [
@@ -164,7 +164,7 @@ User.tempCreate = async (newUser) => {
 };
 
 //비밀번호 변경
-User.changePw = async (user_id, hashed_new_pw) => {
+User.changePw = async (user_id: number, hashed_new_pw: string) => {
   await pool.query(`UPDATE users SET password = ? WHERE id = ?;`, [
     hashed_new_pw,
     user_id,
@@ -173,7 +173,7 @@ User.changePw = async (user_id, hashed_new_pw) => {
 };
 
 //회원정보 변경
-User.getUserInfo = async (user_id: any) => {
+User.getUserInfo = async (user_id: number) => {
   const [user] = await pool.query(
     `SELECT users.id, users.name, users.login_id, users.stu_id, users.email, users.rep_badge as rep_badge_id, users.nickname, users.created_at, users.point, users.is_admin, users.restrict_period, users.restrict_count, badges.name as rep_badge_name, badges.image as rep_badge_image FROM users left join badges on users.rep_badge = badges.id WHERE users.id = ?`,
     [user_id]
@@ -227,7 +227,7 @@ User.deletePwFindSession = async (hashed_login_id) => {
 
 //user mypage models
 
-User.getWikiHistory = async (user_id: any) => {
+User.getWikiHistory = async (user_id: number) => {
   const [user_wiki_history] = await pool.query(
     `SELECT wiki_history.*, wiki_docs.title FROM wiki_history inner join wiki_docs on wiki_history.doc_id = wiki_docs.id WHERE user_id = ? ORDER BY created_at DESC`,
     [user_id]
@@ -235,7 +235,7 @@ User.getWikiHistory = async (user_id: any) => {
   return user_wiki_history;
 };
 
-User.getBadgeHistory = async (user_id: any) => {
+User.getBadgeHistory = async (user_id: number) => {
   const [user_badge_history] = await pool.query(
     `SELECT badge_history.*, badges.image, badges.name, badges.description FROM badge_history inner join badges on badge_history.badge_id = badges.id WHERE user_id = ? order by badge_history.created_at DESC`,
     [user_id]
@@ -258,7 +258,7 @@ ORDER BY
   return badges;
 };
 
-User.setRepBadge = async (rep_badge_id, user_id) => {
+User.setRepBadge = async (rep_badge_id: number, user_id: number) => {
   try {
     await pool.query(`UPDATE users SET rep_badge = ? WHERE id = ?`, [
       rep_badge_id,
@@ -271,7 +271,7 @@ User.setRepBadge = async (rep_badge_id, user_id) => {
   }
 };
 
-User.editNick = async (nickname, user_id) => {
+User.editNick = async (nickname: string, user_id: number) => {
   try {
     await pool.query(`UPDATE users SET nickname = ? WHERE id = ?`, [
       nickname,
@@ -284,7 +284,7 @@ User.editNick = async (nickname, user_id) => {
   }
 };
 
-User.init = async (user_id) => {
+User.init = async (user_id: number) => {
   await pool.query(
     `
     INSERT INTO user_attend (user_id) VALUES (?);
@@ -294,7 +294,7 @@ User.init = async (user_id) => {
   return true;
 };
 
-User.markAttend = async (user_id) => {
+User.markAttend = async (user_id: number) => {
   const [attend_info] = await pool.query(
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
@@ -323,7 +323,7 @@ User.markAttend = async (user_id) => {
 };
 
 //user_id와 restrict_period(제한 하고 싶은 일수)를 받아서 제약을 설정
-User.setConstraint = async (user_id, restrict_period) => {
+User.setConstraint = async (user_id: number, restrict_period: number) => {
   let date = new Date();
   let formattedDate: string;
 
@@ -349,7 +349,7 @@ User.setConstraint = async (user_id, restrict_period) => {
   return true;
 };
 
-User.deactivate = async (user_id) => {
+User.deactivate = async (user_id: number) => {
   try {
     await pool.query(`UPDATE users SET is_deleted = 1 WHERE id = ?`, [user_id]);
 
@@ -367,7 +367,7 @@ User.getConstraint = async () => {
   return constraint;
 };
 
-User.debatetHistory = async (user_id: any) => {
+User.debatetHistory = async (user_id: number) => {
   const [rows] = await pool.query(
     `SELECT 
       debates.id AS debate_id,
@@ -391,7 +391,7 @@ User.debatetHistory = async (user_id: any) => {
   return rows;
 };
 
-User.questionHistory = async (user_id, arrange) => {
+User.questionHistory = async (user_id: number, arrange: number) => {
   //최신순 조회
   let rows: any;
   if (arrange == 0) {
