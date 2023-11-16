@@ -1,4 +1,4 @@
-async function postSearch(user_id, keyword) {
+async function postSearch(user_id: any, keyword: any) {
   const isOften = await pool.query(
     `SELECT * FROM search_history 
     WHERE user_id = ? AND keyword = ? 
