@@ -44,7 +44,7 @@ export const getWikiContent = (res: Response, title: string, version: number): P
 };
 
 // 새 위키 파일을 저장하는 함수
-const saveWikiContent = (res, title, version, content) => {
+const saveWikiContent = (res: Response, title: string, version: number, content: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     S3.putObject({
       Bucket: "wiki-bucket",
@@ -63,7 +63,7 @@ const saveWikiContent = (res, title, version, content) => {
 };
 
 // 인덱싱 함수
-const indexing = (numbers, sections) => {
+const indexing = (numbers: Array<number>, sections: Array<{title: string, content: Array<string>}>) => {
   let content_json = []; // content의 메타데이터와 데이터
   let num_list = []; // index의 리스트
   let idx = 1; // 가장 상위 목차
@@ -108,16 +108,24 @@ const indexing = (numbers, sections) => {
   return content_json;
 };
 
+interface NewWikiPostMidRequest extends Request {
+  doc_id: number;
+  version: number;
+  count: number;
+  summary: string;
+  text_pointer: string;
+  diff: number;
+};
 // 새 위키 문서 생성하기 [기여도 지급]
 // 1. 기존에 같은 타이틀의 문서가 있는지 체크
 // 2-1. 없으면 새로운 문서 생성
 // 2-2. 있으면 지워진 문서인지 확인
 // 3-1. 지워진 문서면 처리
 // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
-export const newWikiPostMid = async (req:Request, res: Response, next: NextFunction) => {
+export const newWikiPostMid = async (req:NewWikiPostMidRequest, res: Response, next: NextFunction) => {
   try {
     // 1. 기존에 같은 타이틀의 문서가 있는지 체크
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
 
     if (doc_id !== null) {
       // 2-2. 있으면 지워진 문서인지 확인
@@ -177,8 +185,13 @@ export const newWikiPostMid = async (req:Request, res: Response, next: NextFunct
   }
 };
 
+interface contentsGetMidRequest extends Request {
+  calltype: number;
+  isAuthenticated: () => boolean;
+  user: any;
+};
 // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
-export const contentsGetMid = async (req, res) => {
+export const contentsGetMid = async (req: contentsGetMidRequest, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -196,7 +209,7 @@ export const contentsGetMid = async (req, res) => {
     }
 
     let text = "";
-    let jsonData = {};
+    let jsonData = {version: 0, text: "", contents: [], success: false, is_favorite: false};
 
     // 삭제된 문서인지 확인
     const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
@@ -266,7 +279,7 @@ export const contentsGetMid = async (req, res) => {
     indexing(numbers, sections).forEach(obj => {
       jsonData.contents.push(obj);
     });
-    
+
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
       const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
