@@ -1,15 +1,9 @@
-const express = require("express");
 const questionMid = require("../controllers/questionController");
-const { isSignedIn } = require("../middlewares/sign_in");
-const { newNotice } = require("../middlewares/notification");
 const {
   newActionQuestion,
   cancelActionQuestion,
   newActionLike,
 } = require("../middlewares/user_action");
-const { recordSearch } = require("../middlewares/search.js");
-
-const router = express.Router();
 
 // GET /question/view/:flag/:title
 router.get("/view/:flag/:title", questionMid.questionGetAllMid);

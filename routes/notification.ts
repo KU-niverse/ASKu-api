@@ -1,9 +1,4 @@
-const express = require("express");
 const notificationMid = require("../controllers/notificationController");
-const { isSignedIn } = require('../middlewares/sign_in');
-const { isAdmin } = require('../middlewares/admin');
-
-const router = express.Router();
 
 // GET notification/user
 router.get("/user", isSignedIn, notificationMid.userNoticeGetMid);

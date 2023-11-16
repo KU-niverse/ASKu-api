@@ -1,9 +1,5 @@
-const express = require("express");
 const debateMid = require("../controllers/debateController");
-const { isSignedIn } = require('../middlewares/sign_in');
 const { newActionDebate } = require("../middlewares/user_action");
-
-const router = express.Router();
 
 // POST /debate/new/:title
 router.post("/new/:title", isSignedIn, debateMid.debatePostMid);
@@ -28,5 +24,3 @@ router.get("/searchall/:query", debateMid.debateSearchAllGetMid);
 
 // POST /debate/end/:title/:debate
 router.post("/end/:title/:debate", isSignedIn, debateMid.debateEndPostMid);
-
-module.exports = router;

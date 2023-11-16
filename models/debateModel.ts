@@ -1,21 +1,21 @@
 const pool = require("../config/db");
 
 // debates 테이블의 column을 가지는 객체
-const Debate = function (debate) {
+const Debate = function (debate: { doc_id: any; user_id: any; subject: any; }) {
   this.doc_id = debate.doc_id;
   this.user_id = debate.user_id;
   this.subject = debate.subject;
 };
 
 // debate_history 테이블의 column을 가지는 객체
-const History = function (history) {
+const History = function (history: { debate_id: any; user_id: any; content: any; }) {
   this.debate_id = history.debate_id;
   this.user_id = history.user_id;
   this.content = history.content;
 };
 
 // wiki_docs의 title을 입력하면 해당 문서의 id 반환하는 함수
-async function getIdByTitle(title) {
+async function getIdByTitle(title: any) {
   const result = await pool.query(
     `SELECT id FROM wiki_docs WHERE title = ?`,
     [title]
@@ -24,7 +24,7 @@ async function getIdByTitle(title) {
 }
 
 // id를 입력하면 해당 id의 debate 반환하는 함수
-async function getDebate(id) {
+async function getDebate(id: any) {
   const row = await pool.query(
     `SELECT * FROM debates WHERE id = ?`,
     [id]
@@ -33,7 +33,7 @@ async function getDebate(id) {
 }
 
 // id를 입력하면 해당 id의 debate_history 반환하는 함수
-async function getHistory(id) {
+async function getHistory(id: any) {
   const row = await pool.query(
     `SELECT * FROM debate_history WHERE id = ?`,
     [id]
@@ -42,14 +42,14 @@ async function getHistory(id) {
 }
 
 // 새로운 debate를 생성하는 함수
-Debate.createDebate = async (newDebate) => {
+Debate.createDebate = async (newDebate: any) => {
   const result = await pool.query("INSERT INTO debates SET ?", newDebate);
   const id = result[0].insertId;
   return getDebate(id);
 };
 
 // 새로운 history를 생성하는 함수
-History.createHistory = async (newHistory) => {
+History.createHistory = async (newHistory: { debate_id: any; }) => {
   const result = await pool.query("INSERT INTO debate_history SET ?", newHistory);
   const date = new Date();
   date.setHours(date.getHours()+9);
@@ -62,7 +62,7 @@ History.createHistory = async (newHistory) => {
 };
 
 // debate 목록을 조회하는 함수 (최근 생성순)
-Debate.getAllDebateBycreate = async (title) => {
+Debate.getAllDebateBycreate = async (title: any) => {
   const doc_id = await getIdByTitle(title);
   const result = await pool.query(
     `SELECT * FROM debates WHERE doc_id = ? ORDER BY created_at DESC`,
@@ -83,7 +83,7 @@ Debate.getAllDebateByEdit = async () => {
 };
 
 // 특정 debate의 debate_history를 조회하는 함수
-History.getAllHistory = async (debate_id) => {
+History.getAllHistory = async (debate_id: any) => {
   const result = await pool.query(
     `SELECT debate_history.*, users.nickname, badges.image AS badge_image
     FROM debate_history 
@@ -97,7 +97,7 @@ History.getAllHistory = async (debate_id) => {
 };
 
 // debate 목록을 검색하는 함수 (한 문서 내부)
-Debate.searchDebateWithDoc = async (title, query) => {
+Debate.searchDebateWithDoc = async (title: any, query: any) => {
   const doc_id = await getIdByTitle(title);
   const result = await pool.query(
     `SELECT * FROM debates
@@ -109,7 +109,7 @@ Debate.searchDebateWithDoc = async (title, query) => {
 };
 
 // debate 목록을 검색하는 함수 (전체)
-Debate.searchDebate = async (query) => {
+Debate.searchDebate = async (query: any) => {
   const result = await pool.query(
     `SELECT debates.*, wiki_docs.title 
     FROM debates
@@ -123,7 +123,7 @@ Debate.searchDebate = async (query) => {
 };
 
 // debate를 종료시키는 함수
-Debate.endDebate = async (id) => {
+Debate.endDebate = async (id: any) => {
   const flag = await pool.query(
     `SELECT done_or_not FROM debates WHERE id = ?`,
     [id]

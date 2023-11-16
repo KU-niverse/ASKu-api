@@ -1,7 +1,5 @@
-const pool = require("../config/db.js");
-
 // user_action 테이블의 column을 가지는 객체
-const Action = function (action) {
+const Action = function (action: { user_id: any; record_count: any; revise_count: any; report_count: any; debate_count: any; question_count: any; like_count: any; answer_count: any; event_begin: any; }) {
   this.user_id = action.user_id;
   this.record_count = action.record_count;
   this.revise_count = action.revise_count;
@@ -14,7 +12,7 @@ const Action = function (action) {
 };
 
 // user_id 넣어주면 해당 user의 action 목록 반환하는 함수
-async function getAction(user_id) {
+async function getAction(user_id: any) {
   const [row] = await pool.query(
     `SELECT * FROM user_action WHERE user_id = ?`,
     [user_id]
@@ -23,7 +21,7 @@ async function getAction(user_id) {
 }
 
 // Action을 생성하는 함수
-Action.initAction = async (user_id) => {
+Action.initAction = async (user_id: any) => {
   const data = {
     user_id: user_id,
     record_count: 0,
@@ -55,8 +53,8 @@ Action.initAction = async (user_id) => {
 6: like_count (일반 추천 개수)
 7: answer_count (일반 답변 개수)
 */
-Action.updateAction = async (user_id, count_type, diff) => {
-  let result;
+Action.updateAction = async (user_id: any, count_type: any, diff: number) => {
+  let result: number;
   switch(count_type) {
   case 1:
     if (diff < 0) {
@@ -111,8 +109,8 @@ Action.updateAction = async (user_id, count_type, diff) => {
 };
 
 // count_type에 따라 action을 취소하는 함수
-Action.cancelAction = async (user_id, count_type) => {
-  let result;
+Action.cancelAction = async (user_id: any, count_type: any) => {
+  let result: number;
   switch (count_type) {
   case 5:
     [result] = await pool.query(
@@ -127,4 +125,4 @@ Action.cancelAction = async (user_id, count_type) => {
   return result;
 };
 
-module.exports = Action;
+export {Action};

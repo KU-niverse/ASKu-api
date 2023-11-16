@@ -1,33 +1,33 @@
 const pool = require("../config/db.js");
 
 // questions 테이블의 column을 가지는 객체
-const Question = function (question) {
+const Question = function (question: { doc_id: any; user_id: any; index_title: any; content: any; }) {
   this.doc_id = question.doc_id;
   this.user_id = question.user_id;
   this.index_title = question.index_title;
   this.content = question.content;
 };
 
-async function getQuestion(id) {
+async function getQuestion(id: any) {
   const [rows] = await pool.query(`SELECT * FROM questions WHERE id = ?`, [id]);
   return rows[0];
 }
 
 // wiki_docs의 title을 입력하면 해당 문서의 id 반환하는 함수
-async function getIdByTitle(title) {
+async function getIdByTitle(title: any) {
   const result = await pool.query(`SELECT id FROM wiki_docs WHERE title = ?`, [
     title,
   ]);
   return result[0][0].id;
 }
 
-Question.createQuestion = async (newQuestion) => {
+Question.createQuestion = async (newQuestion: any) => {
   const [result] = await pool.query(`INSERT INTO questions SET ?`, newQuestion);
   const id = result.insertId;
   return getQuestion(id);
 };
 
-Question.getQuestionOne = async (id) => {
+Question.getQuestionOne = async (id: any) => {
   const rows = await pool.query(
     `SELECT q.*, users.nickname, badges.image AS badge_image, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
       FROM questions q
@@ -49,7 +49,7 @@ Question.getQuestionOne = async (id) => {
   return rows[0];
 };
 
-Question.getQuestionsAll = async (id, flag) => {
+Question.getQuestionsAll = async (id: any, flag: number) => {
   if (flag == 0) {
     const rows = await pool.query(
       `SELECT q.*, users.nickname, badges.image AS badge_image, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count
@@ -97,7 +97,7 @@ Question.getQuestionsAll = async (id, flag) => {
   }
 };
 
-Question.updateQuestion = async (question_id, user_id, new_content) => {
+Question.updateQuestion = async (question_id: any, user_id: any, new_content: any) => {
   const flag = await pool.query(
     `SELECT user_id, answer_or_not FROM questions WHERE id = ?`,
     [question_id]
@@ -113,7 +113,7 @@ Question.updateQuestion = async (question_id, user_id, new_content) => {
   }
 };
 
-Question.deleteQuestion = async (question_id, user_id) => {
+Question.deleteQuestion = async (question_id: any, user_id: any) => {
   const flag = await pool.query(
     `SELECT user_id, answer_or_not FROM questions WHERE id = ?`,
     [question_id]
@@ -136,7 +136,7 @@ Question.deleteQuestion = async (question_id, user_id) => {
   }
 };
 
-Question.likeQuestion = async (id, user_id) => {
+Question.likeQuestion = async (id: any, user_id: any) => {
   const flag_writer = await pool.query(
     `SELECT user_id FROM questions WHERE id = ?`,
     [id]
@@ -158,7 +158,7 @@ Question.likeQuestion = async (id, user_id) => {
   }
 };
 
-Question.getQuestionSearchByQuery = async (query) => {
+Question.getQuestionSearchByQuery = async (query: any) => {
   const result = await pool.query(
     `SELECT q.*, users.nickname, COALESCE(ql.like_count, 0) AS like_count, COALESCE(a.answer_count, 0) AS answer_count, wiki_docs.title
     FROM questions q
@@ -205,7 +205,7 @@ Question.getQuestionsPopular = async () => {
   return rows[0];
 };
 
-Question.getQuestionsAnswer = async (question_id) => {
+Question.getQuestionsAnswer = async (question_id: any) => {
   const rows = await pool.query(
     `SELECT answers.*, wiki_history.user_id, wiki_history.version, wiki_history.index_title,
     users.nickname, users.rep_badge, wiki_docs.title,
