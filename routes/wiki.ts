@@ -1,12 +1,12 @@
 import * as express from "express";
-const wikiCont = require('../controllers/wikiController');
-const wikiMid = require('../middlewares/wiki');
-const imageMid = require('../middlewares/image');
-const { isSignedIn } = require('../middlewares/sign_in');
-const { isAdmin } = require('../middlewares/admin');
-const { newNotice } = require("../middlewares/notification");
-const { newActionRevise, newActionRecord, newActionAnswer } = require('../middlewares/user_action');
-const { recordSearch } = require("../middlewares/search.js");
+import * as wikiCont from "../controllers/wikiController";
+import * as wikiMid  from "../middlewares/wiki";
+import * as imageMid  from "../middlewares/image";
+import { isSignedIn } from "../middlewares/sign_in";
+import { isAdmin } from "../middlewares/admin";
+import { newNotice } from "../middlewares/notification";
+import { newActionRevise, newActionRecord, newActionAnswer } from "../middlewares/user_action";
+import { recordSearch } from "../middlewares/search.js";
 
 const router = express.Router();
 
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/contents/new/:title(*)', isSignedIn, wikiCont.newWikiPostMid, wikiMid.createHistoryMid, wikiMid.wikiChangeRecentContentMid, wikiMid.wikiPointMid, newActionRecord, newNotice);
 
 // 특정 버전의 전체 글 불러오기 / 특정 버전 미리보기 시 사용
-router.get('/contents/:title(*)/version/:version', (req, res, next) => { req.calltype = 2; next(); }, wikiCont.contentsGetMid);
+router.get('/contents/:title(*)/version/:version', (req: { calltype: number; }, res: any, next: () => void) => { req.calltype = 2; next(); }, wikiCont.contentsGetMid);
 
 // 특정 섹션의 글 불러오기 / 특정 섹션의 글 수정시 사용
 router.get('/contents/:title(*)/section/:section', isSignedIn, wikiCont.contentsSectionGetMid);

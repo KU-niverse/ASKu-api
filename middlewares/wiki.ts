@@ -2,11 +2,11 @@ const Wiki = require("../models/wikiModel.js");
 const { getWikiContent } = require("../controllers/wikiController.js");
 
 // 위키 히스토리 생성 미들웨어
-exports.createHistoryMid = async (req, res, next) => {
+export const createHistoryMid = async (req: { body: { is_q_based: number; index_title: any; types_and_conditions: any[][]; qid: any; }; is_rollback: any; user: { id: any; }[]; doc_id: any; text_pointer: any; summary: any; count: any; diff: number; version: any; is_q_based: any; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
     const is_q_based =
-      req.body.is_q_based !== undefined && req.body.is_q_based != ""
+      req.body.is_q_based !== undefined
         ? req.body.is_q_based
         : 0;
     const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
@@ -38,7 +38,7 @@ exports.createHistoryMid = async (req, res, next) => {
     }
 
     // 질문 기반 수정 -> type_id: 2, 3
-    if (is_q_based == true) {
+    if (is_q_based == 1) {
       // 답변 생성
       Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
       req.body.types_and_conditions.push([2, req.body.qid]);
@@ -63,7 +63,7 @@ exports.createHistoryMid = async (req, res, next) => {
 };
 
 // 위키 작성 기여도 지급 미들웨어
-export const wikiPointMid = async (req, res, next) => {
+export const wikiPointMid = async (req: { user: { id: any; }[]; diff: any; is_q_based: number; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     Wiki.Wiki_point.givePoint(req.user[0].id, req.diff, req.is_q_based);
     // 알림
@@ -78,7 +78,7 @@ export const wikiPointMid = async (req, res, next) => {
 };
 
 // 위키 최신 내용 db 업데이트 미들웨어
-exports.wikiChangeRecentContentMid = async (req, res, next) => {
+export const wikiChangeRecentContentMid = async (req: { params: { title: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; json: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
