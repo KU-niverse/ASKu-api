@@ -1,7 +1,8 @@
-const express = require("express");
-const admin = require("../controllers/adminController");
-const { isSignedIn } = require("../middlewares/sign_in");
-const { isAdmin } = require("../middlewares/admin");
+import * as express from "express";
+import * as admin from "../controllers/adminController";
+import { isSignedIn } from "../middlewares/sign_in";
+import { isAdmin } from "../middlewares/admin";
+
 const router = express.Router();
 
 //admin 위키 히스토리 조회
