@@ -1,12 +1,13 @@
-const dotenv = require("dotenv");
-const AWS = require("aws-sdk");
-const multer = require("multer");
-const multerS3 = require("multer-s3");
-const {v4:uuidv4} = require("uuid");
+import * as dotenv from "dotenv";
+import * as AWS from "aws-sdk";
+import multer from "multer";
+import multerS3 from "multer-s3";
+import { v4 as uuidv4 } from "uuid";
 
-const allowedExtention = ["jpg", "jpeg", "png", "gif"];
+const allowedExtension = ["jpg", "jpeg", "png", "gif"];
 const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
 const region = "kr-standard";
+
 dotenv.config();
 
 // S3 객체 생성
@@ -30,7 +31,7 @@ exports.imageUploader = multer({
       const extension = file.originalname.split(".").pop();
       const fileName = `${uuid}.${extension}`;
       console.log(fileName);
-      if(!allowedExtention.includes(extension)){
+      if(!allowedExtension.includes(extension)){
         return cb(new Error("Wrong extension"), false);
       }
       cb(null, fileName);

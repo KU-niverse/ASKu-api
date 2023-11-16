@@ -1,14 +1,16 @@
-const Wiki = require("../models/wikiModel.js");
-const Question = require("../models/questionModel.js");
-// const fs = require("fs");
-// const Point = require("../models/pointModel.js");
-const dotenv = require("dotenv");
-const AWS = require("aws-sdk");
-const edp = "https://kr.object.ncloudstorage.com/";
+import Wiki from "../models/wikiModel.js";
+import Question from "../models/questionModel.js";
+// import fs from "fs";
+// import Point from "../models/pointModel.js";
+import * as dotenv from "dotenv";
+import * as AWS from "aws-sdk";
 
+const edp = "https://kr.object.ncloudstorage.com/";
 const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
 const region = "kr-standard";
+
 dotenv.config();
+
 
 // S3 객체 생성
 const S3 = new AWS.S3({
@@ -21,7 +23,7 @@ const S3 = new AWS.S3({
 });
 
 // 이전 위키의 내용을 가져오는 함수
-const getWikiContent = (res, title, version) => {
+export const getWikiContent = (res, title, version) => {
   return new Promise((resolve) => {
     S3.getObject({
       Bucket: "wiki-bucket",
@@ -44,7 +46,7 @@ exports.getWikiContent = getWikiContent;
 
 // 새 위키 파일을 저장하는 함수
 const saveWikiContent = (res, title, version, content) => {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     S3.putObject({
       Bucket: "wiki-bucket",
       Key: `${title}/r${version}.wiki`,
@@ -52,7 +54,7 @@ const saveWikiContent = (res, title, version, content) => {
     }, (err) => {
       if (err) {
         console.log(err);
-        err.content = content; // content 정보를 에러 객체에 추가
+        (err as any).content = content; // use type assertion to add content property to err object
         reject(err);
         return;
       }

@@ -1,4 +1,4 @@
-const express = require('express');
+import * as express from "express";
 const wikiCont = require('../controllers/wikiController');
 const wikiMid = require('../middlewares/wiki');
 const imageMid = require('../middlewares/image');
@@ -101,4 +101,4 @@ router.get('/contributions/:title(*)', wikiCont.contributionGetMid);
 // 특정 히스토리 bad로 변경
 router.put('/badhis/:hisid', isAdmin, wikiCont.badHistoryPutMid);
 
-module.exports = router;
+export default router;
