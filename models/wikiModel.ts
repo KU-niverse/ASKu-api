@@ -1,31 +1,36 @@
-import * as pool from "../config/db.js";
+// import * as pool from "../config/db.js";
+import pool from "../config/db.js";
+import { OkPacket } from "mysql2";
 
 // wiki_docs 테이블의 column을 가지는 객체
 export class Wiki_docs {
   title: string;
-  text_pointer: any;
-  recent_filtered_content: any;
-  type: any;
-  latest_ver: any;
-  constructor(wiki_docs: { title: string; text_pointer: any; recent_filtered_content: any; type: any; latest_ver: any; }) {
+  text_pointer: string;
+  recent_filtered_content: string;
+  type: string;
+  latest_ver: number;
+  constructor(wiki_docs: { title: string; text_pointer: string; recent_filtered_content: string; type: string; latest_ver: number; }) {
     this.title = wiki_docs.title;
     this.text_pointer = wiki_docs.text_pointer;
     this.recent_filtered_content = wiki_docs.recent_filtered_content;
     this.type = wiki_docs.type;
     this.latest_ver = wiki_docs.latest_ver;
   }
+
   // wiki_docs 테이블에 새로운 문서를 생성해주는 함수
-  static async create(new_wiki_docs: any) {
+
+
+  static async create(new_wiki_docs: { title: string; text_pointer: string; recent_filtered_content: string; type: string; latest_ver: number; }) {
     const [result] = await pool.query(
       "INSERT INTO wiki_docs SET ?",
       new_wiki_docs
     );
-    const id = result.insertId;
+    const id = (result as OkPacket).insertId;
 
     return Wiki_docs.getWikiDocsById(id);
   }
   // wiki_docs 테이블에서 id를 통해 문서를 찾아주는 함수
-  static async getWikiDocsById(id: any) {
+  static async getWikiDocsById(id: number) {
     const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE id = ?`, [
       id,
     ]);
@@ -38,7 +43,7 @@ export class Wiki_docs {
       `SELECT title FROM wiki_docs WHERE is_deleted = 0`
     );
 
-    return rows.map((rows: { title: any; }) => rows.title);
+    return (rows as { title: any; }[]).map((row) => row.title);
   }
   // is_deleted가 0인 문서 중 랜덤으로 제목 하나 가져오기
   static async getRandomWikiDocs() {
@@ -63,7 +68,7 @@ export class Wiki_docs {
       title,
     ]);
 
-    if (rows.length == 0) {
+    if ((rows as any[]).length == 0) {
       return null;
     }
 
@@ -118,23 +123,23 @@ export class Wiki_docs {
       [text, doc_id]
     );
 
-    return result.changedRows;
+    return (result as any).changedRows;
   }
 }
 
 // wiki_history 테이블의 column을 가지는 객체
 export class Wiki_history {
-  user_id: any;
-  doc_id: any;
-  text_pointer: any;
-  summary: any;
-  count: any;
-  diff: any;
-  version: any;
-  is_q_based: any;
-  is_rollback: any;
-  index_title: any;
-  constructor(wiki_history: { user_id: any; doc_id: any; text_pointer: any; summary: any; count: any; diff: any; version: any; is_q_based: any; is_rollback: any; index_title: any; }) {
+  user_id: number;
+  doc_id: number;
+  text_pointer: string;
+  summary: string;
+  count: number;
+  diff: number;
+  version: number;
+  is_q_based: number;
+  is_rollback: number;
+  index_title: string;
+  constructor(wiki_history: { user_id: number; doc_id: number; text_pointer: string; summary: string; count: number; diff: number; version: number; is_q_based: number; is_rollback: number; index_title: string; }) {
     this.user_id = wiki_history.user_id;
     this.doc_id = wiki_history.doc_id;
     this.text_pointer = wiki_history.text_pointer;
@@ -148,7 +153,7 @@ export class Wiki_history {
   }
 
   // wiki_history 내림차순으로 정렬해서 반환해주는 함수(doc_id로)
-  static async getWikiHistorysById(doc_id: any) {
+  static async getWikiHistorysById(doc_id: number) {
     const [rows] = await pool.query(
       `SELECT wh.*, u.nickname AS nick
       FROM wiki_history wh
@@ -160,7 +165,7 @@ export class Wiki_history {
     return rows;
   }
   // 가장 최근에 수정된 wiki_history를 반환해주는 함수(doc_id로)
-  static async getRecentWikiHistoryByDocId(doc_id: any) {
+  static async getRecentWikiHistoryByDocId(doc_id: number) {
     const [rows] = await pool.query(
       "SELECT * FROM wiki_history WHERE doc_id = ? ORDER BY created_at DESC LIMIT 1",
       [doc_id]
@@ -169,7 +174,7 @@ export class Wiki_history {
   }
 
   // 최근에 수정된 wiki_history들을 반환해주는 함수
-  static async getRecentWikiHistorys(type: any) {
+  static async getRecentWikiHistorys(type: string) {
     const [rows] = await pool.query(
       `
     SELECT
@@ -224,7 +229,7 @@ export class Wiki_history {
     );
     await Wiki_point.recalculatePoint(rows[0].user_id);
 
-    return result.changedRows;
+    return (result as any).changedRows;
   }
 
   // 답변 생성하는 함수, 질문 기반 수정일 때만 사용
@@ -233,7 +238,7 @@ export class Wiki_history {
       `INSERT INTO answers SET wiki_history_id = ?, question_id = ?`,
       [wiki_history_id, qid]
     );
-    const answer_id = rows.insertId;
+    const answer_id = (rows as any).insertId;
 
     // questions의 answer_or_not 업데이트
     await pool.query(`UPDATE questions SET answer_or_not = 1 WHERE id = ?`, [
@@ -257,7 +262,7 @@ export class Wiki_history {
         new_wiki_history.doc_id,
       ]
     );
-    const wiki_history_id = result.insertId;
+    const wiki_history_id = (result as any).insertId;
 
     return wiki_history_id;
   }
@@ -282,11 +287,11 @@ export class Wiki_point {
     } else {
       point = point * 4;
     }
-    const [rows] = await pool.query(
+    const [result] = await pool.query(
       "UPDATE users SET point = point + ? WHERE id = ?",
       [point, user_id]
     );
-    return rows.affectedRows;
+    return (result as any).affectedRows;
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
@@ -296,7 +301,7 @@ export class Wiki_point {
       "UPDATE users SET point = (SELECT SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?",
       [user_id, user_id]
     );
-    return result.affectedRows;
+    return (result as any).affectedRows;
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
@@ -393,28 +398,28 @@ export class Wiki_point {
 
 // 위키 즐겨찾기
 export class Wiki_favorite {
-  doc_id: any;
-  user_id: any;
-  constructor(wiki_favorite: { doc_id: any; user_id: any; }) {
+  doc_id: number;
+  user_id: number;
+  constructor(wiki_favorite: { doc_id: number; user_id: number; }) {
     this.doc_id = wiki_favorite.doc_id;
     this.user_id = wiki_favorite.user_id;
   }
 
   // 위키 즐겨찾기 추가
-  static async create(new_wiki_favorite: { doc_id: any; user_id: any; }) {
+  static async create(new_wiki_favorite: { doc_id: number; user_id: number; }) {
     // 이미 즐겨찾기에 추가되어 있는지 확인
     const [rows] = await pool.query(
       `SELECT * FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`,
       [new_wiki_favorite.doc_id, new_wiki_favorite.user_id]
     );
     // 즐겨찾기에 추가되어 있지 않다면
-    if (rows.length == 0) {
+    if ((rows as any[]).length == 0) {
       const [result] = await pool.query(
         "INSERT INTO wiki_favorites SET ?",
         new_wiki_favorite
       );
 
-      return result.insertId;
+      return (result as any).insertId;
     } else {
       return 0;
     }
@@ -426,10 +431,10 @@ export class Wiki_favorite {
       `DELETE FROM wiki_favorites WHERE doc_id = ? AND user_id = ?`,
       [doc_id, user_id]
     );
-    if (result.affectedRows == 0) {
+    if ((result as any).affectedRows == 0) {
       return 0;
     }
-    return result.changedRows;
+    return (result as any).changedRows;
   }
 
   // user_id로 위키 즐겨찾기 조회
