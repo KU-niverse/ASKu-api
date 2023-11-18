@@ -1,12 +1,47 @@
-const Wiki = require("../models/wikiModel.js");
-const { getWikiContent } = require("../controllers/wikiController.js");
+import * as Wiki from "../models/wikiModel.js";
+import { getWikiContent } from "../controllers/wikiController.js";
+import { Request, Response, NextFunction } from "express";
+
+interface CreateHistoryMidRequest extends Request {
+  body: {
+    is_q_based?: number;
+    is_rollback?: number;
+    index_title?: string;
+    qid?: number;
+    types_and_conditions?: any;
+  };
+  user: Array<{ id: number;
+    login_id: string;
+    name: string;
+    stu_id: string;
+    email: string;
+    password: string;
+    nickname: string;
+    rep_badge?: number | null;
+    created_at: string;
+    point: number;
+    is_admin: boolean;
+    restrict_period?: string | null;
+    restrict_count: number;
+    uuid: string;
+    is_deleted: boolean;  }>; 
+  doc_id: number; 
+  text_pointer: string;
+  summary: string; 
+  count: number; 
+  diff: number; 
+  version: number;
+  is_rollback: number;
+  is_q_based: number; 
+  message: string;
+};
 
 // 위키 히스토리 생성 미들웨어
-exports.createHistoryMid = async (req, res, next) => {
+export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
     const is_q_based =
-      req.body.is_q_based !== undefined && req.body.is_q_based != ""
+      req.body.is_q_based !== undefined
         ? req.body.is_q_based
         : 0;
     const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
@@ -38,7 +73,7 @@ exports.createHistoryMid = async (req, res, next) => {
     }
 
     // 질문 기반 수정 -> type_id: 2, 3
-    if (is_q_based == true) {
+    if (is_q_based == 1) {
       // 답변 생성
       Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
       req.body.types_and_conditions.push([2, req.body.qid]);
@@ -63,7 +98,7 @@ exports.createHistoryMid = async (req, res, next) => {
 };
 
 // 위키 작성 기여도 지급 미들웨어
-export const wikiPointMid = async (req, res, next) => {
+export const wikiPointMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
   try {
     Wiki.Wiki_point.givePoint(req.user[0].id, req.diff, req.is_q_based);
     // 알림
@@ -78,7 +113,7 @@ export const wikiPointMid = async (req, res, next) => {
 };
 
 // 위키 최신 내용 db 업데이트 미들웨어
-exports.wikiChangeRecentContentMid = async (req, res, next) => {
+export const wikiChangeRecentContentMid = async (req:Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
