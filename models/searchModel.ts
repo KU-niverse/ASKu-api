@@ -1,3 +1,5 @@
+import pool from "../config/db";
+
 async function postSearch(user_id: any, keyword: any) {
   const isOften = await pool.query(
     `SELECT * FROM search_history 

@@ -1,4 +1,5 @@
-const { Wiki_point } = require("../models/wikiModel.js");
+import pool from "../config/db";
+import { Wiki_point } from "../models/wikiModel.js";
 
 // reports 테이블의 column을 가지는 객체
 const Report = function (report: { user_id: any; type_id: any; target: any; reason_id: any; comment: any; }) {
