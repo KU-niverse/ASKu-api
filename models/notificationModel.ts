@@ -1,4 +1,4 @@
-const pool = require("../config/db.js");
+import pool from "../config/db";
 
 // notifications 테이블의 column을 가지는 객체
 const Notice = function (notice: { user_id: any; type_id: any; message: any; }) {

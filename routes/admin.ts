@@ -20,4 +20,4 @@ router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
 //제한중인 유저 목록
 router.get("/constraint", isSignedIn, isAdmin, admin.getConstraint);
 
-module.exports = router;
+export default router;

@@ -1,4 +1,4 @@
-const pool = require("../config/db");
+import pool from "../config/db";
 
 // debates 테이블의 column을 가지는 객체
 const Debate = function (debate: { doc_id: any; user_id: any; subject: any; }) {

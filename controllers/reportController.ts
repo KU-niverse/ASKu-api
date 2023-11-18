@@ -1,7 +1,8 @@
-const {Report, getReport} = require("../models/reportModel");
+import { Request, Response, NextFunction } from 'express';
+import { Report, getReport } from "../models/reportModel";
 
 // 신고하기
-exports.reportPostMid = async (req: { user: { id: any; }[]; params: { type: any; }; body: { target: any; reason_id: any; comment: any; types_and_conditions: number[][]; }; data: any; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const reportPostMid = async (req: Request, res: Response) => {
   try {
     const newReport = new Report({
       user_id: req.user[0].id,
@@ -21,7 +22,7 @@ exports.reportPostMid = async (req: { user: { id: any; }[]; params: { type: any;
 };
 
 // 신고 확인하기
-exports.reportCheckPostMid = async (req: { body: { is_checked: number; report_id: any; }; report_user: any; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const reportCheckPostMid = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (req.body.is_checked != 1) {
       res.status(406).send({success: false, message: "잘못된 확인값입니다."});

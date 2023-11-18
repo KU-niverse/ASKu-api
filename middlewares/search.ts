@@ -1,8 +1,9 @@
 // 검색 기록 저장을 위한 미들웨어입니다.
 
-const {postSearch} = require("../models/searchModel");
+import { Request, Response, NextFunction } from "express";
+import { postSearch } from "../models/searchModel";
 
-exports.recordSearch = async (req: { params: { query: string; title: string; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const recordSearch = async (req: Request, res: Response, next: NextFunction) => {  
   let keyword = "";
   if (req.params.query) {
     keyword = req.params.query.trim();

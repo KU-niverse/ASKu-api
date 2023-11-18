@@ -5,7 +5,15 @@
     "outDir": "./dist",
     "moduleResolution": "Node",
     "lib": ["ES2016", "DOM", "DOM.Iterable"],
-    "types": ["node"]
+    "types": ["node"],
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true
   },
   "include": ["**/*"],
   "exclude": ["node_modules", "dist"]
