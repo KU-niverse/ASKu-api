@@ -1,7 +1,7 @@
 import * as passport from "passport";
 const local = require("./localStrategy");
 import User from "../models/userModel";
-module.exports = () => {
+export const passportConfig = () => {
   passport.serializeUser((user, done) => {
     done(null, user[0].login_id);
   });
