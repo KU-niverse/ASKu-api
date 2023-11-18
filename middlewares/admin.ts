@@ -1,5 +1,7 @@
+import { Request, Response, NextFunction } from "express";
+
 //admin인지 확인
-export const isAdmin = (req: any, res: any, next: any) => {
+export const isAdmin = (req:Request, res: Response, next: NextFunction) => {
   if (req.user[0].is_admin == true) {
     next();
   } else {

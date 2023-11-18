@@ -1,9 +1,10 @@
 import {Report} from "../models/reportModel";
 import {Wiki_docs, Wiki_history} from "../models/wikiModel";
+import {Request, Response} from 'express';
 import User from "../models/userModel";
 
 // admin 위키 히스토리 조회
-export const wikiHistory = async (req, res) => {
+export const wikiHistory = async (req:Request, res: Response) => {
   try {
     const wiki_history = await Wiki.Wiki_history.getAllWikiHistory();
     return res
@@ -20,7 +21,7 @@ export const wikiHistory = async (req, res) => {
   }
 };
 
-export const newDoc = async (req, res) => {
+export const newDoc = async (req:Request, res: Response) => {
   try {
     const wiki_docs = await Wiki.Wiki_docs.getAllDoc();
     return res.status(200).send({
@@ -35,7 +36,7 @@ export const newDoc = async (req, res) => {
   }
 };
 
-export const report = async (req, res) => {
+export const report = async (req:Request, res: Response) => {
   try {
     const reports = await Report.getAllReport();
     console.log(typeof reports);
@@ -54,7 +55,7 @@ export const report = async (req, res) => {
   }
 };
 
-export const setConstraint = async (req, res) => {
+export const setConstraint = async (req:Request, res: Response) => {
   try {
     const { target_user_id, restrict_period } = req.body;
     const user = await User.findById(target_user_id);
@@ -90,7 +91,7 @@ export const setConstraint = async (req, res) => {
   }
 };
 
-export const getConstraint = async (req, res) => {
+export const getConstraint = async (req:Request, res: Response) => {
   try {
     const result = await User.getConstraint();
     return res.status(200).send({

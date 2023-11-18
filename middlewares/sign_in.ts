@@ -1,6 +1,7 @@
 import User from "../models/userModel";
+import { Request, Response, NextFunction } from "express";
 
-export const isSignedIn = (req, res, next) => {
+export const isSignedIn = (req: Request, res: Response, next: NextFunction) => {
   if (req.isAuthenticated()) {
     //TODO: 유저 출석 체크 로직이 이쪽에 들어가는 것이 맞는지에 대한 근본적인 고민
     User.markAttend(req.user[0].id);
@@ -10,7 +11,7 @@ export const isSignedIn = (req, res, next) => {
   }
 };
 
-export const isNotSignedIn = (req, res, next) => {
+export const isNotSignedIn = (req: Request, res: Response, next: NextFunction) => {
   if (!req.isAuthenticated()) {
     next();
   } else {
