@@ -1,6 +1,6 @@
 import * as passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-// const LocalStrategy = require("passport-local").Strategy;
+
 import * as bcrypt from "bcrypt";
 
 import User from "../models/userModel";
