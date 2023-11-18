@@ -1,3 +1,5 @@
+import pool from "../config/db";
+
 // user_action 테이블의 column을 가지는 객체
 const Action = function (action: { user_id: any; record_count: any; revise_count: any; report_count: any; debate_count: any; question_count: any; like_count: any; answer_count: any; event_begin: any; }) {
   this.user_id = action.user_id;

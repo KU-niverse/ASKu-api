@@ -1,8 +1,8 @@
 // 로깅을 위한 winston 설정
 
-const winston = require("winston");
+import winston from "winston";
 const { format } = winston;
-const winstonDaily = require("winston-daily-rotate-file");
+import winstonDaily from "winston-daily-rotate-file";
 const { combine, timestamp, printf } = format;
 
 // 로그 메시지 형식
@@ -38,4 +38,4 @@ const stream = {
   }
 };
 
-module.exports =  { logger, stream };
+export { logger, stream };

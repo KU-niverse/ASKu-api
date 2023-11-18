@@ -1,10 +1,10 @@
 import * as express from "express";
+import auth from "./auth";
+import mypage from "./mypage";
 
-const auth = require("./auth");
-const mypage = require("./mypage");
 const router = express.Router();
 
 router.use("/auth", auth);
 router.use("/mypage", mypage);
 
-module.exports = router;
+export default router;

@@ -1,5 +1,10 @@
-const reportMid = require("../controllers/reportController");
-const { newActionReport } = require("../middlewares/user_action");
+import express from 'express';
+import reportMid from "../controllers/reportController";
+import { newActionReport } from "../middlewares/user_action";
+import { isSignedIn } from '../middlewares/sign_in';
+import { isAdmin } from '../middlewares/admin';
+
+const router = express.Router();
 
 // PUT /report/check
 router.put("/check", isSignedIn, isAdmin, reportMid.reportCheckPostMid, newActionReport);
@@ -7,4 +12,4 @@ router.put("/check", isSignedIn, isAdmin, reportMid.reportCheckPostMid, newActio
 // POST /report/:type
 router.post("/:type", isSignedIn, reportMid.reportPostMid, newNotice);
 
-module.exports = router;
+export default router;

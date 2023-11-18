@@ -1,9 +1,9 @@
-const {Notice} = require("../models/notificationModel");
-
+import { Request, Response } from 'express';
+import { Notice } from "../models/notificationModel";
 
 // 유저 알림 조회
-exports.userNoticeGetMid = async(req: { user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
-  try {
+export const userNoticeGetMid = async (req: Request, res: Response) => {
+    try {
     const notices = await Notice.getNoticeByRole(req.user[0].id, 0);
     res.status(200).send({success: true, message: "유저 알림 목록을 조회하였습니다.", data: notices[0]});
   } catch (err) {
@@ -13,7 +13,7 @@ exports.userNoticeGetMid = async(req: { user: { id: any; }[]; }, res: { status: 
 };
 
 // 관리자 알림 조회
-exports.adminNoticeGetMid = async(req: { user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const adminNoticeGetMid = async (req: Request, res: Response) => {
   try {
     const notices = await Notice.getNoticeByRole(req.user[0].id, 1);
     res.status(200).send({success: true, message: "관리자 알림 목록을 조회하였습니다.", data: notices[0]});
@@ -24,7 +24,7 @@ exports.adminNoticeGetMid = async(req: { user: { id: any; }[]; }, res: { status:
 };
 
 // 알림 읽음 표시
-exports.NoticeReadPostMid = async(req: { body: { notification_id: any; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }) => {
+export const NoticeReadPostMid = async (req: Request, res: Response) => {
   try {
     const result = await Notice.readNotice(req.body.notification_id, req.user[0].id);
     if (result[0].changedRows) {

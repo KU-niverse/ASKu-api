@@ -1,10 +1,10 @@
-const { Question, getIdByTitle } = require("../models/questionModel.js");
-
-const diff = require("diff");
-const { getWikiContent } = require("./wikiController.js");
+import { Request, Response } from 'express';
+import { Question, getIdByTitle } from "../models/questionModel.js";
+import { getWikiContent } from "./wikiController.js";
+import diff from "diff";
 
 // 질문 조회하기 (id)
-exports.questionGetMid = async (req: { params: { id: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const questionGetMid = async (req: Request, res: Response) => {
   try {
     const question = await Question.getQuestionOne(req.params.id);
     if (!question) {
@@ -19,7 +19,7 @@ exports.questionGetMid = async (req: { params: { id: any; }; }, res: { status: (
 };
 
 // 질문 조회하기 (doc_id)
-exports.questionGetAllMid = async (req: { params: { title: string; flag: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const questionGetAllMid = async (req: { params: { title: string; flag: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
     const questions = await Question.getQuestionsAll(doc_id, req.params.flag);
@@ -41,7 +41,7 @@ exports.questionGetAllMid = async (req: { params: { title: string; flag: any; };
 };
 
 // 질문 등록하기
-exports.questionPostMid = async (req: { body: { content: any; index_title: any; user_id: any; types_and_conditions: any[][]; }; params: { title: any; }; user: { id: any; }[]; data: any; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const questionPostMid = async (req: { body: { content: any; index_title: any; user_id: any; types_and_conditions: any[][]; }; params: { title: any; }; user: { id: any; }[]; data: any; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     if (!req.body.content) {
       res.status(400).send({ success: false, message: "내용을 작성해주세요." });
@@ -66,7 +66,7 @@ exports.questionPostMid = async (req: { body: { content: any; index_title: any; 
 };
 
 // 질문 수정하기 [답변이 달리기 전까지만 가능]
-exports.questionEditMid = async (req: { params: { question: any; }; user: { id: any; }[]; body: { new_content: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; messsage?: string; message?: string; }): void; new(): any; }; }; }) => {
+export const questionEditMid = async (req: { params: { question: any; }; user: { id: any; }[]; body: { new_content: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; messsage?: string; message?: string; }): void; new(): any; }; }; }) => {
   try {
     const result = await Question.updateQuestion(
       req.params.question,
@@ -90,7 +90,7 @@ exports.questionEditMid = async (req: { params: { question: any; }; user: { id: 
 };
 
 // 질문 삭제하기 [답변이 달리기 전, 좋아요 눌리기 전까지만 가능]
-exports.questionDeleteMid = async (req: { params: { question: any; }; user: { id: any; }[]; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const questionDeleteMid = async (req: { params: { question: any; }; user: { id: any; }[]; message: string; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     const result = await Question.deleteQuestion(
       req.params.question,
@@ -112,7 +112,7 @@ exports.questionDeleteMid = async (req: { params: { question: any; }; user: { id
 };
 
 // 질문 좋아요 누르기
-exports.questionLikeMid = async (req: { params: { question: any; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
+export const questionLikeMid = async (req: { params: { question: any; }; user: { id: any; }[]; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; }): void; new(): any; }; }; }, next: () => void) => {
   try {
     const result = await Question.likeQuestion(
       req.params.question,
@@ -137,7 +137,7 @@ exports.questionLikeMid = async (req: { params: { question: any; }; user: { id: 
 };
 
 // 질문 제목 기반으로 검색하기
-exports.questionSearchGetMid = async (req: { params: { query: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const questionSearchGetMid = async (req: { params: { query: string; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     let query = decodeURIComponent(req.params.query);
     if (query.includes("%") || query.includes("_")) {
@@ -160,7 +160,7 @@ exports.questionSearchGetMid = async (req: { params: { query: string; }; }, res:
 };
 
 // 인기 질문 조회하기
-exports.questionPopularGetMid = async (req: any, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const questionPopularGetMid = async (req: any, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const questions = await Question.getQuestionsPopular();
     res.status(200).send({
@@ -175,7 +175,7 @@ exports.questionPopularGetMid = async (req: any, res: { status: (arg0: number) =
 };
 
 //TODO: 잘못된 parameter input에 대한 처리 필요
-exports.questionAnswerGetMid = async (req: { params: { question: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const questionAnswerGetMid = async (req: { params: { question: any; }; }, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
   try {
     const answers = await Question.getQuestionsAnswer(req.params.question);
     let updatedAnswers: any[];

@@ -1,9 +1,10 @@
-const questionMid = require("../controllers/questionController");
-const {
-  newActionQuestion,
-  cancelActionQuestion,
-  newActionLike,
-} = require("../middlewares/user_action");
+import express from 'express';
+import * as questionMid from '../controllers/questionController';
+import { newActionQuestion, cancelActionQuestion, newActionLike } from '../middlewares/user_action';
+import { isSignedIn } from "../middlewares/sign_in";
+import { recordSearch } from '../middlewares/search';
+
+const router = express.Router();
 
 // GET /question/view/:flag/:title
 router.get("/view/:flag/:title", questionMid.questionGetAllMid);
@@ -48,4 +49,4 @@ router.get("/popular", questionMid.questionPopularGetMid);
 // GET question/answer/:question
 router.get("/answer/:question", questionMid.questionAnswerGetMid); // 답변 조회
 
-module.exports = router;
+export default router;

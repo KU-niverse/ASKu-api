@@ -1,5 +1,8 @@
-const debateMid = require("../controllers/debateController");
-const { newActionDebate } = require("../middlewares/user_action");
+import express from 'express';
+const router = express.Router();
+import debateMid from "../controllers/debateController";
+import { isSignedIn } from "../middlewares/sign_in";
+import { newActionDebate } from "../middlewares/user_action";
 
 // POST /debate/new/:title
 router.post("/new/:title", isSignedIn, debateMid.debatePostMid);
@@ -24,3 +27,5 @@ router.get("/searchall/:query", debateMid.debateSearchAllGetMid);
 
 // POST /debate/end/:title/:debate
 router.post("/end/:title/:debate", isSignedIn, debateMid.debateEndPostMid);
+
+export default router;

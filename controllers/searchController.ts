@@ -1,6 +1,7 @@
-const {getKeywordRank} = require("../models/searchModel");
+import { Request, Response } from 'express';
+import { getKeywordRank } from "../models/searchModel";
 
-exports.popularRankGetMid = async (req: any, res: { status: (arg0: number) => { (): any; new(): any; send: { (arg0: { success: boolean; message: string; data?: any; }): void; new(): any; }; }; }) => {
+export const popularRankGetMid = async (req: Request, res: Response) => {
   try {
     const ranks = await getKeywordRank();
     res.status(200).send({success: true, message: "인기순 검색어를 조회하였습니다.", data: ranks});

@@ -1,6 +1,9 @@
-const { popularRankGetMid } = require("../controllers/searchController");
+import express from 'express';
+import { popularRankGetMid } from "../controllers/searchController";
+
+const router = express.Router();
 
 // GET /search/popular
 router.get("/popular", popularRankGetMid);
 
-module.exports = router;
+export default router;
