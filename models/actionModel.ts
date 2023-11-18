@@ -127,4 +127,4 @@ Action.cancelAction = async (user_id: any, count_type: any) => {
   return result;
 };
 
-export {Action};
+export default Action;
