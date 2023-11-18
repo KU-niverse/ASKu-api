@@ -21,7 +21,7 @@ const S3 = new AWS.S3({
 });
 
 // multer image uploader, 5MB 제한, 사용할 때 imageUploader.single("image") 이런 식으로 미들웨어로 사용
-exports.imageUploader = multer({
+export const imageUploader = multer({
   storage: multerS3({
     s3: S3,
     bucket: "image-bucket",

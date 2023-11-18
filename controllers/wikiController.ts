@@ -1,9 +1,12 @@
-import Wiki from "../models/wikiModel.js";
-import Question from "../models/questionModel.js";
+import * as Wiki from "../models/wikiModel.js";
+import * as Question from "../models/questionModel.js";
 // import fs from "fs";
 // import Point from "../models/pointModel.js";
 import * as dotenv from "dotenv";
 import * as AWS from "aws-sdk";
+import { Request, Response, NextFunction } from "express";
+import { nextToken } from "aws-sdk/clients/health.js";
+import { bool } from "aws-sdk/clients/signer.js";
 
 const edp = "https://kr.object.ncloudstorage.com/";
 const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
@@ -23,7 +26,7 @@ const S3 = new AWS.S3({
 });
 
 // 이전 위키의 내용을 가져오는 함수
-export const getWikiContent = (res, title, version) => {
+export const getWikiContent = (res: Response, title: string, version: number): Promise<string> => {
   return new Promise((resolve) => {
     S3.getObject({
       Bucket: "wiki-bucket",
@@ -42,10 +45,8 @@ export const getWikiContent = (res, title, version) => {
   });
 };
 
-exports.getWikiContent = getWikiContent;
-
 // 새 위키 파일을 저장하는 함수
-const saveWikiContent = (res, title, version, content) => {
+const saveWikiContent = (res: Response, title: string, version: number, content: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     S3.putObject({
       Bucket: "wiki-bucket",
@@ -64,7 +65,7 @@ const saveWikiContent = (res, title, version, content) => {
 };
 
 // 인덱싱 함수
-const indexing = (numbers, sections) => {
+const indexing = (numbers: Array<number>, sections: Array<{title: string, content: Array<string>}>) => {
   let content_json = []; // content의 메타데이터와 데이터
   let num_list = []; // index의 리스트
   let idx = 1; // 가장 상위 목차
@@ -109,16 +110,24 @@ const indexing = (numbers, sections) => {
   return content_json;
 };
 
+interface WikiPostMidRequest extends Request {
+  doc_id: number;
+  version: number;
+  count: number;
+  summary: string;
+  text_pointer: string;
+  diff: number;
+};
 // 새 위키 문서 생성하기 [기여도 지급]
 // 1. 기존에 같은 타이틀의 문서가 있는지 체크
 // 2-1. 없으면 새로운 문서 생성
 // 2-2. 있으면 지워진 문서인지 확인
 // 3-1. 지워진 문서면 처리
 // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
-exports.newWikiPostMid = async (req, res, next) => {
+export const newWikiPostMid = async (req:WikiPostMidRequest, res: Response, next: NextFunction) => {
   try {
     // 1. 기존에 같은 타이틀의 문서가 있는지 체크
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
 
     if (doc_id !== null) {
       // 2-2. 있으면 지워진 문서인지 확인
@@ -137,10 +146,21 @@ exports.newWikiPostMid = async (req, res, next) => {
       }
     }
 
-    const title = req.params.title.replace(/\/+/g, "_");
-    const text = req.body.text;
-    const version = 1;
-    const type = req.body.type;
+    const title: string = req.params.title.replace(/\/+/g, "_");
+    const text: string = req.body.text;
+    const version: number = 1;
+    const type: string = req.body.type;
+
+    // 제목 길이 30자 제한, 넘으면 error 반환
+    // TODO: Swagger 업데이트
+    if (title.length > 30) {
+      res.status(400).send({
+        success: false,
+        message: "Title is too long",
+        content: req.body.text,
+      });
+      return;
+    }
 
     // 2-1. 없으면 새로운 문서 생성
     // 아래는 S3에 저장하는 코드
@@ -178,13 +198,18 @@ exports.newWikiPostMid = async (req, res, next) => {
   }
 };
 
+interface ContentsGetMidRequest extends Request {
+  calltype: number;
+  isAuthenticated: () => boolean;
+  user: any;
+};
 // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
-exports.contentsGetMid = async (req, res) => {
+export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
-    if(rows.length === 0) {
+    if((rows as any[]).length === 0) {
       res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
@@ -197,7 +222,7 @@ exports.contentsGetMid = async (req, res) => {
     }
 
     let text = "";
-    let jsonData = {};
+    let jsonData = {version: 0, text: "", contents: [], success: false, is_favorite: false};
 
     // 삭제된 문서인지 확인
     const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
@@ -267,11 +292,11 @@ exports.contentsGetMid = async (req, res) => {
     indexing(numbers, sections).forEach(obj => {
       jsonData.contents.push(obj);
     });
-    
+
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
       const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
-      if(rows.length === 0) {
+      if((rows as any[]).length === 0) {
         jsonData["is_favorite"] = false;
       } else {
         jsonData["is_favorite"] = true;
@@ -287,7 +312,7 @@ exports.contentsGetMid = async (req, res) => {
 };
 
 // 전체 글 수정하기
-exports.contentsPostMid = async (req, res, next) => {
+export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -328,7 +353,7 @@ exports.contentsPostMid = async (req, res, next) => {
 
 // 수정 시 기존 섹션 텍스트 불러오기
 // req에 doc_id, section 필요
-exports.contentsSectionGetMid = async (req, res) => {
+export const contentsSectionGetMid = async (req: Request, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -336,7 +361,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     const version = rows[0].version;
     let text = "";
     let sections = [];
-    let jsonData = {};
+    let jsonData = {doc_id: 0, version: 0, title: "", content: "", success: false};
     let section = null;
 
     // S3에서 파일 읽어오는 코드
@@ -376,7 +401,6 @@ exports.contentsSectionGetMid = async (req, res) => {
 
     // 섹션 번호에 맞는 섹션 불러오기
     section = sections[parseInt(req.params.section) - 1];
-    jsonData = {};
     jsonData["doc_id"] = doc_id;
     jsonData["version"] = version;
     jsonData["title"] = section.title;
@@ -389,7 +413,7 @@ exports.contentsSectionGetMid = async (req, res) => {
 };
 
 // 섹션 수정하기
-exports.contentsSectionPostMid = async (req, res, next) => {
+export const contentsSectionPostMid = async (req: WikiPostMidRequest, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -405,11 +429,11 @@ exports.contentsSectionPostMid = async (req, res, next) => {
     }
 
     // 섹션 수정하고 새 위키 파일(버전) 만들기
-    const title = req.params.title.replace(/\/+/g, "_");
-    const latest_ver = rows[0].version;
-    const new_version = latest_ver + 1;
-    const updated_section_index = req.params.section - 1;
-    const new_content = req.body.new_content;
+    const title: string = req.params.title.replace(/\/+/g, "_");
+    const latest_ver: number = rows[0].version;
+    const new_version: number = latest_ver + 1;
+    const updated_section_index: number = parseInt(req.params.section) - 1;
+    const new_content: string = req.body.new_content;
 
     // 이전 파일의 내용에서 일부 섹션을 다른 내용으로 대체하는 함수
     const updateFileContent = async () => {
@@ -429,7 +453,7 @@ exports.contentsSectionPostMid = async (req, res, next) => {
             updated_content += new_content + "\n";
             flag = 1;
           }
-          else if (current_sectionIndex === updated_section_index & flag === 1) {
+          else if (current_sectionIndex === updated_section_index && flag === 1) {
             void 0; // 아무것도 안함 섹션 내용을 아예 갈아끼운 것
           }
           else {
@@ -469,7 +493,7 @@ exports.contentsSectionPostMid = async (req, res, next) => {
 };
 
 // 모든 글 제목 조회
-exports.titlesGetMid = async (req, res) => {
+export const titlesGetMid = async (req: Request, res: Response) => {
   try {
     const rows = await Wiki.Wiki_docs.getAllWikiDocs();
     res.status(200).send({ success: true, titles: rows });
@@ -480,7 +504,7 @@ exports.titlesGetMid = async (req, res) => {
 };
 
 // 랜덤 글 제목 조회
-exports.randomTitleGetMid = async (req, res) => {
+export const randomTitleGetMid = async (req: Request, res: Response) => {
   try {
     const title = await Wiki.Wiki_docs.getRandomWikiDocs();
     res.status(200).send({ success: true, title: title });
@@ -491,7 +515,7 @@ exports.randomTitleGetMid = async (req, res) => {
 };
 
 // 위키 히스토리 불러오기
-exports.historyGetMid = async (req, res) => {
+export const historyGetMid = async (req: Request, res: Response) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
@@ -503,11 +527,11 @@ exports.historyGetMid = async (req, res) => {
 };
 
 // 최근 변경된 위키 히스토리 불러오기
-exports.recentHistoryGetMid = async (req, res) => {
-  try{
-    const type = req.query.type ? req.query.type : "";
-    const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
-    res.status(200).send({success: true, message: rows});
+export const recentHistoryGetMid = async (req: Request, res: Response) => {
+  try {
+    const type: string = Array.isArray(req.query.type) ? (req.query.type.join(",") as string) : (req.query.type || "") as string;
+    const rows: any = await Wiki.Wiki_history.getRecentWikiHistorys(type);
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -515,20 +539,19 @@ exports.recentHistoryGetMid = async (req, res) => {
 };
 
 // 특정 위키 히스토리의 raw 파일 불러오기
-exports.historyRawGetMid = async (req, res) => {
-  let jsonData = {};
+export const historyRawGetMid = async (req: Request, res: Response) => {
+  let jsonData = {doc_id: 0, version: 0, text: ""};
 
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const title = req.params.title.replace(/\/+/g, "_");
-    const version = req.params.version;
-    let text = "";
+    const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const title: string = req.params.title.replace(/\/+/g, "_");
+    const version: number = parseInt(req.params.version);
 
     // 해당 버전의 파일 읽어서 jsonData에 저장
-    text = await getWikiContent(res, title, version);
+    let text: string = await getWikiContent(res, title, version);
 
     // 원래 통으로 가져오는 코드
-    const lines = text.split(/\r?\n/);
+    const lines: string[] = text.split(/\r?\n/);
     text = lines.join("\n");
 
     jsonData["doc_id"] = doc_id;
@@ -541,8 +564,11 @@ exports.historyRawGetMid = async (req, res) => {
   }
 };
 
+interface WikiRollbackMidRequest extends WikiPostMidRequest {
+  is_rollback: number;
+};
 // 롤백하기
-exports.historyVersionPostMid = async (req, res, next) => {
+export const historyVersionPostMid = async (req: WikiRollbackMidRequest, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -581,14 +607,14 @@ exports.historyVersionPostMid = async (req, res, next) => {
 };
 
 // 두 버전 비교하기
-exports.comparisonGetMid = async (req, res) => {
+export const comparisonGetMid = async (req: Request, res: Response) => {
   try {
-    const title = req.params.title.replace(/\/+/g, "_");
-    const rev = req.params.rev;
-    const oldrev = req.params.oldrev;
-    let jsonData = {};
-    let text = "";
-    let lines = [];
+    const title: string = req.params.title.replace(/\/+/g, "_");
+    const rev: number = parseInt(req.params.rev);
+    const oldrev: number = parseInt(req.params.oldrev);
+    let jsonData = {rev: 0, rev_text: "", oldrev: 0, oldrev_text: ""};
+    let text: string = "";
+    let lines: string[] = [];
 
     if (oldrev <= 0) {
       res.status(400).send({
@@ -630,9 +656,9 @@ exports.comparisonGetMid = async (req, res) => {
 };
 
 // 문서 삭제하기
-exports.wikiDeleteMid = async (req, res) => {
+export const wikiDeleteMid = async (req: Request, res: Response) => {
   try{
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     await Wiki.Wiki_docs.deleteWikiDocsById(doc_id);
     res.status(200).json({ success: true, message: "위키 문서 삭제 성공" });
   } catch (err) {
@@ -641,8 +667,11 @@ exports.wikiDeleteMid = async (req, res) => {
   }
 };
 
+interface WikiSearchGetMidRequest extends Request {
+  user: any;
+};
 // 위키 제목 기반으로 문서 검색하기
-exports.wikiSearchGetMid = async (req, res) => {
+export const wikiSearchGetMid = async (req: WikiSearchGetMidRequest, res: Response) => {
   try{
     let title = decodeURIComponent(req.params.title);
     if (title.includes("%") || title.includes("_")) {
@@ -662,32 +691,32 @@ exports.wikiSearchGetMid = async (req, res) => {
 };
 
 // 같은 목차가 존재하는지 확인, ex) based_on_section: true, section: 3
-exports.contentsSectionGetMidByIndex = async (req, res) => {
+export const contentsSectionGetMidByIndex = async (req: Request, res: Response) => {
   try {
     // 질문을 받아온다
-    const q = await Question.getQuestion(req.params.qid);
+    const q: any = await Question.getQuestion(req.params.qid);
     // 질문에 해당하는 문서를 가져와서 목차를 가져온다
-    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(q.doc_id);
-    const wiki_docs = await Wiki.Wiki_docs.getWikiDocsById(q.doc_id);
-    const title = wiki_docs.title.replace(/\/+/g, "_");
-    const version = rows[0].version;
+    const rows: any = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(q.doc_id);
+    const wiki_docs: any = await Wiki.Wiki_docs.getWikiDocsById(q.doc_id);
+    const title: string = wiki_docs.title.replace(/\/+/g, "_");
+    const version: number = rows[0].version;
     let text = "";
-    let jsonData = {};
+    let jsonData = {version: 0, text: "", contents: [], success: false, based_on_section: false, section: 0};
 
     // S3에서 파일 읽어오는 코드
     text = await getWikiContent(res, title, version);
 
     // 원래 통으로 가져오는 코드
-    const lines = text.split(/\r?\n/);
+    const lines: string[] = text.split(/\r?\n/);
     text = lines.join("\n");
 
     jsonData["version"] = version;
     jsonData["text"] = text;
 
-    const sections = [];
-    let current_section = null;
-    let current_content = null;
-    const numbers = [];
+    const sections: Array<{title: string, content: Array<string>}> = [];
+    let current_section: any = null;
+    let current_content: any = null;
+    const numbers: number[] = [];
 
     // 파일 읽고 section 나누기
     for (let line of lines) {
@@ -723,18 +752,18 @@ exports.contentsSectionGetMidByIndex = async (req, res) => {
     const content_json = indexing(numbers, sections);
     jsonData["contents"] = content_json;
 
-    let index_title_list = [];
+    let index_title_list: string[] = [];
     for(let i = 0; i < content_json.length; i++){
       index_title_list.push(content_json[i].index + " " + content_json[i].title);
     }
 
-    const found = index_title_list.includes(q.index_title);
+    const found: boolean = index_title_list.includes(q.index_title);
 
     // 목차를 순회하면서 질문과 같은 목차가 있는지 확인한다
     // 같은 목차가 있으면 res에 based_on_section: true, section: section을 넣어서 보낸다
     if(found){
       jsonData["based_on_section"] = true;
-      const section = index_title_list.indexOf(q.index_title) + 1;
+      const section: number = index_title_list.indexOf(q.index_title) + 1;
       jsonData["section"] = section;
     }
     // 같은 목차가 없으면 res에 based_on_section: false를 넣어서 보낸다
@@ -750,8 +779,11 @@ exports.contentsSectionGetMidByIndex = async (req, res) => {
   }
 };
 
+interface WikiFavoriteMidRequest extends Request {
+  user: any;
+};
 // 위키 즐겨찾기 조회
-exports.wikiFavoriteGetMid = async (req, res) => {
+export const wikiFavoriteGetMid = async (req: WikiFavoriteMidRequest, res: Response) => {
   try{
     const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(req.user[0].id);
     res.status(200).send({ success: true, message: rows });
@@ -762,9 +794,9 @@ exports.wikiFavoriteGetMid = async (req, res) => {
 };
 
 // 위키 즐겨찾기 추가
-exports.wikiFavoritePostMid = async (req, res) => {
+export const wikiFavoritePostMid = async (req: WikiFavoriteMidRequest, res: Response) => {
   try{
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const new_wiki_favorite = new Wiki.Wiki_favorite({
       user_id: req.user[0].id,
       doc_id: doc_id,
@@ -778,7 +810,7 @@ exports.wikiFavoritePostMid = async (req, res) => {
 };
 
 // 위키 즐겨찾기 삭제
-exports.wikiFavoriteDeleteMid = async (req, res) => {
+export const wikiFavoriteDeleteMid = async (req: WikiFavoriteMidRequest, res: Response) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const result = await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
@@ -794,14 +826,29 @@ exports.wikiFavoriteDeleteMid = async (req, res) => {
   }
 };
 
+interface WikiContributionMidRequest extends Request {
+  user: any;
+};
 // 로그인한 유저 기여도 순위 조회
-exports.userContributionGetMid = async (req, res) => {
+export const userContributionGetMid = async (req: WikiContributionMidRequest, res: Response) => {
   try {
     const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
     const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
-    rows.docs = rows2;
+    let rows3: {
+      count: number;
+      ranking: number;
+      point: number;
+      ranking_percentage: number;
+      docs: any;
+    } = {
+      count: rows.count,
+      ranking: rows.ranking,
+      point: rows.point,
+      ranking_percentage: rows.ranking_percentage,
+      docs: rows2
+    };
     
-    res.status(200).send({ success: true, message: rows});
+    res.status(200).send({ success: true, message: rows3 });
   } catch (err) {
     console.log(err);
     res.status(500).json({ success: false, message: "유저 기여도 순위 조회 중 오류" });
@@ -809,7 +856,7 @@ exports.userContributionGetMid = async (req, res) => {
 };
 
 // 전체 기여도 리스트 조회
-exports.totalContributionGetMid = async (req, res) => {
+export const totalContributionGetMid = async (req: Request, res: Response) => {
   try {
     const rows = await Wiki.Wiki_point.getRanking();
     res.status(200).send({ success: true, message: rows});
@@ -820,7 +867,7 @@ exports.totalContributionGetMid = async (req, res) => {
 };
 
 // 문서 내 기여도 리스트 조회
-exports.contributionGetMid = async (req, res) => {
+export const contributionGetMid = async (req: Request, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     if(doc_id == null) {
@@ -836,7 +883,7 @@ exports.contributionGetMid = async (req, res) => {
 };
 
 // 특정 히스토리 bad로 변경
-exports.badHistoryPutMid = async (req, res) => {
+export const badHistoryPutMid = async (req: Request, res: Response) => {
   try {
     const history_id = req.params.hisid;
     await Wiki.Wiki_history.badHistoryById(history_id);
