@@ -1,8 +1,8 @@
 // 로깅을 위한 winston 설정
-
 import winston from "winston";
-const { format } = winston;
 import winstonDaily from "winston-daily-rotate-file";
+
+const { format } = winston;
 const { combine, timestamp, printf } = format;
 
 // 로그 메시지 형식
@@ -26,14 +26,13 @@ const logger = winston.createLogger({
       datePattern: 'YYYYMMDD',
       dirname: './logs',
       filename: `asku_%DATE%.log`,
-      maxSize: null,
       maxFiles: 14
     }),
   ],
 });
 
 const stream = {
-  write: message => {
+  write: (message: string) => {
     logger.info(message);
   }
 };
