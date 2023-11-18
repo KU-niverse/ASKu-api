@@ -9,11 +9,11 @@ class User {
   password: string;
   nickname: string;
   rep_badge: number;
-  created_at: any;
+  created_at: string;
   point: number;
   is_admin: boolean;
-  restrict_period: any;
-  restrict_count: boolean;
+  restrict_period: string;
+  restrict_count: number;
   uuid: string;
   is_deleted: boolean;
   static findByLoginIdTemp: any;
@@ -36,14 +36,14 @@ class User {
   static getBadges: any;
   static setRepBadge: (rep_badge_id: any, user_id: any) => Promise<boolean>;
   static editNick: (nickname: any, user_id: any) => Promise<boolean>;
-  static init: (user_id: any) => Promise<boolean>;
-  static markAttend: (user_id: any) => Promise<boolean>;
-  static setConstraint: (user_id: any, restrict_period: any) => Promise<boolean>;
-  static deactivate: (user_id: any) => Promise<boolean>;
+  static init: (user_id: number) => Promise<boolean>;
+  static markAttend: (user_id: number) => Promise<boolean>;
+  static setConstraint: (user_id: number, restrict_period: number) => Promise<boolean>;
+  static deactivate: (user_id: number) => Promise<boolean>;
   static getConstraint: any;
   static debatetHistory: any;
-  static questionHistory: (user_id: any, arrange: any) => Promise<any>;
-  constructor(user: { id: any; login_id: any; name: any; stu_id: any; email: any; password: any; nickname: any; rep_badge: any; created_at: any; point: any; is_admin: any; restrict_period: any; restrict_count: any; uuid: any; is_deleted: any; }) {
+  static questionHistory: (user_id: number, arrange: any) => Promise<any>;
+  constructor(user: { id: number; login_id: string; name: string; stu_id: string; email: string; password: string; nickname: string; rep_badge: number; created_at: string; point: number; is_admin: boolean; restrict_period: string; restrict_count: number; uuid: string; is_deleted: boolean; }) {
     this.id = user.id;
     this.login_id = user.login_id;
     this.name = user.name;
@@ -90,13 +90,13 @@ User.findByEmailTemp = async (email: string) => {
 
 //user_id로 유저 찾기
 User.findById = async (id: number) => {
-  const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
+  const [user]: object[] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
   return user;
 };
 
 //login_id로 유저 찾기
 User.findByLoginId = async (login_id: string) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
+  const [rows]: object[] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
   ]);
   return rows;
@@ -104,14 +104,14 @@ User.findByLoginId = async (login_id: string) => {
 
 //nickname으로 유저 찾기
 User.findByNickname = async (nickname: string) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
+  const [rows]: object[] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
     nickname,
   ]);
   return rows;
 };
 //email로 유저 찾기
 User.findByEmail = async (email: string) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
+  const [rows]: object[] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
   ]);
 
@@ -132,7 +132,7 @@ User.create = async (newUser: { login_id: string; name: string; stu_id: string; 
       newUser.uuid,
     ]
   );
-  const [user] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
+  const [user]: object[] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     newUser.login_id,
   ]);
 

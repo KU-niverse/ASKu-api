@@ -1,6 +1,7 @@
 import User from "../../models/userModel";
+import { Request, Response } from "express";
 
-exports.info = async (req, res) => {
+exports.info = async (req:Request, res: Response) => {
   try {
     const user_info = await User.getUserInfo(req.user[0].id);
     return res.status(201).json({
@@ -18,7 +19,7 @@ exports.info = async (req, res) => {
   }
 };
 
-exports.wikiHistory = async (req, res) => {
+exports.wikiHistory = async (req:Request, res: Response) => {
   try {
     const wikiHistory = await User.getWikiHistory(req.user[0].id);
     return res.status(201).json({
@@ -36,7 +37,7 @@ exports.wikiHistory = async (req, res) => {
   }
 };
 
-exports.badgeHistory = async (req, res) => {
+exports.badgeHistory = async (req:Request, res: Response) => {
   try {
     const badgeHistory = await User.getBadgeHistory(req.user[0].id);
     return res.status(201).json({
@@ -54,7 +55,7 @@ exports.badgeHistory = async (req, res) => {
   }
 };
 
-exports.setRepBadge = async (req, res) => {
+exports.setRepBadge = async (req:Request, res: Response) => {
   try {
     const result = await User.setRepBadge(
       req.body.rep_badge_id,
@@ -81,7 +82,7 @@ exports.setRepBadge = async (req, res) => {
   }
 };
 
-exports.editNick = async (req, res) => {
+exports.editNick = async (req:Request, res: Response) => {
   try {
     const { nickname } = req.body;
     //닉네임이 빈 문자열이라면
@@ -115,7 +116,7 @@ exports.editNick = async (req, res) => {
   }
 };
 
-exports.debatetHistory = async (req, res) => {
+exports.debatetHistory = async (req:Request, res: Response) => {
   try {
     const commentHistory = await User.debatetHistory(req.user[0].id);
     return res.status(201).json({ success: true, message: commentHistory });
@@ -129,7 +130,7 @@ exports.debatetHistory = async (req, res) => {
   }
 };
 
-exports.questionHistory = async (req, res) => {
+exports.questionHistory = async (req:Request, res: Response) => {
   try {
     if (req.params.arrange === "latest") {
       const questionHistory = await User.questionHistory(req.user[0].id, 0);
@@ -162,7 +163,7 @@ exports.questionHistory = async (req, res) => {
   }
 };
 
-exports.getBadges = async (req, res) => {
+exports.getBadges = async (req:Request, res: Response) => {
   try {
     const badges = await User.getBadges();
     return res.status(201).json({
