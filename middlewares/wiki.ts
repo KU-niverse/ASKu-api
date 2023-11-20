@@ -76,9 +76,11 @@ export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Respons
     // 질문 기반 수정 -> type_id: 2, 3
     if (is_q_based == 1) {
       // 답변 생성
-      Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
-      req.body.types_and_conditions.push([2, req.body.qid]);
-      req.body.types_and_conditions.push([3, req.body.qid]);
+      if (req.body.qid !== undefined) {
+        Wiki.Wiki_history.createAnswer(wiki_history_id, req.body.qid);
+        req.body.types_and_conditions.push([2, req.body.qid]);
+        req.body.types_and_conditions.push([3, req.body.qid]);
+      }
     }
 
     // 100자 이상 수정 -> type_id: 5

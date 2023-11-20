@@ -1,6 +1,7 @@
 // import * as pool from "../config/db.js";
 import pool from "../config/db.js";
 import { OkPacket } from "mysql2";
+import { RowDataPacket } from "mysql2";
 
 // wiki_docs 테이블의 column을 가지는 객체
 export class Wiki_docs {
@@ -35,7 +36,11 @@ export class Wiki_docs {
       id,
     ]);
 
-    return rows[0];
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows[0];
+    } else {
+      return null;
+    }
   }
   // is_deleted가 0인 모든 문서 제목 가져오기
   static async getAllWikiDocs() {
@@ -51,7 +56,7 @@ export class Wiki_docs {
       `SELECT title FROM wiki_docs WHERE is_deleted = 0 ORDER BY RAND() LIMIT 1`
     );
 
-    return rows[0].title;
+    return (rows as { title: string }[])[0].title;
   }
   // wiki_docs 테이블에서 id를 통해 문서를 지워주는 함수(is_deleted = 1로 업데이트)
   static async deleteWikiDocsById(id: any) {
@@ -60,19 +65,20 @@ export class Wiki_docs {
       [id]
     );
 
-    return result[0].changedRows;
+    return (result as any).changedRows;
   }
   // wiki_docs 테이블에서 title을 통해 문서의 id를 찾아주는 함수
+
   static async getWikiDocsIdByTitle(title: any) {
     const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title = ?`, [
       title,
     ]);
 
-    if ((rows as any[]).length == 0) {
+    if ((rows as RowDataPacket[]).length == 0) {
       return null;
     }
 
-    return rows[0].id;
+    return (rows as RowDataPacket[])[0].id;
   }
   // wiki_docs 테이블에서 title을 통해 like 기반으로 문서를 찾아주는 함수, 나중에 업데이트 예정
   static async searchWikiDocsByTitle(title: any, user_id: any) {
@@ -213,7 +219,11 @@ export class Wiki_history {
       [doc_id, version]
     );
 
-    return rows[0];
+    if (Array.isArray(rows) && rows.length > 0) {
+      return rows[0];
+    } else {
+      return null; // or return an appropriate value
+    }
   }
 
   // 부적절한 wiki_history is_bad = 1로 업데이트해주는 함수, 이때 작성한 유저의 기여도와 action record_count도 재계산해준다.
@@ -227,13 +237,14 @@ export class Wiki_history {
       `SELECT user_id FROM wiki_history WHERE id = ?`,
       [id]
     );
-    await Wiki_point.recalculatePoint(rows[0].user_id);
+    const userData = rows as RowDataPacket[];
+    await Wiki_point.recalculatePoint(userData[0].user_id);
 
     return (result as any).changedRows;
   }
 
   // 답변 생성하는 함수, 질문 기반 수정일 때만 사용
-  static async createAnswer(wiki_history_id: any, qid: any) {
+  static async createAnswer(wiki_history_id: number, qid: number) {
     const [rows] = await pool.query(
       `INSERT INTO answers SET wiki_history_id = ?, question_id = ?`,
       [wiki_history_id, qid]
@@ -249,7 +260,7 @@ export class Wiki_history {
   }
 
   // 새로운 wiki_history를 생성해주는 함수, wiki_docs의 text_pointer와 lastest_ver도 업데이트해준다.
-  static async create(new_wiki_history: { text_pointer: any; version: any; doc_id: any; }) {
+  static async create(new_wiki_history: { text_pointer: string; version: number; doc_id: number; }) {
     const [result] = await pool.query(
       "INSERT INTO wiki_history SET ?",
       new_wiki_history
@@ -278,7 +289,7 @@ export class Wiki_history {
 // 기여도 관련 함수들을 가지는 객체
 export class Wiki_point {
   // 기여도를 지급해주는 함수 (그냥 위키 수정 diff * 4, 질문 기반 작성일 시 diff * 5)
-  static async givePoint(user_id: any, point: number, is_q_based: number) {
+  static async givePoint(user_id: number, point: number, is_q_based: number) {
     if (point <= 0) {
       return;
     }
@@ -295,7 +306,7 @@ export class Wiki_point {
   }
 
   // 기여도를 user의 wiki_history 기반으로 재계산 해주는 함수
-  static async recalculatePoint(user_id: any) {
+  static async recalculatePoint(user_id: number) {
     // 기여도 재계산
     const [result] = await pool.query(
       "UPDATE users SET point = (SELECT SUM(CASE WHEN diff > 0 AND is_q_based = 1 THEN diff * 5 WHEN diff > 0 THEN diff * 4 ELSE 0 END) FROM wiki_history WHERE user_id = ? AND is_bad = 0 AND is_rollback = 0) WHERE id = ?",
@@ -305,7 +316,7 @@ export class Wiki_point {
   }
 
   // 현재 문서에 기여한 유저와 기여도를 반환해주는 함수
-  static async getContributors(doc_id: any) {
+  static async getContributors(doc_id: number) {
     const [rows] = await pool.query(
       `
       SELECT
@@ -350,12 +361,12 @@ export class Wiki_point {
       [user_id, user_id]
     );
 
-    const totalUsers = rows[0].count;
-    const userRanking = rows2[0].ranking;
-    const userPoint = rows2[0].user_point;
+    const totalUsers = (rows as any)[0].count;
+    const userRanking = (rows2 as any)[0].ranking;
+    const userPoint = (rows2 as any)[0].user_point;
 
     const ranking_percentage = (userRanking / totalUsers) * 100;
-    if(userPoint == 0) {
+    if (userPoint == 0) {
       return {
         count: totalUsers,
         ranking: userRanking,

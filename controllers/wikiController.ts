@@ -138,7 +138,11 @@ export const newWikiPostMid = async (req:WikiPostMidRequest, res: Response, next
 
     if (doc_id !== null) {
       // 2-2. 있으면 지워진 문서인지 확인
-      const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
+      const row: any = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
+      if(row == null){
+        res.status(500).json({ success: false, message: "위키 생성 중 오류", content: req.body.text });
+        return;
+      }
       if (row.is_deleted === 1) {
         // 3-1. 지워진 문서면 처리
       }
@@ -182,7 +186,7 @@ export const newWikiPostMid = async (req:WikiPostMidRequest, res: Response, next
       latest_ver: version,
     });
 
-    const rows_docs = await Wiki.Wiki_docs.create(new_wiki_docs);
+    const rows_docs: any = await Wiki.Wiki_docs.create(new_wiki_docs);
     console.log(rows_docs);
 
     let count = text.length;
@@ -233,7 +237,7 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
     let jsonData: Record<string, any> = { version: 0, text: "", contents: [], success: false };
 
     // 삭제된 문서인지 확인
-    const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
+    const row: any = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
     if (row.is_deleted === 1) {
       res.status(410).send({
         success: false,
