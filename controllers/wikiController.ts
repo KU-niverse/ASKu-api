@@ -5,8 +5,7 @@ import * as Question from "../models/questionModel.js";
 import * as dotenv from "dotenv";
 import * as AWS from "aws-sdk";
 import { Request, Response, NextFunction } from "express";
-import { nextToken } from "aws-sdk/clients/health.js";
-import { bool } from "aws-sdk/clients/signer.js";
+import { RowDataPacket } from "mysql2";
 
 const edp = "https://kr.object.ncloudstorage.com/";
 const endpoint = new AWS.Endpoint("https://kr.object.ncloudstorage.com/");
@@ -20,8 +19,8 @@ const S3 = new AWS.S3({
   endpoint,
   region,
   credentials: {
-    accessKeyId: process.env.ACCESSKEY,
-    secretAccessKey: process.env.SECRETACCESSKEY,
+    accessKeyId: process.env.ACCESSKEY ?? "",
+    secretAccessKey: process.env.SECRETACCESSKEY ?? "",
   },
 });
 
@@ -36,11 +35,18 @@ export const getWikiContent = (res: Response, title: string, version: number): P
         console.log(err);
         res.status(404).send({ // 내부에서 404 에러 처리
           success: false,
-          message:err
+          message: err
         });
         return;
       }
-      resolve(data.Body.toString('utf-8'));
+      if (data && data.Body) {
+        resolve(data.Body.toString('utf-8'));
+      } else {
+        res.status(404).send({ // 내부에서 404 에러 처리
+          success: false,
+          message: "Data not found"
+        });
+      }
     });
   });
 };
@@ -67,12 +73,12 @@ const saveWikiContent = (res: Response, title: string, version: number, content:
 // 인덱싱 함수
 const indexing = (numbers: Array<number>, sections: Array<{title: string, content: Array<string>}>) => {
   let content_json = []; // content의 메타데이터와 데이터
-  let num_list = []; // index의 리스트
+  let num_list: number[] = []; // index의 리스트
   let idx = 1; // 가장 상위 목차
 
   // 인덱싱
   for (let i = 0; i < numbers.length; i++) {
-    let section_dic = {}; // section : section, index : index, title: title, content: content
+    let section_dic: Record<string, any> = {}; // section : section, index : index, title: title, content: content
     section_dic["section"] = (i + 1).toString();
     const num = numbers[i];
 
@@ -89,12 +95,13 @@ const indexing = (numbers: Array<number>, sections: Array<{title: string, conten
           // depth가 똑같아질 때까지 pop
           num_list.pop();
         }
-        let tmp = num_list[num_list.length - 1]; // 한 단계 올리기
+        let tmp: number = num_list[num_list.length - 1]; // 한 단계 올리기
         num_list.pop();
         num_list.push(tmp + 1);
       }
       section_dic["index"] = num_list.join(".");
     }
+
 
     // title과 content 저장
     section_dic["title"] = sections[i].title;
@@ -209,20 +216,21 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
-    if((rows as any[]).length === 0) {
+    if ((rows as RowDataPacket[]).length === 0) {
       res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
 
     let version;
-    if(req.calltype === 1){ // 글 불러오거나 수정용
-      version = rows[0].version;
-    } else if(req.calltype === 2) { // 버전별 글 불러오기용
+    if (req.calltype === 1) {
+      // Use type assertion to specify the type of rows[0]
+      version = (rows as RowDataPacket[])[0].version;
+    } else if (req.calltype === 2) {
       version = req.params.version;
     }
 
     let text = "";
-    let jsonData = {version: 0, text: "", contents: [], success: false, is_favorite: false};
+    let jsonData: Record<string, any> = { version: 0, text: "", contents: [], success: false };
 
     // 삭제된 문서인지 확인
     const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
@@ -259,7 +267,9 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
         // 해당 라인이 섹션 타이틀인 경우
         numbers.push(matches[1].length - 1);
         if (current_section !== null) {
-          current_section.content.push(current_content);
+          if (current_section.content) {
+            current_section.content.push(current_content);
+          }
           sections.push(current_section);
         } else {  // 목차 없이 그냥 글만 있는 경우
           is_started = true;
@@ -269,7 +279,7 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
         }
         current_section = {
           title: matches[2],
-          content: [],
+          content: [] as string[], // Fix: Initialize content as an empty array of strings
         };
         current_content = "";
       } else {
@@ -316,7 +326,7 @@ export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, ne
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
-    const version = rows[0].version;
+    const version = (rows as RowDataPacket)[0].version;
 
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != version) {
@@ -339,7 +349,7 @@ export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, ne
     req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
     req.summary = req.body.summary;
     req.count = new_content.length;
-    req.diff = new_content.length - rows[0].count;
+    req.diff = new_content.length - (rows as RowDataPacket)[0].count;
     req.version = new_version;
 
     // 히스토리 생성 -> 기여도 -> 알림
@@ -356,7 +366,7 @@ export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, ne
 export const contentsSectionGetMid = async (req: Request, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id) as RowDataPacket[];
     const title = req.params.title.replace(/\/+/g, "_");
     const version = rows[0].version;
     let text = "";
@@ -377,15 +387,18 @@ export const contentsSectionGetMid = async (req: Request, res: Response) => {
       if (matches !== null) {
         // 해당 라인이 섹션 타이틀인 경우
         if (current_section !== null) {
-          current_section.content.push(current_content);
+          if (current_content !== null) {
+            current_section.content.push(current_content);
+          }
           sections.push(current_section);
         }
         current_section = {
           title: line,
-          content: [],
+          content: [] as string[],
         };
         current_content = "";
       } else {
+
         // 해당 라인이 섹션 내용인 경우
         if (current_content !== "") {
           current_content += "\n";
@@ -395,7 +408,9 @@ export const contentsSectionGetMid = async (req: Request, res: Response) => {
     }
 
     if (current_section !== null) {
-      current_section.content.push(current_content);
+      if (current_content !== null) {
+        current_section.content.push(current_content);
+      }
       sections.push(current_section);
     }
 
@@ -416,7 +431,7 @@ export const contentsSectionGetMid = async (req: Request, res: Response) => {
 export const contentsSectionPostMid = async (req: WikiPostMidRequest, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id) as RowDataPacket[];
 
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != rows[0].version) {
@@ -572,7 +587,7 @@ export const historyVersionPostMid = async (req: WikiRollbackMidRequest, res: Re
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
-    const version = rows[0].version;
+    const version = (rows as RowDataPacket[])[0].version;
 
     // 전체 글 저장하는 새 파일(버전) 만들기
     const title = req.params.title.replace(/\/+/g, "_");
@@ -593,10 +608,10 @@ export const historyVersionPostMid = async (req: WikiRollbackMidRequest, res: Re
     req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
     req.summary = `version ${rollback_version}으로 롤백`;
     req.count = text.length;
-    req.diff = text.length - rows[0].count;
+    req.diff = text.length - (rows as RowDataPacket[])[0].count;
     req.version = new_version;
     req.is_rollback = 1;
-    req.body.index_title = rows[0].index_title;
+    req.body.index_title = (rows as RowDataPacket[])[0].index_title;
 
     // 히스토리 생성 -> 알림
     next();
@@ -701,7 +716,7 @@ export const contentsSectionGetMidByIndex = async (req: Request, res: Response) 
     const title: string = wiki_docs.title.replace(/\/+/g, "_");
     const version: number = rows[0].version;
     let text = "";
-    let jsonData = {version: 0, text: "", contents: [], success: false, based_on_section: false, section: 0};
+    let jsonData: Record<string, any> = { version: 0, text: "", contents: [], success: false };
 
     // S3에서 파일 읽어오는 코드
     text = await getWikiContent(res, title, version);

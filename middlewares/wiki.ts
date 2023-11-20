@@ -1,6 +1,7 @@
 import * as Wiki from "../models/wikiModel.js";
 import { getWikiContent } from "../controllers/wikiController.js";
 import { Request, Response, NextFunction } from "express";
+import { RowDataPacket } from 'mysql2/promise';
 
 interface CreateHistoryMidRequest extends Request {
   body: {
@@ -116,7 +117,7 @@ export const wikiPointMid = async (req:CreateHistoryMidRequest, res: Response, n
 export const wikiChangeRecentContentMid = async (req:Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
+    const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id) as RowDataPacket[];
     const title = req.params.title.replace(/\/+/g, "_");
     const version = rows[0].version;
     let text = "";
