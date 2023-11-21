@@ -1,4 +1,4 @@
-import * as express from "express";
+import express, {Request, Response} from "express";
 
 const { isSignedIn, isNotSignedIn } = require("../../middlewares/sign_in");
 const {
@@ -41,7 +41,7 @@ router.get("/emaildupcheck/:email", isNotSignedIn, emailDupCheck);
 
 //로그인여부 확인
 //TODO: 서버 에러 처리
-router.get("/issignedin", isSignedIn, (req, res) => {
+router.get("/issignedin", isSignedIn, (req: Request, res: Response) => {
   return res
     .status(201)
     .json({ success: true, message: "로그인한 상태입니다." });
@@ -56,4 +56,4 @@ router.put("/changepw", isSignedIn, changePw);
 //비밀번호 재설정
 router.put("/resetpw", isNotSignedIn, resetPw);
 
-module.exports = router;
+export default router;
