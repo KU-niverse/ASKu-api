@@ -3,6 +3,9 @@ import { Request, Response } from "express";
 
 exports.info = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const user_info = await User.getUserInfo(req.user[0].id);
     return res.status(201).json({
       success: true,
@@ -21,6 +24,9 @@ exports.info = async (req:Request, res: Response) => {
 
 exports.wikiHistory = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const wikiHistory = await User.getWikiHistory(req.user[0].id);
     return res.status(201).json({
       success: true,
@@ -39,6 +45,9 @@ exports.wikiHistory = async (req:Request, res: Response) => {
 
 exports.badgeHistory = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const badgeHistory = await User.getBadgeHistory(req.user[0].id);
     return res.status(201).json({
       success: true,
@@ -57,6 +66,9 @@ exports.badgeHistory = async (req:Request, res: Response) => {
 
 exports.setRepBadge = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const result = await User.setRepBadge(
       req.body.rep_badge_id,
       req.user[0].id
@@ -84,6 +96,9 @@ exports.setRepBadge = async (req:Request, res: Response) => {
 
 exports.editNick = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const { nickname } = req.body;
     //닉네임이 빈 문자열이라면
     if (nickname === "") {
@@ -118,6 +133,9 @@ exports.editNick = async (req:Request, res: Response) => {
 
 exports.debatetHistory = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const commentHistory = await User.debatetHistory(req.user[0].id);
     return res.status(201).json({ success: true, message: commentHistory });
   } catch (error) {
@@ -132,6 +150,9 @@ exports.debatetHistory = async (req:Request, res: Response) => {
 
 exports.questionHistory = async (req:Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     if (req.params.arrange === "latest") {
       const questionHistory = await User.questionHistory(req.user[0].id, 0);
       return res.status(201).json({
