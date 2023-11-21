@@ -1,6 +1,6 @@
 import pool from "../config/db";
 
-async function postSearch(user_id: any, keyword: any) {
+async function postSearch(user_id: String, keyword: String) {
   const [isOften] = await pool.query(
     `SELECT * FROM search_history 
     WHERE user_id = ? AND keyword = ? 
@@ -31,4 +31,4 @@ export async function getKeywordRank() {
   return rows;
 }
 
-module.exports = {postSearch, getKeywordRank};
+module.exports = { postSearch, getKeywordRank };
