@@ -1,14 +1,14 @@
 import pool from "../config/db";
 
 async function postSearch(user_id: any, keyword: any) {
-  const isOften = await pool.query(
+  const [isOften] = await pool.query(
     `SELECT * FROM search_history 
     WHERE user_id = ? AND keyword = ? 
     AND TIMESTAMPDIFF(MINUTE, search_time, NOW()) <= 10`,
     [user_id, keyword]
   );
   
-  if (isOften[0].length) {
+  if (Array.isArray(isOften) && isOften.length) {
     return;
   } else{
     const result = await pool.query(
@@ -19,7 +19,7 @@ async function postSearch(user_id: any, keyword: any) {
   }
 }
 
-async function getKeywordRank() {
+export async function getKeywordRank() {
   const [rows] = await pool.query(
     `SELECT keyword, COUNT(*) as count 
      FROM search_history
