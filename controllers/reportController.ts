@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Report, getReport } from "../models/reportModel";
 
 // 신고하기
-export const reportPostMid = async (req: Request, res: Response) => {
+export const reportPostMid = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const newReport = new Report({
       user_id: req.user[0].id,
