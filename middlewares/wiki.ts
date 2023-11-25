@@ -38,34 +38,34 @@ interface CreateHistoryMidRequest extends Request {
 };
 
 // 위키 히스토리 생성 미들웨어
-export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
+export const createHistoryMid = async (req:Request, res: Response, next: NextFunction) => {
   // 프론트에서 질문 기반 수정이면 꼭 req.body.is_q_based = 1와 req.body.qid 넣어주기
   try {
     const is_q_based =
       req.body.is_q_based !== undefined
         ? req.body.is_q_based
         : 0;
-    const is_rollback = req.is_rollback !== undefined ? req.is_rollback : 0;
+    const is_rollback = (req as CreateHistoryMidRequest).is_rollback !== undefined ? (req as CreateHistoryMidRequest).is_rollback : 0;
     const index_title = req.body.index_title !== undefined ? req.body.index_title : "전체";
 
     const new_wiki_history = new Wiki.Wiki_history({
-      user_id: req.user[0].id,
-      doc_id: req.doc_id,
-      text_pointer: req.text_pointer,
-      summary: req.summary,
-      count: req.count,
-      diff: req.diff,
-      version: req.version,
+      user_id: (req as CreateHistoryMidRequest).user[0].id,
+      doc_id: (req as CreateHistoryMidRequest).doc_id,
+      text_pointer: (req as CreateHistoryMidRequest).text_pointer,
+      summary: (req as CreateHistoryMidRequest).summary,
+      count: (req as CreateHistoryMidRequest).count,
+      diff: (req as CreateHistoryMidRequest).diff,
+      version: (req as CreateHistoryMidRequest).version,
       is_q_based: is_q_based,
       is_rollback: is_rollback,
       index_title: index_title,
     });
 
     const wiki_history_id = await Wiki.Wiki_history.create(new_wiki_history);
-    req.is_q_based = is_q_based;
+    (req as CreateHistoryMidRequest).is_q_based = is_q_based;
 
     // res message 정의 (롤백 제외)
-    req.message = "위키 히스토리를 생성하였습니다.";
+    (req as CreateHistoryMidRequest).message = "위키 히스토리를 생성하였습니다.";
 
     /* 알림 변수 정의*/
     if (!req.body.types_and_conditions) {
@@ -84,7 +84,7 @@ export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Respons
     }
 
     // 100자 이상 수정 -> type_id: 5
-    if (req.diff >= 100) {
+    if ((req as CreateHistoryMidRequest).diff >= 100) {
       req.body.types_and_conditions.push([5, -1]);
     }
 
@@ -101,9 +101,9 @@ export const createHistoryMid = async (req:CreateHistoryMidRequest, res: Respons
 };
 
 // 위키 작성 기여도 지급 미들웨어
-export const wikiPointMid = async (req:CreateHistoryMidRequest, res: Response, next: NextFunction) => {
+export const wikiPointMid = async (req:Request, res: Response, next: NextFunction) => {
   try {
-    Wiki.Wiki_point.givePoint(req.user[0].id, req.diff, req.is_q_based);
+    Wiki.Wiki_point.givePoint((req as CreateHistoryMidRequest).user[0].id, (req as CreateHistoryMidRequest).diff, (req as CreateHistoryMidRequest).is_q_based);
     // 알림
     next();
     //res.status(200).json({ message: "위키 작성 기여도 지급 성공" });

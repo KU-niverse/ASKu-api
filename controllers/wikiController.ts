@@ -131,7 +131,7 @@ interface WikiPostMidRequest extends Request {
 // 2-2. 있으면 지워진 문서인지 확인
 // 3-1. 지워진 문서면 처리
 // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
-export const newWikiPostMid = async (req:WikiPostMidRequest, res: Response, next: NextFunction) => {
+export const newWikiPostMid = async (req:Request, res: Response, next: NextFunction) => {
   try {
     // 1. 기존에 같은 타이틀의 문서가 있는지 체크
     const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
@@ -191,12 +191,12 @@ export const newWikiPostMid = async (req:WikiPostMidRequest, res: Response, next
 
     let count = text.length;
 
-    req.doc_id = rows_docs.id;
-    req.version = version;
-    req.count = count;
-    req.summary = "새 위키 문서 생성";
-    req.text_pointer = `${edp}wiki-bucket/${title}/r${version}.wiki`;
-    req.diff = count;
+    (req as WikiPostMidRequest).doc_id = rows_docs.id;
+    (req as WikiPostMidRequest).version = version;
+    (req as WikiPostMidRequest).count = count;
+    (req as WikiPostMidRequest).summary = "새 위키 문서 생성";
+    (req as WikiPostMidRequest).text_pointer = `${edp}wiki-bucket/${title}/r${version}.wiki`;
+    (req as WikiPostMidRequest).diff = count;
 
     // 히스토리 생성 -> 기여도 -> 알림
     // 알림 변수 선언
@@ -215,7 +215,7 @@ interface ContentsGetMidRequest extends Request {
   user: any;
 };
 // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
-export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) => {
+export const contentsGetMid = async (req: Request, res: Response) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -226,10 +226,10 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
     }
 
     let version;
-    if (req.calltype === 1) {
+    if ((req as ContentsGetMidRequest).calltype === 1) {
       // Use type assertion to specify the type of rows[0]
       version = (rows as RowDataPacket[])[0].version;
-    } else if (req.calltype === 2) {
+    } else if ((req as ContentsGetMidRequest).calltype === 2) {
       version = req.params.version;
     }
 
@@ -309,7 +309,7 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
 
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
-      const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
+      const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId((req as ContentsGetMidRequest).user[0].id, doc_id);
       if((rows as any[]).length === 0) {
         jsonData["is_favorite"] = false;
       } else {
@@ -326,7 +326,7 @@ export const contentsGetMid = async (req: ContentsGetMidRequest, res: Response) 
 };
 
 // 전체 글 수정하기
-export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, next: NextFunction) => {
+export const contentsPostMid = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -349,12 +349,12 @@ export const contentsPostMid = async (req: WikiPostMidRequest, res: Response, ne
 
     await saveWikiContent(res, title, new_version, new_content);
 
-    req.doc_id = doc_id;
-    req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
-    req.summary = req.body.summary;
-    req.count = new_content.length;
-    req.diff = new_content.length - (rows as RowDataPacket)[0].count;
-    req.version = new_version;
+    (req as WikiPostMidRequest).doc_id = doc_id;
+    (req as WikiPostMidRequest).text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+    (req as WikiPostMidRequest).summary = req.body.summary;
+    (req as WikiPostMidRequest).count = new_content.length;
+    (req as WikiPostMidRequest).diff = new_content.length - (rows as RowDataPacket)[0].count;
+    (req as WikiPostMidRequest).version = new_version;
 
     // 히스토리 생성 -> 기여도 -> 알림
     next();
@@ -432,7 +432,7 @@ export const contentsSectionGetMid = async (req: Request, res: Response) => {
 };
 
 // 섹션 수정하기
-export const contentsSectionPostMid = async (req: WikiPostMidRequest, res: Response, next: NextFunction) => {
+export const contentsSectionPostMid = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id) as RowDataPacket[];
@@ -485,12 +485,12 @@ export const contentsSectionPostMid = async (req: WikiPostMidRequest, res: Respo
 
         console.log("The file has been updated!");
 
-        req.doc_id = doc_id;
-        req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
-        req.summary = req.body.summary;
-        req.count = updated_content.length;
-        req.diff = updated_content.length - rows[0].count;
-        req.version = new_version;
+        (req as WikiPostMidRequest).doc_id = doc_id;
+        (req as WikiPostMidRequest).text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+        (req as WikiPostMidRequest).summary = req.body.summary;
+        (req as WikiPostMidRequest).count = updated_content.length;
+        (req as WikiPostMidRequest).diff = updated_content.length - rows[0].count;
+        (req as WikiPostMidRequest).version = new_version;
 
         // 히스토리 생성 -> 기여도 -> 알림
         next();
@@ -587,7 +587,7 @@ interface WikiRollbackMidRequest extends WikiPostMidRequest {
   is_rollback: number;
 };
 // 롤백하기
-export const historyVersionPostMid = async (req: WikiRollbackMidRequest, res: Response, next: NextFunction) => {
+export const historyVersionPostMid = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
@@ -608,13 +608,13 @@ export const historyVersionPostMid = async (req: WikiRollbackMidRequest, res: Re
     // 새 파일 만들기
     await saveWikiContent(res, title, new_version, text);
 
-    req.doc_id = doc_id;
-    req.text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
-    req.summary = `version ${rollback_version}으로 롤백`;
-    req.count = text.length;
-    req.diff = text.length - (rows as RowDataPacket[])[0].count;
-    req.version = new_version;
-    req.is_rollback = 1;
+    (req as WikiRollbackMidRequest).doc_id = doc_id;
+    (req as WikiRollbackMidRequest).text_pointer = `${edp}wiki-bucket/${title}/r${new_version}.wiki`;
+    (req as WikiRollbackMidRequest).summary = `version ${rollback_version}으로 롤백`;
+    (req as WikiRollbackMidRequest).count = text.length;
+    (req as WikiRollbackMidRequest).diff = text.length - (rows as RowDataPacket[])[0].count;
+    (req as WikiRollbackMidRequest).version = new_version;
+    (req as WikiRollbackMidRequest).is_rollback = 1;
     req.body.index_title = (rows as RowDataPacket[])[0].index_title;
 
     // 히스토리 생성 -> 알림
@@ -690,7 +690,7 @@ interface WikiSearchGetMidRequest extends Request {
   user: any;
 };
 // 위키 제목 기반으로 문서 검색하기
-export const wikiSearchGetMid = async (req: WikiSearchGetMidRequest, res: Response) => {
+export const wikiSearchGetMid = async (req: Request, res: Response) => {
   try{
     let title = decodeURIComponent(req.params.title);
     if (title.includes("%") || title.includes("_")) {
@@ -699,7 +699,7 @@ export const wikiSearchGetMid = async (req: WikiSearchGetMidRequest, res: Respon
     if (!title) {
       res.status(400).send({success: false, message: "잘못된 검색어"});
     } else {
-      const user_id = (req.user && req.user[0] && req.user[0].id) ? req.user[0].id : 0;
+      const user_id = (req.user && (req as WikiSearchGetMidRequest).user[0] && (req as WikiSearchGetMidRequest).user[0].id) ? (req as WikiSearchGetMidRequest).user[0].id : 0;
       const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(title, user_id);
       res.status(200).send({ success: true, message: rows });
     }
@@ -802,9 +802,9 @@ interface WikiFavoriteMidRequest extends Request {
   user: any;
 };
 // 위키 즐겨찾기 조회
-export const wikiFavoriteGetMid = async (req: WikiFavoriteMidRequest, res: Response) => {
+export const wikiFavoriteGetMid = async (req: Request, res: Response) => {
   try{
-    const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(req.user[0].id);
+    const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId((req as WikiFavoriteMidRequest).user[0].id);
     res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
@@ -813,11 +813,11 @@ export const wikiFavoriteGetMid = async (req: WikiFavoriteMidRequest, res: Respo
 };
 
 // 위키 즐겨찾기 추가
-export const wikiFavoritePostMid = async (req: WikiFavoriteMidRequest, res: Response) => {
+export const wikiFavoritePostMid = async (req: Request, res: Response) => {
   try{
     const doc_id: number = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const new_wiki_favorite = new Wiki.Wiki_favorite({
-      user_id: req.user[0].id,
+      user_id: (req as WikiFavoriteMidRequest).user[0].id,
       doc_id: doc_id,
     });
     await Wiki.Wiki_favorite.create(new_wiki_favorite);
@@ -829,10 +829,10 @@ export const wikiFavoritePostMid = async (req: WikiFavoriteMidRequest, res: Resp
 };
 
 // 위키 즐겨찾기 삭제
-export const wikiFavoriteDeleteMid = async (req: WikiFavoriteMidRequest, res: Response) => {
+export const wikiFavoriteDeleteMid = async (req: Request, res: Response) => {
   try{
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const result = await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
+    const result = await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, (req as WikiFavoriteMidRequest).user[0].id);
     if(result == 0){
       res.status(404).json({ success: false, message: "위키 즐겨찾기에 없는 문서입니다." });
     }
@@ -849,10 +849,10 @@ interface WikiContributionMidRequest extends Request {
   user: any;
 };
 // 로그인한 유저 기여도 순위 조회
-export const userContributionGetMid = async (req: WikiContributionMidRequest, res: Response) => {
+export const userContributionGetMid = async (req: Request, res: Response) => {
   try {
-    const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
-    const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
+    const rows = await Wiki.Wiki_point.getRankingById((req as WikiContributionMidRequest).user[0].id);
+    const rows2 = await Wiki.Wiki_point.getDocsContributions((req as WikiContributionMidRequest).user[0].id);
     let rows3: {
       count: number;
       ranking: number;
