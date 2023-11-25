@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { Report, getReport } from "../models/reportModel";
+import { Report } from "../models/reportModel";
 import { OkPacket, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 interface ReportRequest extends Request {
   report_user?: number;
-  data?: RowDataPacket[] | RowDataPacket[][] | OkPacket | OkPacket[] | ResultSetHeader;
+  data?: OkPacket | RowDataPacket[] | RowDataPacket[][] | OkPacket[] | ResultSetHeader;
   message?: string
 }
 
@@ -40,7 +40,7 @@ export const reportCheckPostMid = async (req: ReportRequest, res: Response, next
     } else {
       const result = await Report.checkReport(req.body.report_id, req.body.is_checked) as unknown as OkPacket;
       if (result.changedRows) {
-        const reportResult = await getReport(req.body.report_id);
+        const reportResult = await Report.getReport(req.body.report_id);
         if (Array.isArray(reportResult) && reportResult.length > 0) {
           const report = reportResult[0];
           if ('user_id' in report) {

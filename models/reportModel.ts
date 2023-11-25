@@ -40,6 +40,11 @@ export class Report implements ReportType {
     this.comment = comment;
   }
   
+  static getReport = async (id: number) =>  {
+    const [rows] = await pool.query(`SELECT * FROM reports WHERE id = ?`, [id]);
+    return rows;
+  }
+  
   static getAllReport = async () => {
     const [rows] = await pool.query(
       `SELECT * FROM reports ORDER BY created_at DESC `
@@ -51,14 +56,14 @@ export class Report implements ReportType {
     const [result] = await pool.query(`INSERT INTO reports SET ?`, newReport);
     if ('insertId' in result) {
       const id = result.insertId;
-      return getReport(id);
+      return Report.getReport(id);
     }
   };
   
   // TODO: js map 자료구조로 리팩토링
   static checkReport = async (report_id: number, is_checked: number) => {
     if (is_checked == 1) {
-      const report = await getReport(report_id);
+      const report = await Report.getReport(report_id);
       if (Array.isArray(report) && report.length > 0) {
         const type_id = (report[0] as ReportType).type_id;
         const target = (report[0] as ReportType).target;
@@ -191,9 +196,4 @@ export class Report implements ReportType {
     );
     return result;
   };
-}
-
-export async function getReport(id: number) {
-  const [rows] = await pool.query(`SELECT * FROM reports WHERE id = ?`, [id]);
-  return rows;
 }
