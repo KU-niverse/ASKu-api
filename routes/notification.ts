@@ -1,7 +1,7 @@
 import express from 'express';
 const router = express.Router();
 
-import notificationMid from "../controllers/notificationController";
+import * as notificationMid from "../controllers/notificationController";
 import { isSignedIn } from '../middlewares/sign_in';
 import { isAdmin } from '../middlewares/admin';
 
