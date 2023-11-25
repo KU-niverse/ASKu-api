@@ -60,3 +60,5 @@ export const reportCheckPostMid = async (req: ReportRequest, res: Response, next
     res.status(500).send({success: false, message: "오류가 발생하였습니다."});
   }
 };
+
+export default reportPostMid
