@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import * as admin from "../controllers/adminController";
 import { isSignedIn } from "../middlewares/sign_in";
 import { isAdmin } from "../middlewares/admin";

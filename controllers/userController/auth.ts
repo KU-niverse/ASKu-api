@@ -1,10 +1,10 @@
 import * as bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import User from "../../models/userModel";
-import {Action} from "../../models/actionModel";
+import Action from "../../models/actionModel";
 import { v4 as uuidv4 } from "uuid";
 import * as passport from "passport";
-import * as moment from "moment";
+import moment from "moment";
 import * as nodemailer from "nodemailer";
 
 
@@ -118,7 +118,7 @@ exports.signUp = async (req: Request, res: Response) => {
     const uuid = uuidv4();
     const auth_uuid = uuidv4();
     try {
-      const result = await User.tempCreate({
+      await User.tempCreate({
         login_id,
         name,
         stu_id,
@@ -223,7 +223,7 @@ exports.signUp = async (req: Request, res: Response) => {
 //로그인
 exports.signIn = async (req:Request, res: Response, next: NextFunction) => {
   try {
-    passport.authenticate("local", (authError, user, info) => {
+    passport.authenticate("local", (authError: any, user: any, info: any) => {
       if (authError) {
         console.error(authError);
         return next(authError);
@@ -340,6 +340,9 @@ exports.resetPw = async (req: Request, res: Response) => {
 //로그인 되어있는 상태에서 유저 비밀번호 변경
 exports.changePw = async (req: Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const { password, new_password } = req.body;
     //기존 비밀번호와 일치하는지 확인
     const is_password_right = await bcrypt.compare(
@@ -523,6 +526,9 @@ exports.signUpEmailCheck = async (req: Request, res: Response) => {
 
 exports.deactivate = async (req: Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const result = await User.deactivate(req.user[0].id);
     if (result) {
       //로그아웃 처리

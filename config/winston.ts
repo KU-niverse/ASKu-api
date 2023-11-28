@@ -26,14 +26,14 @@ const logger = winston.createLogger({
       datePattern: 'YYYYMMDD',
       dirname: './logs',
       filename: `asku_%DATE%.log`,
-      maxSize: null,
+      maxSize: undefined,
       maxFiles: 14
     }),
   ],
 });
 
 const stream = {
-  write: message => {
+  write: (message: string) => {
     logger.info(message);
   }
 };
