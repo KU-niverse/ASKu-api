@@ -1,7 +1,7 @@
 import User from "../../models/userModel";
 import { Request, Response } from "express";
 
-exports.info = async (req:Request, res: Response) => {
+exports.info = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
