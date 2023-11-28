@@ -42,7 +42,7 @@ interface CustomRequest extends ExpressRequest {
 }
 
 // 알림 생성
-exports.newNotice = async (req: CustomRequest, res: Response, next: NextFunction) => {  
+export const newNotice = async (req: CustomRequest, res: Response, next: NextFunction) => {  
   try {
     const typesAndConditions: [] = req.body.types_and_conditions; // [[type_id, condition_id], ...]
     const result = []; // 알림 생성 결과
