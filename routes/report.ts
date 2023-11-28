@@ -1,5 +1,5 @@
 import express from 'express';
-import reportMid from "../controllers/reportController";
+import * as reportMid from "../controllers/reportController";
 import { newActionReport } from "../middlewares/user_action";
 import { isSignedIn } from '../middlewares/sign_in';
 import { isAdmin } from '../middlewares/admin';

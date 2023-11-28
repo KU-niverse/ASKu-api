@@ -1,8 +1,8 @@
 // 로깅을 위한 winston 설정
-
 import winston from "winston";
-const { format } = winston;
 import winstonDaily from "winston-daily-rotate-file";
+
+const { format } = winston;
 const { combine, timestamp, printf } = format;
 
 // 로그 메시지 형식

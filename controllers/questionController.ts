@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { Question, getIdByTitle } from "../models/questionModel.js";
 import { getWikiContent } from "./wikiController.js";
 import diff from "diff";
@@ -41,7 +41,7 @@ export const questionGetAllMid = async (req: Request, res: Response) => {
 };
 
 // 질문 등록하기
-export const questionPostMid = async (req: Request, res: Response) => {  
+export const questionPostMid = async (req: Request, res: Response, next: NextFunction) => {  
   try {
     if (!req.body.content) {
       res.status(400).send({ success: false, message: "내용을 작성해주세요." });
@@ -90,7 +90,7 @@ export const questionEditMid = async (req: Request, res: Response) => {
 };
 
 // 질문 삭제하기 [답변이 달리기 전, 좋아요 눌리기 전까지만 가능]
-export const questionDeleteMid = async (req: Request, res: Response) => {  
+export const questionDeleteMid = async (req: Request, res: Response, next: NextFunction) => {  
   try {
     const result = await Question.deleteQuestion(
       req.params.question,
@@ -112,7 +112,7 @@ export const questionDeleteMid = async (req: Request, res: Response) => {
 };
 
 // 질문 좋아요 누르기
-export const questionLikeMid = async (req: Request, res: Response) => {  
+export const questionLikeMid = async (req: Request, res: Response, next: NextFunction) => {  
   try {
     const result = await Question.likeQuestion(
       req.params.question,

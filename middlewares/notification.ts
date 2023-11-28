@@ -32,24 +32,37 @@
 */
 
 
-import { Request, Response, NextFunction } from "express";
-import { getUsers, getInfo, Notice } from "../models/notificationModel";
+import { Request as ExpressRequest, Response, NextFunction } from "express";
+import { Notification as Notice } from "../models/notificationModel";
+
+interface CustomRequest extends ExpressRequest {
+  is_rollback?: boolean;
+  message?: string;
+  data?: string;
+}
 
 // 알림 생성
-exports.newNotice = async (req: Request, res: Response, next: NextFunction) => {  
+exports.newNotice = async (req: CustomRequest, res: Response, next: NextFunction) => {  
   try {
-    const typesAndConditions = req.body.types_and_conditions; // [[type_id, condition_id], ...]
+    const typesAndConditions: [] = req.body.types_and_conditions; // [[type_id, condition_id], ...]
     const result = []; // 알림 생성 결과
     
     for (let pair of typesAndConditions) {
       // type_id, condition_id 정의
-      const type_id = pair[0];
-      const condition_id = pair[1];
+      const type_id: number = pair[0];
+      const condition_id: number = pair[1];
       
       // 알림 받는 user 목록 get
-      const users = await getUsers(type_id, condition_id);
+      const users = await Notice.getUsers(type_id, condition_id);
+      if (typeof users === 'number') {
+        continue;
+      }
+      
       // 알림 메시지 필요 정보 get
-      const info = await getInfo(type_id, condition_id);
+      const info = await Notice.getInfo(type_id, condition_id);
+      if (typeof info === 'number') {
+        continue;
+      }
       
       if (type_id === 8 && !info) {
         continue;
