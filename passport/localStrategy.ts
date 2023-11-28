@@ -1,8 +1,10 @@
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcrypt");
+import * as passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
 
-const User = require("../models/userModel");
+import * as bcrypt from "bcrypt";
+
+import User from "../models/userModel";
+
 
 module.exports = () => {
   passport.use(
@@ -12,7 +14,7 @@ module.exports = () => {
         passwordField: "password",
         passReqToCallback: false,
       },
-      async (login_id, password, done) => {
+      async (login_id: string, password: string, done: any) => {
         try {
           const exUser = await User.findByLoginId(login_id);
           if (exUser.length != 0) {

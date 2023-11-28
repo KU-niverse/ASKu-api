@@ -23,6 +23,7 @@ import reportRoutes from "./routes/report";
 import searchRoutes from "./routes/search";
 import wikiRoutes from "./routes/wiki";
 import adminRoutes from "./routes/admin";
+import {passportConfig} from "./passport";
 
 // 환경 변수 로드
 dotenv.config();
@@ -98,7 +99,7 @@ if (process.env.NODE_ENV === "production") {
 app.use(session(sessionOption));
 
 // 패스포트 설정
-passport.passportConfig();
+passportConfig();
 app.use(passport.initialize());
 app.use(passport.session());
 

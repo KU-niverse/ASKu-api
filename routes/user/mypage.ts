@@ -25,4 +25,4 @@ router.get("/debatehistory", isSignedIn, debatetHistory);
 router.get("/questionhistory/:arrange", isSignedIn, questionHistory);
 router.get("/badges", isSignedIn, getBadges);
 
-module.exports = router;
+export default router;

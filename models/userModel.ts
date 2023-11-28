@@ -1,3 +1,4 @@
+import { RowDataPacket } from "mysql2";
 import pool from "../config/db";
 
 class User {
@@ -9,11 +10,11 @@ class User {
   password: string;
   nickname: string;
   rep_badge: number;
-  created_at: any;
+  created_at: string;
   point: number;
   is_admin: boolean;
-  restrict_period: any;
-  restrict_count: boolean;
+  restrict_period: string;
+  restrict_count: number;
   uuid: string;
   is_deleted: boolean;
   static findByLoginIdTemp: any;
@@ -36,14 +37,14 @@ class User {
   static getBadges: any;
   static setRepBadge: (rep_badge_id: any, user_id: any) => Promise<boolean>;
   static editNick: (nickname: any, user_id: any) => Promise<boolean>;
-  static init: (user_id: any) => Promise<boolean>;
-  static markAttend: (user_id: any) => Promise<boolean>;
-  static setConstraint: (user_id: any, restrict_period: any) => Promise<boolean>;
-  static deactivate: (user_id: any) => Promise<boolean>;
+  static init: (user_id: number) => Promise<boolean>;
+  static markAttend: (user_id: number) => Promise<boolean>;
+  static setConstraint: (user_id: number, restrict_period: number) => Promise<boolean>;
+  static deactivate: (user_id: number) => Promise<boolean>;
   static getConstraint: any;
   static debatetHistory: any;
-  static questionHistory: (user_id: any, arrange: any) => Promise<any>;
-  constructor(user: { id: any; login_id: any; name: any; stu_id: any; email: any; password: any; nickname: any; rep_badge: any; created_at: any; point: any; is_admin: any; restrict_period: any; restrict_count: any; uuid: any; is_deleted: any; }) {
+  static questionHistory: (user_id: number, arrange: any) => Promise<any>;
+  constructor(user: { id: number; login_id: string; name: string; stu_id: string; email: string; password: string; nickname: string; rep_badge: number; created_at: string; point: number; is_admin: boolean; restrict_period: string; restrict_count: number; uuid: string; is_deleted: boolean; }) {
     this.id = user.id;
     this.login_id = user.login_id;
     this.name = user.name;
@@ -67,7 +68,7 @@ User.findByLoginIdTemp = async (login_id: string) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE login_id = ?`,
     [login_id]
-  );
+  ) as RowDataPacket[];
   return rows;
 };
 
@@ -76,21 +77,21 @@ User.findByNicknameTemp = async (nickname: string) => {
   const [rows] = await pool.query(
     `SELECT * FROM temp_users WHERE nickname = ?`,
     [nickname]
-  );
+  ) as RowDataPacket[];
   return rows;
 };
 //temp에서 email로 유저 찾기
 User.findByEmailTemp = async (email: string) => {
   const [rows] = await pool.query(`SELECT * FROM temp_users WHERE email = ?`, [
     email,
-  ]);
+  ]) as RowDataPacket[];
 
   return rows;
 };
 
 //user_id로 유저 찾기
 User.findById = async (id: number) => {
-  const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]);
+  const [user] = await pool.query(`SELECT * FROM users WHERE id = ?`, [id]) as RowDataPacket[];
   return user;
 };
 
@@ -98,7 +99,7 @@ User.findById = async (id: number) => {
 User.findByLoginId = async (login_id: string) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
-  ]);
+  ]) as RowDataPacket[];
   return rows;
 };
 
@@ -106,14 +107,14 @@ User.findByLoginId = async (login_id: string) => {
 User.findByNickname = async (nickname: string) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
     nickname,
-  ]);
+  ]) as RowDataPacket[];
   return rows;
 };
 //email로 유저 찾기
 User.findByEmail = async (email: string) => {
-  const [rows] = await pool.query(`SELECT * FROM users WHERE email = ?`, [
+  const [rows]= await pool.query(`SELECT * FROM users WHERE email = ?`, [
     email,
-  ]);
+  ]) as RowDataPacket[];
 
   return rows;
 };
@@ -132,9 +133,9 @@ User.create = async (newUser: { login_id: string; name: string; stu_id: string; 
       newUser.uuid,
     ]
   );
-  const [user] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
+  const [user]= await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     newUser.login_id,
-  ]);
+  ]) as RowDataPacket[];
 
   return user;
 };
@@ -143,7 +144,7 @@ User.tempCreate = async (newUser) => {
   const [dup_user] = await pool.query(
     `SELECT * FROM users where login_id = ? or email = ? or nickname = ?`,
     [newUser.login_id, newUser.email, newUser.nickname]
-  );
+  ) as RowDataPacket[];
   if (Array.isArray(dup_user) && dup_user.length > 0) {
     return false;
   }
@@ -177,7 +178,7 @@ User.getUserInfo = async (user_id: number) => {
   const [user] = await pool.query(
     `SELECT users.id, users.name, users.login_id, users.stu_id, users.email, users.rep_badge as rep_badge_id, users.nickname, users.created_at, users.point, users.is_admin, users.restrict_period, users.restrict_count, badges.name as rep_badge_name, badges.image as rep_badge_image FROM users left join badges on users.rep_badge = badges.id WHERE users.id = ?`,
     [user_id]
-  );
+  ) as RowDataPacket[];
   return user;
 };
 
@@ -187,7 +188,7 @@ User.register_auth = async (auth_uuid) => {
   const [temp_user] = await pool.query(
     `SELECT * FROM temp_users WHERE auth_uuid = ?;`,
     [auth_uuid]
-  );
+  ) as RowDataPacket[];
   if (Array.isArray(temp_user) && temp_user.length === 1) {
     const [user] = await User.create(temp_user[0]);
     await pool.query(`DELETE FROM temp_users WHERE auth_uuid = ?;`, [
@@ -202,7 +203,7 @@ User.register_auth = async (auth_uuid) => {
 User.createChangePwSession = async (login_id, hashed_login_id) => {
   const [user] = await pool.query(`SELECT * FROM users WHERE login_id = ?`, [
     login_id,
-  ]);
+  ]) as RowDataPacket[];
   await pool.query(
     `INSERT INTO change_pw_session (user_id, change_pw_token) VALUES (?, ?)`,
     [user[0].id, hashed_login_id]
@@ -214,7 +215,7 @@ User.checkPwChangeSession = async (hashed_login_id: any) => {
   const [pw_session] = await pool.query(
     `SELECT * FROM change_pw_session WHERE change_pw_token = ?`,
     [hashed_login_id]
-  );
+  ) as RowDataPacket[];
   return pw_session;
 };
 
@@ -231,7 +232,7 @@ User.getWikiHistory = async (user_id: number) => {
   const [user_wiki_history] = await pool.query(
     `SELECT wiki_history.*, wiki_docs.title FROM wiki_history inner join wiki_docs on wiki_history.doc_id = wiki_docs.id WHERE user_id = ? ORDER BY created_at DESC`,
     [user_id]
-  );
+  ) as RowDataPacket[];
   return user_wiki_history;
 };
 
@@ -239,7 +240,7 @@ User.getBadgeHistory = async (user_id: number) => {
   const [user_badge_history] = await pool.query(
     `SELECT badge_history.*, badges.image, badges.name, badges.description FROM badge_history inner join badges on badge_history.badge_id = badges.id WHERE user_id = ? order by badge_history.created_at DESC`,
     [user_id]
-  );
+  ) as RowDataPacket[];
   return user_badge_history;
 };
 
@@ -254,7 +255,7 @@ LEFT JOIN
 GROUP BY 
   badges.id, badges.name, badges.image, badges.description, badges.event, badges.cont
 ORDER BY 
-  history_count ASC, badges.id ASC;`);
+  history_count ASC, badges.id ASC;`) as RowDataPacket[];
   return badges;
 };
 
@@ -298,7 +299,7 @@ User.markAttend = async (user_id: number) => {
   const [attend_info] = await pool.query(
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
-  );
+  ) as RowDataPacket[];
   //오늘 첫 출석이라면
 
   if (!attend_info[0].today_attend) {
@@ -324,7 +325,7 @@ User.markAttend = async (user_id: number) => {
 
 //user_id와 restrict_period(제한 하고 싶은 일수)를 받아서 제약을 설정
 User.setConstraint = async (user_id: number, restrict_period: number) => {
-  let date = new Date();
+  let date: Date = new Date();
   let formattedDate: string;
 
   //restrict_period가 0이라면 제약을 해제한다.
@@ -363,7 +364,7 @@ User.deactivate = async (user_id: number) => {
 User.getConstraint = async () => {
   const [constraint] = await pool.query(
     `SELECT id, login_id, name, stu_id, email, nickname, point, restrict_period, restrict_count FROM users WHERE restrict_period >= CURDATE();`
-  );
+  ) as RowDataPacket[];
   return constraint;
 };
 
@@ -387,7 +388,7 @@ User.debatetHistory = async (user_id: number) => {
       ORDER BY
           debate_history.created_at DESC;`,
     [user_id]
-  );
+  ) as RowDataPacket[];
   return rows;
 };
 
@@ -414,7 +415,7 @@ User.questionHistory = async (user_id: number, arrange: number) => {
       WHERE users.id = ?
       ORDER BY q.created_at DESC`,
       [user_id]
-    );
+    ) as RowDataPacket[];
   }
   //인기순 조회
   else if (arrange == 1) {
@@ -437,7 +438,7 @@ User.questionHistory = async (user_id: number, arrange: number) => {
       WHERE users.id = ?
       ORDER BY like_count DESC, q.created_at DESC`,
       [user_id]
-    );
+    ) as RowDataPacket[];
   }
 
   return rows;

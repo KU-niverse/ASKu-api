@@ -26,6 +26,7 @@ const logger = winston.createLogger({
       datePattern: 'YYYYMMDD',
       dirname: './logs',
       filename: `asku_%DATE%.log`,
+      maxSize: undefined,
       maxFiles: 14
     }),
   ],

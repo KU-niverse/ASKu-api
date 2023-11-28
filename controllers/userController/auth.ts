@@ -1,13 +1,14 @@
 import * as bcrypt from "bcrypt";
+import { NextFunction, Request, Response } from "express";
 import User from "../../models/userModel";
 import Action from "../../models/actionModel";
 import { v4 as uuidv4 } from "uuid";
 import * as passport from "passport";
-import * as moment from "moment";
+import moment from "moment";
 import * as nodemailer from "nodemailer";
 
 
-exports.idDupCheck = async (req, res) => {
+exports.idDupCheck = async (req: Request, res: Response) => {
   const login_id = req.params.loginid;
   try {
     const [ex_user_login_id, ex_temp_user_login_id] = await Promise.all([
@@ -35,7 +36,7 @@ exports.idDupCheck = async (req, res) => {
   }
 };
 
-exports.nickDupCheck = async (req, res) => {
+exports.nickDupCheck = async (req:Request, res: Response) => {
   const nickname = req.params.nick;
   try {
     const [ex_user_nickname, ex_temp_user_nickname] = await Promise.all([
@@ -62,7 +63,7 @@ exports.nickDupCheck = async (req, res) => {
   }
 };
 
-exports.emailDupCheck = async (req, res) => {
+exports.emailDupCheck = async (req: Request, res:Response) => {
   const email = req.params.email;
 
   // '@korea.ac.kr' 형식인지 확인하기 위한 정규식
@@ -109,7 +110,7 @@ exports.emailDupCheck = async (req, res) => {
 //FIXME: 유저 회원가입시 ai_session 테이블에 항목 생성
 //FIXME: 유저 회원가입시 생성되어야하는 데이터 다시 정리
 //회원가입 후 인증 이메일 전송
-exports.signUp = async (req, res) => {
+exports.signUp = async (req: Request, res: Response) => {
   const { login_id, name, stu_id, email, password, nickname } = req.body;
   try {
     //아이디, 이메일, nickname 중복검사, 비밀번호 확인은 프론트에서 처리, 학번은 중복검사x
@@ -117,7 +118,7 @@ exports.signUp = async (req, res) => {
     const uuid = uuidv4();
     const auth_uuid = uuidv4();
     try {
-      const result = await User.tempCreate({
+      await User.tempCreate({
         login_id,
         name,
         stu_id,
@@ -220,9 +221,9 @@ exports.signUp = async (req, res) => {
 };
 
 //로그인
-exports.signIn = async (req, res, next) => {
+exports.signIn = async (req:Request, res: Response, next: NextFunction) => {
   try {
-    passport.authenticate("local", (authError, user, info) => {
+    passport.authenticate("local", (authError: any, user: any, info: any) => {
       if (authError) {
         console.error(authError);
         return next(authError);
@@ -277,7 +278,7 @@ exports.signIn = async (req, res, next) => {
 };
 
 //로그아웃
-exports.signOut = (req, res) => {
+exports.signOut = (req: Request, res: Response) => {
   try {
     req.logout(() => {
       res.status(200).send({ success: true, message: "로그아웃 되었습니다." });
@@ -292,7 +293,7 @@ exports.signOut = (req, res) => {
 };
 
 //비밀번호를 잊어버린 상태에서 비밀번호 변경
-exports.resetPw = async (req, res) => {
+exports.resetPw = async (req: Request, res: Response) => {
   try {
     const { hashed_login_id, new_password } = req.body;
     //해당 세션이 유효한지 체크
@@ -337,8 +338,11 @@ exports.resetPw = async (req, res) => {
   }
 };
 //로그인 되어있는 상태에서 유저 비밀번호 변경
-exports.changePw = async (req, res) => {
+exports.changePw = async (req: Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const { password, new_password } = req.body;
     //기존 비밀번호와 일치하는지 확인
     const is_password_right = await bcrypt.compare(
@@ -369,7 +373,7 @@ exports.changePw = async (req, res) => {
   }
 };
 
-exports.findId = async (req, res) => {
+exports.findId = async (req: Request, res: Response) => {
   try {
     const email = req.body.email;
     const found_user = await User.findByEmail(email);
@@ -394,7 +398,7 @@ exports.findId = async (req, res) => {
   }
 };
 
-exports.findPw = async (req, res) => {
+exports.findPw = async (req: Request, res: Response) => {
   try {
     const login_id = req.body.login_id;
     const user = await User.findByLoginId(login_id);
@@ -487,7 +491,7 @@ exports.findPw = async (req, res) => {
   }
 };
 
-exports.signUpEmailCheck = async (req, res) => {
+exports.signUpEmailCheck = async (req: Request, res: Response) => {
   try {
     const auth_uuid = req.body.auth_uuid;
     const user_id = await User.register_auth(auth_uuid);
@@ -520,8 +524,11 @@ exports.signUpEmailCheck = async (req, res) => {
   }
 };
 
-exports.deactivate = async (req, res) => {
+exports.deactivate = async (req: Request, res: Response) => {
   try {
+    if (!req.user || !Array.isArray(req.user)){
+      throw new Error;
+    }
     const result = await User.deactivate(req.user[0].id);
     if (result) {
       //로그아웃 처리

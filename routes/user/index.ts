@@ -1,4 +1,4 @@
-import * as express from "express";
+import express from "express";
 import auth from "./auth";
 import mypage from "./mypage";
 
