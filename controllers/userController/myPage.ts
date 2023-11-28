@@ -22,7 +22,7 @@ exports.info = async (req: Request, res: Response) => {
   }
 };
 
-exports.wikiHistory = async (req:Request, res: Response) => {
+exports.wikiHistory = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -43,7 +43,7 @@ exports.wikiHistory = async (req:Request, res: Response) => {
   }
 };
 
-exports.badgeHistory = async (req:Request, res: Response) => {
+exports.badgeHistory = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -64,7 +64,7 @@ exports.badgeHistory = async (req:Request, res: Response) => {
   }
 };
 
-exports.setRepBadge = async (req:Request, res: Response) => {
+exports.setRepBadge = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -94,7 +94,7 @@ exports.setRepBadge = async (req:Request, res: Response) => {
   }
 };
 
-exports.editNick = async (req:Request, res: Response) => {
+exports.editNick = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -131,7 +131,7 @@ exports.editNick = async (req:Request, res: Response) => {
   }
 };
 
-exports.debatetHistory = async (req:Request, res: Response) => {
+exports.debatetHistory = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -148,7 +148,7 @@ exports.debatetHistory = async (req:Request, res: Response) => {
   }
 };
 
-exports.questionHistory = async (req:Request, res: Response) => {
+exports.questionHistory = async (req: Request, res: Response) => {
   try {
     if (!req.user || !Array.isArray(req.user)){
       throw new Error;
@@ -184,7 +184,7 @@ exports.questionHistory = async (req:Request, res: Response) => {
   }
 };
 
-exports.getBadges = async (req:Request, res: Response) => {
+exports.getBadges = async (req: Request, res: Response) => {
   try {
     const badges = await User.getBadges();
     return res.status(201).json({
