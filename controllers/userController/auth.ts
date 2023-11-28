@@ -1,7 +1,7 @@
 import * as bcrypt from "bcrypt";
 import { NextFunction, Request, Response } from "express";
 import User from "../../models/userModel";
-import {Action} from "../../models/actionModel";
+import Action from "../../models/actionModel";
 import { v4 as uuidv4 } from "uuid";
 import * as passport from "passport";
 import moment from "moment";
