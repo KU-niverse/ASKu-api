@@ -52,7 +52,7 @@ export const getWikiContent = (res: Response, title: string, version: number): P
 };
 
 // 새 위키 파일을 저장하는 함수
-const saveWikiContent = (res: Response, title: string, version: number, content: string): Promise<void> => {
+const saveWikiContent = (_res: Response, title: string, version: number, content: string): Promise<void> => {
   return new Promise<void>((resolve, reject) => {
     S3.putObject({
       Bucket: "wiki-bucket",
@@ -512,7 +512,7 @@ export const contentsSectionPostMid = async (req: Request, res: Response, next: 
 };
 
 // 모든 글 제목 조회
-export const titlesGetMid = async (req: Request, res: Response) => {
+export const titlesGetMid = async (_req: Request, res: Response) => {
   try {
     const rows = await Wiki.Wiki_docs.getAllWikiDocs();
     res.status(200).send({ success: true, titles: rows });
@@ -523,7 +523,7 @@ export const titlesGetMid = async (req: Request, res: Response) => {
 };
 
 // 랜덤 글 제목 조회
-export const randomTitleGetMid = async (req: Request, res: Response) => {
+export const randomTitleGetMid = async (_req: Request, res: Response) => {
   try {
     const title = await Wiki.Wiki_docs.getRandomWikiDocs();
     res.status(200).send({ success: true, title: title });
@@ -875,7 +875,7 @@ export const userContributionGetMid = async (req: Request, res: Response) => {
 };
 
 // 전체 기여도 리스트 조회
-export const totalContributionGetMid = async (req: Request, res: Response) => {
+export const totalContributionGetMid = async (_req: Request, res: Response) => {
   try {
     const rows = await Wiki.Wiki_point.getRanking();
     res.status(200).send({ success: true, message: rows});
