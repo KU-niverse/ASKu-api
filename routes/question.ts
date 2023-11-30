@@ -3,6 +3,7 @@ import * as questionMid from '../controllers/questionController';
 import { newActionQuestion, cancelActionQuestion, newActionLike } from '../middlewares/user_action';
 import { isSignedIn } from "../middlewares/sign_in";
 import { recordSearch } from '../middlewares/search';
+import { newNotice } from "../middlewares/notification";
 
 const router = express.Router();
 
