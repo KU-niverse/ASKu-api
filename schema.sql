@@ -1,7 +1,7 @@
 CREATE DATABASE
-    asku_api CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+    asku CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
-USE asku_api;
+USE asku;
 
 -- 이벤트 스케줄러 on
 
@@ -220,12 +220,6 @@ VALUES (
 CREATE TABLE
     `users` (
         `id` int NOT NULL AUTO_INCREMENT,
-        `login_id` varchar(30) NOT NULL UNIQUE,
-        -- 로그인 시 사용되는 id
-        `name` varchar(15) NOT NULL,
-        `stu_id` char(10) NOT NULL,
-        `email` varchar(255) NOT NULL UNIQUE,
-        `password` varchar(255) NOT NULL,
         `nickname` varchar(20) NOT NULL UNIQUE,
         `rep_badge` int NULL DEFAULT 16,
         -- 대표 배지
@@ -248,13 +242,8 @@ CREATE TABLE
 -- 비로그인용 유저
 
 INSERT INTO
-    `asku_api`.`users` (
+    `asku`.`users` (
         `id`,
-        `login_id`,
-        `name`,
-        `stu_id`,
-        `email`,
-        `password`,
         `nickname`,
         `point`,
         `is_admin`,
@@ -264,11 +253,6 @@ INSERT INTO
     )
 VALUES (
         '0',
-        'unsignedin',
-        '비로그인',
-        '0000000000',
-        'unsignedin0123@korea.ac.kr',
-        '1234123456',
         '비로그인',
         '0',
         '0',
@@ -277,7 +261,7 @@ VALUES (
         '0'
     );
 
-UPDATE `asku_api`.`users`
+UPDATE `asku`.`users`
 SET `id` = '0'
 WHERE (`id` = last_insert_id());
 
@@ -1461,54 +1445,6 @@ END;
 //
 
 DELIMITER ;
-
-CREATE TABLE
-    `temp_users` (
-        `login_id` varchar(30) NOT NULL UNIQUE,
-        -- 로그인 시 사용되는 id
-        `name` varchar(15) NOT NULL,
-        `stu_id` char(10) NOT NULL,
-        `email` varchar(255) NOT NULL UNIQUE,
-        `password` varchar(255) NOT NULL,
-        `nickname` varchar(20) NOT NULL UNIQUE,
-        `uuid` varchar(255) NOT NULL,
-        `auth_uuid` varchar(255) NOT NULL,
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY(`email`)
-    );
-
--- 매일 오전 4시에 생성된 행 중 2시간 이상 된 행을 삭제
-
-DROP EVENT IF EXISTS reset_temp_users;
-
-CREATE EVENT RESET_TEMP_USERS 
-	ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
-	DO
-	DELETE FROM temp_users
-	WHERE
-	    created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);
-
-
-CREATE TABLE
-    `change_pw_session` (
-        `user_id` int NOT NULL,
-        `change_pw_token` varchar(255) NOT NULL,
-        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        PRIMARY KEY (`user_id`, `change_pw_token`),
-        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
-    );
-
--- 매일 오전 4시에 생성된 행 중 2시간 이상 된 행을 삭제
-
-DROP EVENT IF EXISTS reset_change_pw_session;
-
-CREATE EVENT RESET_CHANGE_PW_SESSION 
-	ON SCHEDULE EVERY 1 DAY STARTS '2023-07-02 04:00:00'
-	DO
-	DELETE FROM
-	    change_pw_session
-	WHERE
-	    created_at <= DATE_SUB(NOW(), INTERVAL 2 HOUR);
 
 
 -- 매일 오전 0시에 출석여부를 확인하여 연속 출석을 0으로 만들고, 모든 사용자의 오늘 출석을 false로 재설정
