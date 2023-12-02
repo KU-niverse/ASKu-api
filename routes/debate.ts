@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import debateMid from "../controllers/debateController";
+import * as debateMid from "../controllers/debateController";
 import { isSignedIn } from "../middlewares/sign_in";
 import { newActionDebate } from "../middlewares/user_action";
 

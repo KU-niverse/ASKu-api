@@ -1,17 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
-import { Debate, History, getIdByTitle } from "../models/debateModel";
+import { Debate, DebateHistory, DebateHistoryType } from "../models/debateModel";
 
-interface RequestWithDebateMessage extends Request {
-  debate_message: String; // Replace 'any' with the actual type of 'debate_message'
+interface User {
+  id: number;
+}
+
+interface DebateRequest extends Request {
+  user: User[];
+}
+
+interface DebateHistoryRequest extends Request {
+  user: User[];
+  debate_message: DebateHistoryType;
 }
 
 // 토론 생성하기
-export const debatePostMid = async (req: Request, res: Response) => {
+export const debatePostMid = async (req: DebateRequest, res: Response) => {
   try {
     if (!req.body.subject) {
       res.status(400).send({success: false, message: "토론 제목을 입력하세요."});
     } else {
-      const doc_id = await getIdByTitle(decodeURIComponent(req.params.title));
+      const doc_id = await Debate.getIdByTitle(decodeURIComponent(req.params.title));
       const newDebate = new Debate({
         doc_id: doc_id,
         user_id: req.user[0].id,
@@ -27,17 +36,17 @@ export const debatePostMid = async (req: Request, res: Response) => {
 };
 
 // 토론방에서 메시지 입력
-export const historyPostMid = async (req: RequestWithDebateMessage, res: Response, next: NextFunction) => {
+export const historyPostMid = async (req: DebateHistoryRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.body.content) {
       res.status(400).send({success: false, message: "메시지 내용을 입력하세요."});
     } else {
-      const newHistory = new History({
-        debate_id: req.params.debate,
-        user_id: req.user[0].id,
+      const newHistory = new DebateHistory({
+        debate_id: Number(req.params.debate),
+        user_id: Number(req.user[0].id),
         content: decodeURIComponent(req.body.content),
       });
-      req.debate_message = await History.createHistory(newHistory);
+      req.debate_message = await DebateHistory.createHistory(newHistory);
       next();
     }
   } catch (err) {
@@ -72,7 +81,7 @@ export const debateGetAllMid = async (req: Request, res: Response) => {
 // 토론방 메시지 조회
 export const historyGetMid = async (req: Request, res: Response) => {
   try {
-    const histories = await History.getAllHistory(req.params.debate);
+    const histories = await DebateHistory.getAllHistory(Number(req.params.debate));
     res.status(200).send({success: true, message: "토론 메시지를 조회하였습니다.", data: histories});
   } catch (err) {
     console.error(err);
@@ -118,7 +127,7 @@ export const debateSearchAllGetMid = async (req: Request, res: Response) => {
 // 토론방 종결
 export const debateEndPostMid = async (req: Request, res: Response) => {
   try {
-    const result = await Debate.endDebate(req.params.debate);
+    const result = await Debate.endDebate(Number(req.params.debate));
     if (!result) {
       res.status(400).send({success: false, message: "이미 종료된 토론방입니다."});
     } else {
