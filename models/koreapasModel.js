@@ -58,7 +58,7 @@ class Koreapas {
           return false;
         }
       }
-      if (res.status !== 200) {
+      if (res.status != 200) {
         throw new Error("고파스 로그인 api 서버 에러");
       }
     } catch (error) {
