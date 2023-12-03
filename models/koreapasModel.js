@@ -21,9 +21,8 @@ class Koreapas {
       if (this.nickname === null) {
         throw new Error("nickname이 없습니다, verifyIdPw를 먼저 실행해주세요.");
       }
-      if (this.nickname !== null) {
-        return this.nickname;
-      }
+      return this.nickname;
+
     } catch (error) {
       console.error(`🚨 model -> ⚡️ Koreapas-getNickname : 🐞${error}`);
       throw error;
@@ -34,9 +33,8 @@ class Koreapas {
       if (this.uuid === null) {
         throw new Error("uuid가 없습니다, verifyIdPw를 먼저 실행해주세요.");
       }
-      if (this.uuid !== null) {
-        return this.uuid;
-      }
+      return this.uuid;
+
     } catch (error) {
       console.error(`🚨 model -> ⚡️ Koreapas-getUuid : 🐞${error}`);
       throw error;
