@@ -3,11 +3,6 @@ const pool = require("../config/db.js");
 class User {
   constructor(user) {
     this.id = user.id;
-    this.login_id = user.login_id;
-    this.name = user.name;
-    this.stu_id = user.stu_id;
-    this.email = user.email;
-    this.password = user.password;
     this.nickname = user.nickname;
     this.rep_badge = user.rep_badge;
     this.created_at = user.created_at;
@@ -17,6 +12,86 @@ class User {
     this.restrict_count = user.restrict_count;
     this.uuid = user.uuid;
     this.is_deleted = user.is_deleted;
+  }
+
+  static createUserByUuid = (uuid) => {
+    try {
+      return new User({ uuid });
+    } catch (error) {
+      console.error(`🚨 model -> ⚡️ createUserByUuid : 🐞${error}`);
+      throw error;
+    }
+  };
+  async syncNickname({ nickname }) {
+    try {
+      if (this.nickname != nickname) {
+        await pool.query(`UPDATE users SET nickname = ? WHERE id = ?`, [
+          nickname,
+          this.id,
+        ]);
+      }
+    } catch (error) {
+      console.error(`🚨 model -> ⚡️ User-syncNickname : 🐞${error}`);
+      throw error;
+    }
+  }
+  async loadUserByUuid() {
+    try {
+      if (this.uuid === null) {
+        throw new Error("uuid가 없습니다.");
+      }
+      if (this.uuid !== null) {
+        const [rows] = await pool.query(`SELECT * FROM users WHERE uuid = ?`, [
+          this.uuid,
+        ]);
+
+        if (rows.length == 0) {
+          return false;
+        }
+        if (rows.length == 1) {
+          this.id = rows[0].id;
+          this.nickname = rows[0].nickname;
+          this.rep_badge = rows[0].rep_badge;
+          this.created_at = rows[0].created_at;
+          this.point = rows[0].point;
+          this.is_admin = rows[0].is_admin;
+          this.restrict_period = rows[0].restrict_period;
+          this.restrict_count = rows[0].restrict_count;
+          this.is_deleted = rows[0].is_deleted;
+          return true;
+        }
+      }
+    } catch (error) {
+      console.error(`🚨 model -> ⚡️ loadUserByUuid : 🐞${error}`);
+      throw error;
+    }
+  }
+
+  async init() {
+    await pool.query(
+      `
+      INSERT INTO user_action (user_id) VALUES (?);
+      INSERT INTO user_attend (user_id) VALUES (?);
+      INSERT INTO ai_session (user_id) VALUES (?);`,
+      [this.id, this.id, this.id]
+    );
+    return true;
+  }
+  async insertNewUser({ nickname }) {
+    try {
+      if (this.uuid === null) {
+        throw new Error("uuid가 없습니다.");
+      }
+      if (this.uuid !== null) {
+        await pool.query(`INSERT INTO users (uuid, nickname) VALUES (?, ?)`, [
+          this.uuid,
+          nickname,
+        ]);
+      }
+    } catch (error) {
+      console.error(`🚨 model -> ⚡️ insertUserByKoreapas : 🐞${error}`);
+      throw error;
+    }
   }
 }
 
@@ -59,7 +134,10 @@ User.findByLoginId = async (login_id) => {
   ]);
   return rows;
 };
-
+User.findByUuid = async (uuid) => {
+  const [rows] = await pool.query(`SELECT * FROM users WHERE uuid = ?`, [uuid]);
+  return rows;
+};
 //nickname으로 유저 찾기
 User.findByNickname = async (nickname) => {
   const [rows] = await pool.query(`SELECT * FROM users WHERE nickname = ?`, [
@@ -257,6 +335,7 @@ User.markAttend = async (user_id) => {
     `SELECT * FROM user_attend WHERE user_id = ?`,
     [user_id]
   );
+
   //오늘 첫 출석이라면
 
   if (!attend_info[0].today_attend) {

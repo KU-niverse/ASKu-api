@@ -281,6 +281,7 @@ exports.signIn = async (req, res, next) => {
 exports.signOut = (req, res) => {
   try {
     req.logout(() => {
+      res.set("Cache-Control", "no-store");
       res.status(200).send({ success: true, message: "로그아웃 되었습니다." });
     });
   } catch (error) {
