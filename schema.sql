@@ -220,7 +220,7 @@ VALUES (
 CREATE TABLE
     `users` (
         `id` int NOT NULL AUTO_INCREMENT,
-        `nickname` varchar(20) NOT NULL UNIQUE,
+        `nickname` varchar(30) NOT NULL UNIQUE,
         `rep_badge` int NULL DEFAULT 16,
         -- 대표 배지
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
