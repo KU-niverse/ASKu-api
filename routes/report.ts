@@ -3,6 +3,7 @@ import * as reportMid from "../controllers/reportController";
 import { newActionReport } from "../middlewares/user_action";
 import { isSignedIn } from '../middlewares/sign_in';
 import { isAdmin } from '../middlewares/admin';
+import { newNotice } from "../middlewares/notification";
 
 const router = express.Router();
 
