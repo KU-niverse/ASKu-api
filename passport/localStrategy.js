@@ -1,8 +1,8 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcrypt");
 
 const User = require("../models/userModel");
+const Koreapas = require("../models/koreapasModel");
 
 module.exports = () => {
   passport.use(
@@ -14,16 +14,37 @@ module.exports = () => {
       },
       async (login_id, password, done) => {
         try {
-          const exUser = await User.findByLoginId(login_id);
-          if (exUser.length != 0) {
-            const result = await bcrypt.compare(password, exUser[0].password);
-            if (result) {
-              done(null, exUser);
-            } else {
-              done(null, false, { message: "비밀번호가 일치하지 않습니다." });
+          const koreapas = new Koreapas({ login_id, password });
+          const is_verified = await koreapas.verifyIdPw();
+
+          //고파스 로그인 실패
+          if (is_verified == false) {
+            done(null, false, {
+              message: "아이디와 비밀번호를 다시 확인해주세요.",
+            });
+          }
+          //고파스 로그인 성공
+          else if (is_verified == true) {
+            const koreapas_nickname = koreapas.getNickname();
+            const koreaps_uuid = koreapas.getUuid();
+            //유저를 생성
+            const user = User.createUserByUuid(koreaps_uuid);
+            //유저 정보를 불러오기
+            const user_exist = await user.loadUserByUuid();
+
+            //유저가 없으면(고파스 아이디로 최초 로그인) 유저를 생성
+            if (user_exist == false) {
+              await user.insertNewUser({ nickname: koreapas_nickname });
+              await user.loadUserByUuid();
+              await user.init();
             }
-          } else {
-            done(null, false, { message: "가입되지 않은 회원입니다." });
+            //유저가 있으면(고파스 아이디로 최초 로그인이 아님) 닉네임을 업데이트
+            else if (user_exist == true) {
+              await user.syncNickname({ nickname: koreapas_nickname });
+            }
+            if (user) {
+              done(null, [user]);
+            }
           }
         } catch (error) {
           console.error(error);
