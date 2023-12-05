@@ -328,7 +328,9 @@ exports.contentsPostMid = async (req, res, next) => {
 // req에 doc_id, section 필요
 exports.contentsSectionGetMid = async (req, res) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
     const version = rows[0].version;
@@ -379,6 +381,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["version"] = version;
     jsonData["title"] = section.title;
     jsonData["content"] = section.content.join("\n");
+    jsonData["is_managed"] = doc.is_managed;
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {

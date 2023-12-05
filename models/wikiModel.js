@@ -65,6 +65,17 @@ class Wiki_docs {
 
     return rows[0].id;
   }
+
+  static async getWikiDocsByTitle(title) {
+    const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title = ?`, [
+      title,
+    ]);
+    if (rows.length == 0) {
+      return null;
+    }
+    return rows[0];
+  }
+
   // wiki_docs 테이블에서 title을 통해 like 기반으로 문서를 찾아주는 함수, 나중에 업데이트 예정
   static async searchWikiDocsByTitle(title, user_id) {
     const [rows] = await pool.query(
