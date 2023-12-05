@@ -8,6 +8,7 @@ class Wiki_docs {
     this.recent_filtered_content = wiki_docs.recent_filtered_content;
     this.type = wiki_docs.type;
     this.latest_ver = wiki_docs.latest_ver;
+    this.is_managed = wiki_docs.is_managed;
   }
   // wiki_docs 테이블에 새로운 문서를 생성해주는 함수
   static async create(new_wiki_docs) {
@@ -335,7 +336,7 @@ class Wiki_point {
     const userPoint = rows2[0].user_point;
 
     const ranking_percentage = (userRanking / totalUsers) * 100;
-    if(userPoint == 0) {
+    if (userPoint == 0) {
       return {
         count: totalUsers,
         ranking: userRanking,
