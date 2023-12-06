@@ -394,9 +394,20 @@ exports.contentsSectionGetMid = async (req, res) => {
 // 섹션 수정하기
 exports.contentsSectionPostMid = async (req, res, next) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
 
+    if (doc.is_managed === 1) {
+      if (req.user[0].is_authorized !== 1) {
+        res.status(403).send({
+          success: false,
+          message: "인증된 회원만 편집이 가능한 문서입니다.",
+          new_content: req.body.new_content,
+        });
+        return;
+      }}
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != rows[0].version) {
       res.status(426).send({
