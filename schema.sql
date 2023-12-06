@@ -235,6 +235,8 @@ CREATE TABLE
         -- 식별을 위한 uuid column,
         `is_deleted` bool NOT NULL DEFAULT 0,
         -- [탈퇴 여부] 0: 존재 회원 1: 탈퇴 회원
+        `is_authorized` bool NOT NULL DEFAULT 0,
+        -- [인증된 유저 여부, 더 많은 편집 권한] 0: 인증되지 않은 유저 1: 인증된 유저
         PRIMARY KEY(`id`),
         FOREIGN KEY (`rep_badge`) REFERENCES `badges` (`id`)
     );
@@ -280,6 +282,8 @@ CREATE TABLE
         `is_deleted` bool NOT NULL DEFAULT 0,
         -- [문서 삭제 여부] 0: 존재하는 문서 1: 삭제한 문서
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `is_managed` bool NOT NULL DEFAULT 0,
+        -- [관리 문서 여부] 0: 일반 문서 1: 관리 문서
         PRIMARY KEY(`id`)
     );
 

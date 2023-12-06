@@ -12,6 +12,7 @@ class User {
     this.restrict_count = user.restrict_count;
     this.uuid = user.uuid;
     this.is_deleted = user.is_deleted;
+    this.is_authorized = user.is_authorized;
   }
 
   static createUserByUuid = (uuid) => {
