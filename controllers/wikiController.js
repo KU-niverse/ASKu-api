@@ -570,9 +570,21 @@ exports.historyRawGetMid = async (req, res) => {
 // 롤백하기
 exports.historyVersionPostMid = async (req, res, next) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const version = rows[0].version;
+
+    if (doc.is_managed === 1) {
+      if (req.user[0].is_authorized !== 1) {
+        res.status(403).send({
+          success: false,
+          message: "인증된 회원만 롤백이 가능한 문서입니다.",
+          new_content: req.body.new_content,
+        });
+        return;
+      }}
 
     // 전체 글 저장하는 새 파일(버전) 만들기
     const title = req.params.title.replace(/\/+/g, "_");
