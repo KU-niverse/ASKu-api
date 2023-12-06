@@ -8,6 +8,7 @@ class Wiki_docs {
     this.recent_filtered_content = wiki_docs.recent_filtered_content;
     this.type = wiki_docs.type;
     this.latest_ver = wiki_docs.latest_ver;
+    this.is_managed = wiki_docs.is_managed;
   }
   // wiki_docs 테이블에 새로운 문서를 생성해주는 함수
   static async create(new_wiki_docs) {
@@ -64,6 +65,17 @@ class Wiki_docs {
 
     return rows[0].id;
   }
+  //wiki_docs 테이블에서 title을 통해 문서를 찾아주는 함수
+  static async getWikiDocsByTitle(title) {
+    const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title = ?`, [
+      title,
+    ]);
+    if (rows.length == 0) {
+      return null;
+    }
+    return rows[0];
+  }
+
   // wiki_docs 테이블에서 title을 통해 like 기반으로 문서를 찾아주는 함수, 나중에 업데이트 예정
   static async searchWikiDocsByTitle(title, user_id) {
     const [rows] = await pool.query(
@@ -335,7 +347,7 @@ class Wiki_point {
     const userPoint = rows2[0].user_point;
 
     const ranking_percentage = (userRanking / totalUsers) * 100;
-    if(userPoint == 0) {
+    if (userPoint == 0) {
       return {
         count: totalUsers,
         ranking: userRanking,

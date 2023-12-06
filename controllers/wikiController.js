@@ -179,7 +179,8 @@ exports.newWikiPostMid = async (req, res, next) => {
 // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
 exports.contentsGetMid = async (req, res) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
     if(rows.length === 0) {
@@ -196,6 +197,7 @@ exports.contentsGetMid = async (req, res) => {
 
     let text = "";
     let jsonData = {};
+    jsonData["is_managed"] = doc.is_managed;
 
     // 삭제된 문서인지 확인
     const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
@@ -287,9 +289,21 @@ exports.contentsGetMid = async (req, res) => {
 // 전체 글 수정하기
 exports.contentsPostMid = async (req, res, next) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const version = rows[0].version;
+
+    if (doc.is_managed === 1) {
+      if (req.user[0].is_authorized !== 1) {
+        res.status(403).send({
+          success: false,
+          message: "인증된 회원만 편집이 가능한 문서입니다.",
+          new_content: req.body.new_content,
+        });
+        return;
+      }}
 
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != version) {
@@ -328,7 +342,9 @@ exports.contentsPostMid = async (req, res, next) => {
 // req에 doc_id, section 필요
 exports.contentsSectionGetMid = async (req, res) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
     const version = rows[0].version;
@@ -379,6 +395,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["version"] = version;
     jsonData["title"] = section.title;
     jsonData["content"] = section.content.join("\n");
+    jsonData["is_managed"] = doc.is_managed;
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
@@ -389,9 +406,20 @@ exports.contentsSectionGetMid = async (req, res) => {
 // 섹션 수정하기
 exports.contentsSectionPostMid = async (req, res, next) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
 
+    if (doc.is_managed === 1) {
+      if (req.user[0].is_authorized !== 1) {
+        res.status(403).send({
+          success: false,
+          message: "인증된 회원만 편집이 가능한 문서입니다.",
+          new_content: req.body.new_content,
+        });
+        return;
+      }}
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != rows[0].version) {
       res.status(426).send({
@@ -542,9 +570,21 @@ exports.historyRawGetMid = async (req, res) => {
 // 롤백하기
 exports.historyVersionPostMid = async (req, res, next) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    // const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const version = rows[0].version;
+
+    if (doc.is_managed === 1) {
+      if (req.user[0].is_authorized !== 1) {
+        res.status(403).send({
+          success: false,
+          message: "인증된 회원만 롤백이 가능한 문서입니다.",
+          new_content: req.body.new_content,
+        });
+        return;
+      }}
 
     // 전체 글 저장하는 새 파일(버전) 만들기
     const title = req.params.title.replace(/\/+/g, "_");
