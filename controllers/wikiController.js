@@ -179,7 +179,8 @@ exports.newWikiPostMid = async (req, res, next) => {
 // 전체 글 불러오기 + 수정 시 기존 전체 텍스트 불러오기
 exports.contentsGetMid = async (req, res) => {
   try {
-    const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
+    const doc = await Wiki.Wiki_docs.getWikiDocsByTitle(req.params.title);
+    const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
     if(rows.length === 0) {
@@ -196,6 +197,7 @@ exports.contentsGetMid = async (req, res) => {
 
     let text = "";
     let jsonData = {};
+    jsonData["is_managed"] = doc.is_managed;
 
     // 삭제된 문서인지 확인
     const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
