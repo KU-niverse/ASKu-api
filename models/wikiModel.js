@@ -65,7 +65,7 @@ class Wiki_docs {
 
     return rows[0].id;
   }
-
+  //wiki_docs 테이블에서 title을 통해 문서를 찾아주는 함수
   static async getWikiDocsByTitle(title) {
     const [rows] = await pool.query(`SELECT * FROM wiki_docs WHERE title = ?`, [
       title,
