@@ -1615,6 +1615,7 @@
                           "created_at": "2023-07-30T08:57:27.000Z",
                           "point": 37760,
                           "is_admin": 0,
+                          "is_authorized": 0,
                           "restrict_period": null,
                           "restrict_count": 0,
                           "rep_badge_name": "말하는 감자",
