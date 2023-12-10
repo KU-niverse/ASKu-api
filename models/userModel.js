@@ -212,7 +212,7 @@ User.changePw = async (user_id, hashed_new_pw) => {
 //회원정보 변경
 User.getUserInfo = async (user_id) => {
   const [user] = await pool.query(
-    `SELECT users.id, users.rep_badge as rep_badge_id, users.nickname, users.created_at, users.point, users.is_admin, users.restrict_period, users.restrict_count, badges.name as rep_badge_name, badges.image as rep_badge_image FROM users left join badges on users.rep_badge = badges.id WHERE users.id = ?`,
+    `SELECT users.id, users.rep_badge as rep_badge_id, users.nickname, users.created_at, users.point, users.is_admin, users.is_authorized, users.restrict_period, users.restrict_count, badges.name as rep_badge_name, badges.image as rep_badge_image FROM users left join badges on users.rep_badge = badges.id WHERE users.id = ?`,
     [user_id]
   );
   user[0].name = "***";
