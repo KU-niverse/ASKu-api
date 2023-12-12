@@ -240,7 +240,7 @@ exports.signIn = async (req, res, next) => {
             success: false,
             message: "고파스 아이디로 최초 로그인하셨습니다.",
             koreapas_nickname: info.koreapas_nickname,
-            koreaps_uuid: info.koreaps_uuid,
+            koreapas_uuid: info.koreaps_uuid,
           });
         }
       }
