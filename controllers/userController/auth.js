@@ -229,14 +229,19 @@ exports.signIn = async (req, res, next) => {
         return next(authError);
       }
       if (!user) {
-        if (info.message === "비밀번호가 일치하지 않습니다.") {
-          return res
-            .status(401)
-            .json({ success: false, message: "비밀번호가 일치하지 않습니다." });
-        } else {
-          return res
-            .status(404)
-            .json({ success: false, message: "가입되지 않은 회원입니다." });
+        if (info.message === "아이디와 비밀번호를 다시 확인해주세요.") {
+          return res.status(401).json({
+            success: false,
+            message: "아이디와 비밀번호를 다시 확인해주세요",
+          });
+        }
+        if (info.message === "고파스 아이디로 최초 로그인하셨습니다.") {
+          return res.status(402).json({
+            success: false,
+            message: "고파스 아이디로 최초 로그인하셨습니다.",
+            koreapas_nickname: info.koreapas_nickname,
+            koreapas_uuid: info.koreaps_uuid,
+          });
         }
       }
 
@@ -546,5 +551,50 @@ exports.deactivate = async (req, res) => {
       success: false,
       message: "서버 내부 오류가 발생했습니다.",
     });
+  }
+};
+// 고파스 유저 등록
+exports.signUpKoreapas = async (req, res, next) => {
+  try {
+    if (req.body.nickname == null || req.body.uuid == null) {
+      return res.status(401).json({
+        success: false,
+        message: "닉네임과 uuid가 포함되어야 합니다.",
+      });
+    }
+    //유저객체를 생성
+    const user = User.createUserByUuid(req.body.uuid);
+    //유저 정보를 불러오기
+    const user_exist = await user.loadUserByUuid();
+
+    //유저가 없으면(고파스 아이디로 최초 로그인) 유저를 생성
+    if (user_exist == false) {
+      await user.insertNewUser({ nickname: req.body.nickname });
+      await user.loadUserByUuid();
+      await user.init();
+    }
+    //유저가 있으면(고파스 아이디로 최초 로그인이 아님) 닉네임을 업데이트
+    if (user_exist == true) {
+      return res.status(401).json({
+        success: false,
+        message: "이미 등록된 고파스 유저입니다.",
+      });
+    }
+
+    req.login([user], async (loginError) => {
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+
+      // 출석체크
+      await User.markAttend(user.id);
+
+      //로그인 성공
+      return res.status(200).json({ success: true, message: "회원가입 완료!" });
+    });
+  } catch (error) {
+    console.error(`🚨 controller -> ⚡️ signUpKoreapas : 🐞${error}`);
+    return null;
   }
 };
