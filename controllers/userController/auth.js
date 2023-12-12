@@ -548,3 +548,38 @@ exports.deactivate = async (req, res) => {
     });
   }
 };
+// 고파스 유저 등록
+exports.signUpKoreapas = async (req, res) => {
+  try {
+    if (req.body.nickname == null || req.body.uuid == null) {
+      return res.status(401).json({
+        success: false,
+        message: "닉네임과 uuid가 포함되어야 합니다.",
+      });
+    }
+    //유저객체를 생성
+    const user = User.createUserByUuid(req.body.uuid);
+    //유저 정보를 불러오기
+    const user_exist = await user.loadUserByUuid();
+
+    //유저가 없으면(고파스 아이디로 최초 로그인) 유저를 생성
+    if (user_exist == false) {
+      await user.insertNewUser({ nickname: req.body.nickname });
+      await user.loadUserByUuid();
+      await user.init();
+    }
+    //유저가 있으면(고파스 아이디로 최초 로그인이 아님) 닉네임을 업데이트
+    if (user_exist == true) {
+      return res.status(401).json({
+        success: false,
+        message: "이미 등록된 고파스 유저입니다.",
+      });
+    }
+    return res.status(201).json({
+      success: true,
+      message: "고파스 유저 등록이 완료되었습니다. 로그인을 진행해주세요",
+    });
+  } catch (error) {
+    return null;
+  }
+};
