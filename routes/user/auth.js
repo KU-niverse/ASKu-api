@@ -14,14 +14,19 @@ const {
   findPw,
   deactivate,
   resetPw,
+  signUpKoreapas,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
 
 //회원가입 이메일 인증
 router.post("/signup/emailcheck", signUpEmailCheck);
+//고파스 유저 등록
+router.post("/signup/koreapas", isNotSignedIn, signUpKoreapas);
+
 //회원가입
 router.post("/signup", isNotSignedIn, signUp);
+
 //로그인
 router.post("/signin", isNotSignedIn, signIn);
 //로그아웃

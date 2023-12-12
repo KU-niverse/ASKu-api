@@ -32,17 +32,17 @@ module.exports = () => {
             //유저 정보를 불러오기
             const user_exist = await user.loadUserByUuid();
 
-            //유저가 없으면(고파스 아이디로 최초 로그인) 유저를 생성
+            //유저가 없으면 정보만 전달
             if (user_exist == false) {
-              await user.insertNewUser({ nickname: koreapas_nickname });
-              await user.loadUserByUuid();
-              await user.init();
+              done(null, false, {
+                message: "고파스 아이디로 최초 로그인하셨습니다.",
+                koreapas_nickname,
+                koreaps_uuid,
+              });
             }
             //유저가 있으면(고파스 아이디로 최초 로그인이 아님) 닉네임을 업데이트
             else if (user_exist == true) {
               await user.syncNickname({ nickname: koreapas_nickname });
-            }
-            if (user) {
               done(null, [user]);
             }
           }
