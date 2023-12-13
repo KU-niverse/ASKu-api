@@ -8,7 +8,7 @@ class Wiki_docs {
     this.recent_filtered_content = wiki_docs.recent_filtered_content;
     this.type = wiki_docs.type;
     this.latest_ver = wiki_docs.latest_ver;
-    this.is_managed = wiki_docs.is_managed;
+    this.is_managed = wiki_docs.is_managed || 0;
   }
   // wiki_docs 테이블에 새로운 문서를 생성해주는 함수
   static async create(new_wiki_docs) {

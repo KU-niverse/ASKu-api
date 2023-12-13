@@ -151,6 +151,7 @@ exports.newWikiPostMid = async (req, res, next) => {
       recent_filtered_content: text,
       type: type,
       latest_ver: version,
+      is_managed: 0,
     });
 
     const rows_docs = await Wiki.Wiki_docs.create(new_wiki_docs);
