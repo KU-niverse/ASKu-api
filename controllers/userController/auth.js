@@ -7,6 +7,7 @@ const passport = require("passport");
 const moment = require("moment");
 
 const nodemailer = require("nodemailer");
+const axios = require("axios");
 
 exports.idDupCheck = async (req, res) => {
   const login_id = req.params.loginid;
@@ -553,6 +554,67 @@ exports.deactivate = async (req, res) => {
     });
   }
 };
+
+exports.koreapasOauth = async (req, res, next) => {
+  try {
+    const response = await axios.get(
+      `https://www.koreapas.com/bbs/valid_api.php?api_key=${process.env.KOREAPAS_API_KEY}&uuid=${req.body.uuid}`,
+    );
+
+    if (response.data.result == false){
+      return res.status(403).json({
+        success: false,
+        message: "유효하지 않은 접근입니다."
+      });
+    }
+    const {uuid, nickname, level} = response.data.data;
+    // 9,10 -> 강등 또는 미인증 상태의 유저
+    if (level > 8){
+      return res.status(403).json({
+        success: false,
+        message: "강등 또는 미인증 상태의 유저입니다."
+      });
+    }
+    //유저객체를 생성
+    const user = User.createUserByUuid(req.body.uuid);
+    //유저 정보를 불러오기
+    const user_exist = await user.loadUserByUuid();
+    //유저가 없으면 reject
+    if (user_exist == false) {
+      return res.status(200).json({
+        success: true,
+        message: "등록되지 않은 유저입니다.",
+        data: {
+          is_registered: false,
+          koreapas_nickname: nickname,
+          koreapas_uuid: uuid,
+        }
+      });
+    }
+    // 등록된 유저라면 로그인 처리
+    req.login([user], async (loginError) => {
+      if (loginError) {
+        console.error(loginError);
+        return next(loginError);
+      }
+
+      // 출석체크
+      await User.markAttend(user.id);
+
+      //로그인 성공
+      return res
+        .status(200)
+        .json({ success: true, message: "등록된 고파스유저 로그인 처리 완료", data: {is_registered: true} });
+    });
+  } catch (error) {
+    console.error(`🚨 controller -> ⚡️ koreapasOauth : 🐞${error}`);
+    return res.status(500).json({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};
+
 // 고파스 유저 등록
 exports.signUpKoreapas = async (req, res, next) => {
   try {
