@@ -15,6 +15,7 @@ const {
   deactivate,
   resetPw,
   signUpKoreapas,
+  koreapasOauth,
 } = require("../../controllers/userController/auth");
 
 const router = express.Router();
@@ -26,7 +27,8 @@ router.post("/signup/koreapas", isNotSignedIn, signUpKoreapas);
 
 //회원가입
 router.post("/signup", isNotSignedIn, signUp);
-
+//고파스 유입유저 로그인
+router.post("/koreapasoauth", isNotSignedIn, koreapasOauth);
 //로그인
 router.post("/signin", isNotSignedIn, signIn);
 //로그아웃
