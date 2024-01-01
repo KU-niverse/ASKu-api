@@ -890,7 +890,6 @@ exports.badHistoryPutMid = async (req, res) => {
 exports.allTextsGetMid = async (req, res) => {
   try {
     const title_rows = await Wiki.Wiki_docs.getAllWikiDocs();
-    console.log("title rows: " + title_rows);
     let docs = [];
     for(let i = 0; i < title_rows.length; i++){
       const title = title_rows[i].replace(/\/+/g, "_");
@@ -898,7 +897,6 @@ exports.allTextsGetMid = async (req, res) => {
       const version = rows.latest_ver;
       let text = "";
       text = await getWikiContent(res, title, version);
-      console.log("text: " + text);
       docs.push({'title': title_rows[i], 'version': version, 'text': text});
     }
     res.status(200).send({ success: true, docs: docs });
