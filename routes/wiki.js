@@ -101,4 +101,8 @@ router.get('/contributions/:title(*)', wikiCont.contributionGetMid);
 // 특정 히스토리 bad로 변경
 router.put('/badhis/:hisid', isAdmin, wikiCont.badHistoryPutMid);
 
+// AI 학습용 문서 모두 불러오기
+// TODO: 꼭 AI 측에서만 호출할 수 있도록 만들어야 할듯
+router.get('/pipeline', wikiCont.allTextsGetMid);
+
 module.exports = router;
