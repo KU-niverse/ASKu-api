@@ -885,3 +885,24 @@ exports.badHistoryPutMid = async (req, res) => {
     res.status(500).json({ success: false, message: "히스토리 bad로 변경 중 오류" });
   }
 };
+
+// AI 학습을 위한 최신 데이터 모두 불러오기
+exports.allTextsGetMid = async (req, res) => {
+  try {
+    const title_rows = await Wiki.Wiki_docs.getAllWikiDocs();
+    let docs = [];
+    for(let i = 0; i < title_rows.length; i++){
+      const title = title_rows[i].replace(/\/+/g, "_");
+      const rows = await Wiki.Wiki_docs.getWikiDocsByTitle(title_rows[i]);
+      const version = rows.latest_ver;
+      let text = "";
+      text = await getWikiContent(res, title, version);
+      text = text.replace(/\[\[File:data:image\/png;base64[\s\S]*?\]\]/g, ' ');
+      docs.push({'title': title_rows[i], 'version': version, 'text': text});
+    }
+    res.status(200).send({ success: true, docs: docs });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ success: false, message: "위키 내용 불러오기 중 오류" });
+  }
+};
