@@ -898,7 +898,7 @@ exports.allTextsGetMid = async (req, res) => {
       let text = "";
       text = await getWikiContent(res, title, version);
       text = text.replace(/\[\[File:data:image\/png;base64[\s\S]*?\]\]/g, ' ');
-      docs.push({'title': title_rows[i], 'version': version, 'text': text});
+      docs.push({'id': rows.id,'title': title_rows[i], 'version': version, 'text': text});
     }
     res.status(200).send({ success: true, docs: docs });
   } catch (err) {
