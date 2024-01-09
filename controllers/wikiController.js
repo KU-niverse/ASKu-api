@@ -22,10 +22,11 @@ const S3 = new AWS.S3({
 
 // 이전 위키의 내용을 가져오는 함수
 const getWikiContent = (res, title, version) => {
+  const replaced_title = title.replace(/\/+/g, "_");
   return new Promise((resolve) => {
     S3.getObject({
       Bucket: "wiki-bucket",
-      Key: `${title}/r${version}.wiki`,
+      Key: `${replaced_title}/r${version}.wiki`,
     }, (err, data) => {
       if (err) {
         console.log(err);
@@ -400,6 +401,7 @@ exports.contentsSectionGetMid = async (req, res) => {
     jsonData["success"] = true;
     res.status(200).send(jsonData);
   } catch (err) {
+    console.error(err);
     res.status(422).send({ success: false, message: "Invalid section number" });
   }
 };
