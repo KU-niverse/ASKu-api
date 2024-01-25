@@ -43,8 +43,9 @@ class Koreapas {
   //주어진 login_id와 password로 로그인 시도
   async verifyIdPw() {
     try {
+      console.log(this.login_id, this.password);
       const res = await axios.post(
-        `https://www.koreapas.com/bbs/login_api.php?user_id=${this.login_id}&password=${this.password} &api_key=${process.env.KOREAPAS_API_KEY}`,
+        `https://www.koreapas.com/bbs/login_api.php?user_id=${encodeURIComponent(this.login_id)}&password=${encodeURIComponent(this.password)} &api_key=${process.env.KOREAPAS_API_KEY}`,
         {}
       );
 
