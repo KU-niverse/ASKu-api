@@ -92,7 +92,7 @@ app.use(session(sessionOption));
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.set("port", process.env.APP_PORT || 3000);
+app.set("port", process.env.PORT || 3000);
 
 /* 스웨거 코드  */
 
