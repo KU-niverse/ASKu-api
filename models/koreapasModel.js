@@ -44,7 +44,7 @@ class Koreapas {
   async verifyIdPw() {
     try {
       const res = await axios.post(
-        `https://www.koreapas.com/bbs/login_api.php?user_id=${this.login_id}&password=${this.password} &api_key=${process.env.KOREAPAS_API_KEY}`,
+        `https://www.koreapas.com/bbs/login_api.php?user_id=${encodeURIComponent(this.login_id)}&password=${encodeURIComponent(this.password)} &api_key=${process.env.KOREAPAS_API_KEY}`,
         {}
       );
 
