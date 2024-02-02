@@ -21,7 +21,7 @@ jobs:
         with:
           host: ${{ secrets.REMOTE_IP }}
           username: ${{ secrets.SSH_ID }}
-          password: ${{ secrets.REMOTE_SSH_KEY }}
+          password: ddd
           port: ${{ secrets.REMOTE_SSH_PORT }}
           script: |
             cd /var/www/ASKu-api
