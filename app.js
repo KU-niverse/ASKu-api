@@ -64,7 +64,7 @@ let corsOptions = {
 };
 
 if (process.env.NODE_ENV === "production") {
-  corsOptions.origin = process.env.ORIGIN_URL;
+  corsOptions.origin = [process.env.ORIGIN_URL, "https://www.koreapas.com"];
 }
 
 app.use(cors(corsOptions));
