@@ -45,13 +45,13 @@ passportConfig(); // 패스포트 설정
 
 app.use(bodyParser.json());
 if (process.env.NODE_ENV === "production") {
-  app.use(morgan("combined", {stream}));
+  app.use(morgan("combined", { stream }));
   app.use(
     helmet({
       contentSecurityPolicy: false,
       crossOriginEmbedderPolicy: false,
       crossOriginResourcePolicy: false,
-    }),
+    })
   );
   app.use(hpp());
 } else {
@@ -59,7 +59,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 let corsOptions = {
-  origin: "http://localhost:3000",
+  origin: ["http://localhost:3000", "https://www.koreapas.com"],
   credentials: true,
 };
 
@@ -123,7 +123,6 @@ app.use("/report", reportRoutes);
 
 app.use("/admin", admin);
 app.use("/search", searchRoutes);
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
