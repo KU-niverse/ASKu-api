@@ -36,6 +36,16 @@ class Wiki_docs {
 
     return rows.map((rows) => rows.title);
   }
+
+  static async getUpdatedWikiDocs(check_period) {
+    // 최근 n일간 수정된 문서 제목 가져오기
+    const [rows] = await pool.query(
+      `SELECT title FROM wiki_docs WHERE is_deleted = 0 AND updated_at > DATE_SUB(NOW(), INTERVAL ? DAY)`,
+      [check_period]
+    );
+    return rows.map((rows) => rows.title);
+  }
+
   // is_deleted가 0인 문서 중 랜덤으로 제목 하나 가져오기
   static async getRandomWikiDocs() {
     const [rows] = await pool.query(
@@ -121,7 +131,7 @@ class Wiki_docs {
 
     // 필터링 한 내용을 recent_filtered_content에 업데이트
     const [result] = await pool.query(
-      `UPDATE wiki_docs SET recent_filtered_content = ? WHERE id = ?`,
+      `UPDATE wiki_docs SET recent_filtered_content = ?, updated_at=NOW() WHERE id = ?`,
       [text, doc_id]
     );
 
