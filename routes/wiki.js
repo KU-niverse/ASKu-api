@@ -187,7 +187,7 @@ router.get("/contributions/:title(*)", wikiCont.contributionGetMid);
 router.put("/badhis/:hisid", isAdmin, wikiCont.badHistoryPutMid);
 
 // AI 학습용 문서 변경된 것만 불러오기
-router.get("/pipeline/changed", wikiCont.changedTextsGetMid);
+router.get("/pipeline/updated", wikiCont.updatedTextsGetMid);
 
 // AI 학습용 문서 모두 불러오기
 // TODO: 꼭 AI 측에서만 호출할 수 있도록 만들어야 할듯
