@@ -993,7 +993,7 @@ exports.allTextsGetMid = async (req, res) => {
   }
 };
 
-exports.changedTextsGetMid = async (req, res) => {
+exports.updatedTextsGetMid = async (req, res) => {
   try {
     const check_period = 3;
     const title_rows = await Wiki.Wiki_docs.getUpdatedWikiDocs(check_period);
