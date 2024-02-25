@@ -37,11 +37,12 @@ class Wiki_docs {
     return rows.map((rows) => rows.title);
   }
 
-  static async getUpdatedWikiDocs() {
+  static async getUpdatedWikiDocs(check_period) {
+    // 최근 n일간 수정된 문서 제목 가져오기
     const [rows] = await pool.query(
-      `SELECT title FROM wiki_docs WHERE is_deleted = 0`
+      `SELECT title FROM wiki_docs WHERE is_deleted = 0 AND updated_at > DATE_SUB(NOW(), INTERVAL ? DAY)`,
+      [check_period]
     );
-
     return rows.map((rows) => rows.title);
   }
 
