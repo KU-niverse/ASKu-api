@@ -24,20 +24,24 @@ const S3 = new AWS.S3({
 const getWikiContent = (res, title, version) => {
   const replaced_title = title.replace(/\/+/g, "_");
   return new Promise((resolve) => {
-    S3.getObject({
-      Bucket: "wiki-bucket",
-      Key: `${replaced_title}/r${version}.wiki`,
-    }, (err, data) => {
-      if (err) {
-        console.log(err);
-        res.status(404).send({ // 내부에서 404 에러 처리
-          success: false,
-          message:err
-        });
-        return;
+    S3.getObject(
+      {
+        Bucket: "wiki-bucket",
+        Key: `${replaced_title}/r${version}.wiki`,
+      },
+      (err, data) => {
+        if (err) {
+          console.log(err);
+          res.status(404).send({
+            // 내부에서 404 에러 처리
+            success: false,
+            message: err,
+          });
+          return;
+        }
+        resolve(data.Body.toString("utf-8"));
       }
-      resolve(data.Body.toString('utf-8'));
-    });
+    );
   });
 };
 
@@ -46,19 +50,22 @@ exports.getWikiContent = getWikiContent;
 // 새 위키 파일을 저장하는 함수
 const saveWikiContent = (res, title, version, content) => {
   return new Promise((resolve, reject) => {
-    S3.putObject({
-      Bucket: "wiki-bucket",
-      Key: `${title}/r${version}.wiki`,
-      Body: content,
-    }, (err) => {
-      if (err) {
-        console.log(err);
-        err.content = content; // content 정보를 에러 객체에 추가
-        reject(err);
-        return;
+    S3.putObject(
+      {
+        Bucket: "wiki-bucket",
+        Key: `${title}/r${version}.wiki`,
+        Body: content,
+      },
+      (err) => {
+        if (err) {
+          console.log(err);
+          err.content = content; // content 정보를 에러 객체에 추가
+          reject(err);
+          return;
+        }
+        resolve();
       }
-      resolve();
-    });
+    );
   });
 };
 
@@ -104,7 +111,7 @@ const indexing = (numbers, sections) => {
 
     content_json.push(section_dic);
   }
-  
+
   return content_json;
 };
 
@@ -124,8 +131,7 @@ exports.newWikiPostMid = async (req, res, next) => {
       const row = await Wiki.Wiki_docs.getWikiDocsById(doc_id);
       if (row.is_deleted === 1) {
         // 3-1. 지워진 문서면 처리
-      }
-      else {
+      } else {
         // 3-2. 지워진 문서가 아니면 에러 처리(중복 알림)
         res.status(409).send({
           success: false,
@@ -170,11 +176,15 @@ exports.newWikiPostMid = async (req, res, next) => {
     // 히스토리 생성 -> 기여도 -> 알림
     // 알림 변수 선언
     req.body.types_and_conditions = [[6, -1]];
-    
+
     next();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 생성 중 오류", content: req.body.text });
+    res.status(500).json({
+      success: false,
+      message: "위키 생성 중 오류",
+      content: req.body.text,
+    });
   }
 };
 
@@ -185,15 +195,19 @@ exports.contentsGetMid = async (req, res) => {
     const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
-    if(rows.length === 0) {
-      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+    if (rows.length === 0) {
+      res
+        .status(404)
+        .send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
 
     let version;
-    if(req.calltype === 1){ // 글 불러오거나 수정용
+    if (req.calltype === 1) {
+      // 글 불러오거나 수정용
       version = rows[0].version;
-    } else if(req.calltype === 2) { // 버전별 글 불러오기용
+    } else if (req.calltype === 2) {
+      // 버전별 글 불러오기용
       version = req.params.version;
     }
 
@@ -238,10 +252,16 @@ exports.contentsGetMid = async (req, res) => {
         if (current_section !== null) {
           current_section.content.push(current_content);
           sections.push(current_section);
-        } else {  // 목차 없이 그냥 글만 있는 경우
+        } else {
+          // 목차 없이 그냥 글만 있는 경우
           is_started = true;
-          if(current_content.trim() !== ""){
-            jsonData.contents.push({"section": "0", "index": "0", "title": "들어가며", "content": current_content});
+          if (current_content.trim() !== "") {
+            jsonData.contents.push({
+              section: "0",
+              index: "0",
+              title: "들어가며",
+              content: current_content,
+            });
           }
         }
         current_section = {
@@ -262,18 +282,27 @@ exports.contentsGetMid = async (req, res) => {
       // 마지막 섹션 push
       current_section.content.push(current_content);
       sections.push(current_section);
-    } else if (current_content !== null && !is_started) { // 목차가 아예 없는 경우
-      jsonData.contents.push({"section": "0", "index": "0", "title": "들어가며", "content": current_content});
+    } else if (current_content !== null && !is_started) {
+      // 목차가 아예 없는 경우
+      jsonData.contents.push({
+        section: "0",
+        index: "0",
+        title: "들어가며",
+        content: current_content,
+      });
     }
 
-    indexing(numbers, sections).forEach(obj => {
+    indexing(numbers, sections).forEach((obj) => {
       jsonData.contents.push(obj);
     });
-    
+
     jsonData["success"] = true;
     if (req.isAuthenticated()) {
-      const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(req.user[0].id, doc_id);
-      if(rows.length === 0) {
+      const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserIdAndDocId(
+        req.user[0].id,
+        doc_id
+      );
+      if (rows.length === 0) {
         jsonData["is_favorite"] = false;
       } else {
         jsonData["is_favorite"] = true;
@@ -305,7 +334,8 @@ exports.contentsPostMid = async (req, res, next) => {
           new_content: req.body.new_content,
         });
         return;
-      }}
+      }
+    }
 
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != version) {
@@ -333,10 +363,13 @@ exports.contentsPostMid = async (req, res, next) => {
 
     // 히스토리 생성 -> 기여도 -> 알림
     next();
-
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 수정 중 오류", new_content: req.body.new_content });
+    res.status(500).json({
+      success: false,
+      message: "위키 수정 중 오류",
+      new_content: req.body.new_content,
+    });
   }
 };
 
@@ -422,7 +455,8 @@ exports.contentsSectionPostMid = async (req, res, next) => {
           new_content: req.body.new_content,
         });
         return;
-      }}
+      }
+    }
     // 버전 불일치 시 에러 처리(누가 이미 수정했을 경우)
     if (req.body.version != rows[0].version) {
       res.status(426).send({
@@ -457,11 +491,12 @@ exports.contentsSectionPostMid = async (req, res, next) => {
           if (current_sectionIndex === updated_section_index && flag === 0) {
             updated_content += new_content + "\n";
             flag = 1;
-          }
-          else if (current_sectionIndex === updated_section_index & flag === 1) {
+          } else if (
+            (current_sectionIndex === updated_section_index) &
+            (flag === 1)
+          ) {
             void 0; // 아무것도 안함 섹션 내용을 아예 갈아끼운 것
-          }
-          else {
+          } else {
             updated_content += line + "\n";
           }
         });
@@ -493,7 +528,11 @@ exports.contentsSectionPostMid = async (req, res, next) => {
     updateFileContent();
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "섹션 수정 중 오류", new_content: req.body.new_content });
+    res.status(500).json({
+      success: false,
+      message: "섹션 수정 중 오류",
+      new_content: req.body.new_content,
+    });
   }
 };
 
@@ -504,7 +543,9 @@ exports.titlesGetMid = async (req, res) => {
     res.status(200).send({ success: true, titles: rows });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 제목 불러오기 중 오류" });
   }
 };
 
@@ -515,16 +556,18 @@ exports.randomTitleGetMid = async (req, res) => {
     res.status(200).send({ success: true, title: title });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 제목 불러오기 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 제목 불러오기 중 오류" });
   }
 };
 
 // 위키 히스토리 불러오기
 exports.historyGetMid = async (req, res) => {
-  try{
+  try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const rows = await Wiki.Wiki_history.getWikiHistorysById(doc_id);
-    res.status(200).send({success: true, historys: rows});
+    res.status(200).send({ success: true, historys: rows });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -533,10 +576,10 @@ exports.historyGetMid = async (req, res) => {
 
 // 최근 변경된 위키 히스토리 불러오기
 exports.recentHistoryGetMid = async (req, res) => {
-  try{
+  try {
     const type = req.query.type ? req.query.type : "";
     const rows = await Wiki.Wiki_history.getRecentWikiHistorys(type);
-    res.status(200).send({success: true, message: rows});
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
     res.status(500).json({ message: "위키 히스토리 불러오기 중 오류" });
@@ -566,7 +609,9 @@ exports.historyRawGetMid = async (req, res) => {
     res.status(200).send({ success: true, jsonData });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 raw data 불러오기 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 raw data 불러오기 중 오류" });
   }
 };
 
@@ -587,7 +632,8 @@ exports.historyVersionPostMid = async (req, res, next) => {
           new_content: req.body.new_content,
         });
         return;
-      }}
+      }
+    }
 
     // 전체 글 저장하는 새 파일(버전) 만들기
     const title = req.params.title.replace(/\/+/g, "_");
@@ -672,7 +718,7 @@ exports.comparisonGetMid = async (req, res) => {
 
 // 문서 삭제하기
 exports.wikiDeleteMid = async (req, res) => {
-  try{
+  try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     await Wiki.Wiki_docs.deleteWikiDocsById(doc_id);
     res.status(200).json({ success: true, message: "위키 문서 삭제 성공" });
@@ -684,15 +730,16 @@ exports.wikiDeleteMid = async (req, res) => {
 
 // 위키 제목 기반으로 문서 검색하기
 exports.wikiSearchGetMid = async (req, res) => {
-  try{
+  try {
     let title = decodeURIComponent(req.params.title);
     if (title.includes("%") || title.includes("_")) {
       title = title.replace(/%/g, "\\%").replace(/_/g, "\\_");
     }
     if (!title) {
-      res.status(400).send({success: false, message: "잘못된 검색어"});
+      res.status(400).send({ success: false, message: "잘못된 검색어" });
     } else {
-      const user_id = (req.user && req.user[0] && req.user[0].id) ? req.user[0].id : 0;
+      const user_id =
+        req.user && req.user[0] && req.user[0].id ? req.user[0].id : 0;
       const rows = await Wiki.Wiki_docs.searchWikiDocsByTitle(title, user_id);
       res.status(200).send({ success: true, message: rows });
     }
@@ -765,15 +812,17 @@ exports.contentsSectionGetMidByIndex = async (req, res) => {
     jsonData["contents"] = content_json;
 
     let index_title_list = [];
-    for(let i = 0; i < content_json.length; i++){
-      index_title_list.push(content_json[i].index + " " + content_json[i].title);
+    for (let i = 0; i < content_json.length; i++) {
+      index_title_list.push(
+        content_json[i].index + " " + content_json[i].title
+      );
     }
 
     const found = index_title_list.includes(q.index_title);
 
     // 목차를 순회하면서 질문과 같은 목차가 있는지 확인한다
     // 같은 목차가 있으면 res에 based_on_section: true, section: section을 넣어서 보낸다
-    if(found){
+    if (found) {
       jsonData["based_on_section"] = true;
       const section = index_title_list.indexOf(q.index_title) + 1;
       jsonData["section"] = section;
@@ -781,30 +830,36 @@ exports.contentsSectionGetMidByIndex = async (req, res) => {
     // 같은 목차가 없으면 res에 based_on_section: false를 넣어서 보낸다
     else {
       jsonData["based_on_section"] = false;
-    } 
+    }
     jsonData["success"] = true;
 
     res.status(200).send(jsonData);
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 목차 불러오기 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 목차 불러오기 중 오류" });
   }
 };
 
 // 위키 즐겨찾기 조회
 exports.wikiFavoriteGetMid = async (req, res) => {
-  try{
-    const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(req.user[0].id);
+  try {
+    const rows = await Wiki.Wiki_favorite.getWikiFavoriteByUserId(
+      req.user[0].id
+    );
     res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 즐겨찾기 조회 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 즐겨찾기 조회 중 오류" });
   }
 };
 
 // 위키 즐겨찾기 추가
 exports.wikiFavoritePostMid = async (req, res) => {
-  try{
+  try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
     const new_wiki_favorite = new Wiki.Wiki_favorite({
       user_id: req.user[0].id,
@@ -814,24 +869,34 @@ exports.wikiFavoritePostMid = async (req, res) => {
     res.status(200).json({ success: true, message: "위키 즐겨찾기 추가 성공" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 즐겨찾기 추가 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 즐겨찾기 추가 중 오류" });
   }
 };
 
 // 위키 즐겨찾기 삭제
 exports.wikiFavoriteDeleteMid = async (req, res) => {
-  try{
+  try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    const result = await Wiki.Wiki_favorite.deleteWikiFavorite(doc_id, req.user[0].id);
-    if(result == 0){
-      res.status(404).json({ success: false, message: "위키 즐겨찾기에 없는 문서입니다." });
-    }
-    else{
-      res.status(200).json({ success: true, message: "위키 즐겨찾기 삭제 성공" });
+    const result = await Wiki.Wiki_favorite.deleteWikiFavorite(
+      doc_id,
+      req.user[0].id
+    );
+    if (result == 0) {
+      res
+        .status(404)
+        .json({ success: false, message: "위키 즐겨찾기에 없는 문서입니다." });
+    } else {
+      res
+        .status(200)
+        .json({ success: true, message: "위키 즐겨찾기 삭제 성공" });
     }
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 즐겨찾기 삭제 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 즐겨찾기 삭제 중 오류" });
   }
 };
 
@@ -841,11 +906,13 @@ exports.userContributionGetMid = async (req, res) => {
     const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
     const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
     rows.docs = rows2;
-    
-    res.status(200).send({ success: true, message: rows});
+
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "유저 기여도 순위 조회 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "유저 기여도 순위 조회 중 오류" });
   }
 };
 
@@ -853,10 +920,12 @@ exports.userContributionGetMid = async (req, res) => {
 exports.totalContributionGetMid = async (req, res) => {
   try {
     const rows = await Wiki.Wiki_point.getRanking();
-    res.status(200).send({ success: true, message: rows});
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "전체 기여도 리스트 조회 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "전체 기여도 리스트 조회 중 오류" });
   }
 };
 
@@ -864,15 +933,19 @@ exports.totalContributionGetMid = async (req, res) => {
 exports.contributionGetMid = async (req, res) => {
   try {
     const doc_id = await Wiki.Wiki_docs.getWikiDocsIdByTitle(req.params.title);
-    if(doc_id == null) {
-      res.status(404).send({ success: false, message: "존재하지 않는 문서입니다." });
+    if (doc_id == null) {
+      res
+        .status(404)
+        .send({ success: false, message: "존재하지 않는 문서입니다." });
       return;
     }
     const rows = await Wiki.Wiki_point.getContributors(doc_id);
-    res.status(200).send({ success: true, message: rows});
+    res.status(200).send({ success: true, message: rows });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 기여도 리스트 조회 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 기여도 리스트 조회 중 오류" });
   }
 };
 
@@ -881,10 +954,14 @@ exports.badHistoryPutMid = async (req, res) => {
   try {
     const history_id = req.params.hisid;
     await Wiki.Wiki_history.badHistoryById(history_id);
-    res.status(200).json({ success: true, message: "히스토리 bad로 변경 성공" });
+    res
+      .status(200)
+      .json({ success: true, message: "히스토리 bad로 변경 성공" });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "히스토리 bad로 변경 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "히스토리 bad로 변경 중 오류" });
   }
 };
 
@@ -893,18 +970,53 @@ exports.allTextsGetMid = async (req, res) => {
   try {
     const title_rows = await Wiki.Wiki_docs.getAllWikiDocs();
     let docs = [];
-    for(let i = 0; i < title_rows.length; i++){
+    for (let i = 0; i < title_rows.length; i++) {
       const title = title_rows[i].replace(/\/+/g, "_");
       const rows = await Wiki.Wiki_docs.getWikiDocsByTitle(title_rows[i]);
       const version = rows.latest_ver;
       let text = "";
       text = await getWikiContent(res, title, version);
-      text = text.replace(/\[\[File:data:image\/png;base64[\s\S]*?\]\]/g, ' ');
-      docs.push({'id': rows.id,'title': title_rows[i], 'version': version, 'text': text});
+      text = text.replace(/\[\[File:data:image\/png;base64[\s\S]*?\]\]/g, " ");
+      docs.push({
+        id: rows.id,
+        title: title_rows[i],
+        version: version,
+        text: text,
+      });
     }
     res.status(200).send({ success: true, docs: docs });
   } catch (err) {
     console.log(err);
-    res.status(500).json({ success: false, message: "위키 내용 불러오기 중 오류" });
+    res
+      .status(500)
+      .json({ success: false, message: "위키 내용 불러오기 중 오류" });
+  }
+};
+
+exports.changedTextsGetMid = async (req, res) => {
+  try {
+    const check_period = 3;
+    const title_rows = await Wiki.Wiki_docs.getUpdatedWikiDocs(check_period);
+    let docs = [];
+    for (let i = 0; i < title_rows.length; i++) {
+      const title = title_rows[i].replace(/\/+/g, "_");
+      const rows = await Wiki.Wiki_docs.getWikiDocsByTitle(title_rows[i]);
+      const version = rows.latest_ver;
+      let text = "";
+      text = await getWikiContent(res, title, version);
+      text = text.replace(/\[\[File:data:image\/png;base64[\s\S]*?\]\]/g, " ");
+      docs.push({
+        id: rows.id,
+        title: title_rows[i],
+        version: version,
+        text: text,
+      });
+    }
+    res.status(200).send({ success: true, docs: docs });
+  } catch (err) {
+    console.log(err);
+    res
+      .status(500)
+      .json({ success: false, message: "위키 내용 불러오기 중 오류" });
   }
 };

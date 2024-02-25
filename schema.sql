@@ -282,6 +282,7 @@ CREATE TABLE
         `is_deleted` bool NOT NULL DEFAULT 0,
         -- [문서 삭제 여부] 0: 존재하는 문서 1: 삭제한 문서
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `is_managed` bool NOT NULL DEFAULT 0,
         -- [관리 문서 여부] 0: 일반 문서 1: 관리 문서
         PRIMARY KEY(`id`)
