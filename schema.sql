@@ -284,10 +284,21 @@ CREATE TABLE
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `is_managed` bool NOT NULL DEFAULT 0,
-        `views` INT NOT NULL DEFAULT 0,
         -- [관리 문서 여부] 0: 일반 문서 1: 관리 문서
         PRIMARY KEY(`id`)
     );
+
+CREATE TABLE
+    `wiki_docs_views` (
+        `id` int NOT NULL AUTO_INCREMENT,
+        `doc_id` int NOT NULL,
+        `user_id` int NOT NULL,
+        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    );
+    
 
 CREATE TABLE
     `questions` (
