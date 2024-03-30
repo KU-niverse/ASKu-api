@@ -195,6 +195,17 @@ exports.contentsGetMid = async (req, res) => {
     const doc_id = doc.id;
     const rows = await Wiki.Wiki_history.getRecentWikiHistoryByDocId(doc_id);
     const title = req.params.title.replace(/\/+/g, "_");
+
+    // 로그인 시에만, 조회수 증가
+
+    if (req.isAuthenticated()) {
+      const wiki_docs_view = new Wiki.Wiki_docs_view({
+        doc_id: doc_id,
+        user_id: req.user[0].id,
+      });
+      await wiki_docs_view.create();
+    }
+
     if (rows.length === 0) {
       res
         .status(404)
