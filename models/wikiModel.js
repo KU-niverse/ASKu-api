@@ -465,5 +465,44 @@ class Wiki_favorite {
     return rows;
   }
 }
+class Wiki_docs_view {
+  constructor(Wiki_docs_view) {
+    this.user_id = Wiki_docs_view.user_id;
+    this.doc_id = Wiki_docs_view.doc_id;
+  }
 
-module.exports = { Wiki_history, Wiki_docs, Wiki_point, Wiki_favorite };
+  // 유저의 문서 조회 기록 추가 여부 결정(오늘 문서를 확인했다면 false, 아니면 true)
+  async checkUserViewed() {
+    const [rows] = await pool.query(
+      `SELECT * FROM wiki_docs_views WHERE user_id = ? AND doc_id = ? AND DATE(created_at) = CURDATE()`,
+      [this.user_id, this.doc_id]
+    );
+    if (rows.length == 0) {
+      return false;
+    }
+    if (rows.length > 0) {
+      return true;
+    }
+  }
+
+  // 유저의 문서 조회 기록을 추가
+  async create() {
+    // 이미 조회한 문서인지 확인
+    const isViewed = await this.checkUserViewed();
+    if (isViewed) {
+      return;
+    }
+    if (!isViewed) {
+      await pool.query("INSERT INTO wiki_docs_views SET ?", this);
+      return;
+    }
+  }
+}
+
+module.exports = {
+  Wiki_history,
+  Wiki_docs,
+  Wiki_point,
+  Wiki_favorite,
+  Wiki_docs_view,
+};

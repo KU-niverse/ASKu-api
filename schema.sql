@@ -289,6 +289,18 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    `wiki_docs_views` (
+        `id` int NOT NULL AUTO_INCREMENT,
+        `doc_id` int NOT NULL,
+        `user_id` int NOT NULL,
+        `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        PRIMARY KEY (`id`),
+        FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`),
+        FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+    );
+    
+
+CREATE TABLE
     `questions` (
         `id` int NOT NULL AUTO_INCREMENT,
         `doc_id` int NOT NULL,
