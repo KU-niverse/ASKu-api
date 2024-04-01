@@ -122,12 +122,12 @@ exports.getDocsViews = async(req, res) =>{
     )
     return res.status(200).send({
       success: true,
-      data: result,
+      data: result[0],
       message: "성공적으로 문서 조회수 순위를 가져왔습니다.",
     });
   }catch(error){
     console.error(error);
-    console.log("adminContoller-getConstraint에서 에러 발생");
+    console.log("adminContoller-getDocsViews에서 에러 발생");
     res.status(500).send({
       success: false,
       message: "서버 에러",
@@ -144,17 +144,18 @@ exports.getUserList = async(req, res)=>
       SELECT nickname, point,
       (SELECT COUNT(*) + 1 FROM users AS u WHERE u.point > users.point) AS point_rank
       FROM users
+      ORDER BY point DESC
       LIMIT 100
       `
     )
     return res.status(200).send({
       success: true,
-      data: result,
-      message: "성공적으로 문서 조회수 순위를 가져왔습니다.",
+      data: result[0],
+      message: "성공적으로 회원 별 닉네임, 기여도, 기여 순위를 가져왔습니다.",
     });
   }catch(error){
     console.error(error);
-    console.log("adminContoller-getConstraint에서 에러 발생");
+    console.log("adminContoller-getUserList에서 에러 발생");
     res.status(500).send({
       success: false,
       message: "서버 에러",
