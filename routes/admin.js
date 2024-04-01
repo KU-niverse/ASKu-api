@@ -19,4 +19,7 @@ router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
 //제한중인 유저 목록
 router.get("/constraint", isSignedIn, isAdmin, admin.getConstraint);
 
+//문서별 조회수 순위
+router.get("/docsviews", admin.getDocsViews);
+
 module.exports = router;

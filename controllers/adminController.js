@@ -1,6 +1,7 @@
 const Report = require("../models/reportModel");
 const Wiki = require("../models/wikiModel.js");
 const User = require("../models/userModel.js");
+const pool = require("../config/db.js");
 // admin 위키 히스토리 조회
 exports.wikiHistory = async (req, res) => {
   try {
@@ -98,6 +99,33 @@ exports.getConstraint = async (req, res) => {
       message: "성공적으로 제한중인 유저 목록을 가져왔습니다.",
     });
   } catch (error) {
+    console.error(error);
+    console.log("adminContoller-getConstraint에서 에러 발생");
+    res.status(500).send({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};
+
+//문서별 조회수 순위가 많은 순으로 출력
+exports.getDocsViews = async(req, res) =>{
+  try{
+    const result = await pool.query(
+      `
+      SELECT A.title, count(*) as DOCS_VIEWS
+      FROM wiki_docs A INNER JOIN wiki_docs_views B ON A.id = B.doc_id
+      GROUP BY B.doc_id
+      ORDER BY DOCS_VIEWS DESC
+      LIMIT 100
+      `
+    )
+    return res.status(200).send({
+      success: true,
+      data: result,
+      message: "성공적으로 문서 조회수 순위를 가져왔습니다.",
+    });
+  }catch(error){
     console.error(error);
     console.log("adminContoller-getConstraint에서 에러 발생");
     res.status(500).send({
