@@ -20,6 +20,6 @@ router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
 router.get("/constraint", isSignedIn, isAdmin, admin.getConstraint);
 
 //북마크 랭킹 추출하기
-router.get("/bookmarkrank", admin.getBookmarkRanking);
+router.get("/bookmarkrank", isSignedIn, isAdmin, admin.getBookmarkRanking);
 
 module.exports = router;

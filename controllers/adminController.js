@@ -112,7 +112,7 @@ exports.getBookmarkRanking = async (req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT A.*, count(*) AS BOOKMARK_COUNT 
+      SELECT A.title, count(*) AS BOOKMARK_COUNT 
       FROM wiki_docs A INNER JOIN wiki_favorites B ON A.id = B.doc_id 
       GROUP BY B.doc_id
       ORDER BY BOOKMARK_COUNT DESC 
