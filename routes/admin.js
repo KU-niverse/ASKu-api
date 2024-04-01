@@ -19,4 +19,8 @@ router.post("/setconstraint", isSignedIn, isAdmin, admin.setConstraint);
 //제한중인 유저 목록
 router.get("/constraint", isSignedIn, isAdmin, admin.getConstraint);
 
+//북마크 랭킹 추출하기
+router.get("/bookmarkrank", admin.getBookmarkRanking);
+//router.get("/bookmarkrank", isSignedIn, isAdmin, admin.getBookmarkRanking);
+
 module.exports = router;
