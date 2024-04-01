@@ -22,4 +22,8 @@ router.get("/constraint", isSignedIn, isAdmin, admin.getConstraint);
 //문서별 조회수 순위
 router.get("/docsviews", admin.getDocsViews);
 
+//회원 별 닉네임, 기여도, 기여 순위
+router.get("/userlist", admin.getUserList);
+
+
 module.exports = router;
