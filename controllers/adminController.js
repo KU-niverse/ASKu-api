@@ -107,6 +107,53 @@ exports.getConstraint = async (req, res) => {
   }
 };
 
+//문서별 조회수 순위가 많은 순으로 출력
+exports.getDocsViews = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT A.title, count(*) as DOCS_VIEWS
+      FROM wiki_docs A INNER JOIN wiki_docs_views B ON A.id = B.doc_id
+      GROUP BY B.doc_id
+      ORDER BY DOCS_VIEWS DESC
+      LIMIT 100
+      `
+    );
+    return res.status(200).send({
+      success: true,
+      data: result[0],
+      message: "성공적으로 문서 조회수 순위를 가져왔습니다.",
+    });
+  } catch (error) {
+    console.error(error);
+    console.log("adminContoller-getDocsViews에서 에러 발생");
+    res.status(500).send({
+      success: false,
+      message: "서버 에러",
+    });
+  }
+};
+
+//회원 별 닉네임, 기여도, 기여 순위
+exports.getUserList = async (req, res) => {
+  try {
+    const result = await pool.query(
+      `
+      SELECT users.* 
+      FROM users
+      ORDER BY point DESC
+      `
+    );
+    return res.status(200).send({
+      success: true,
+      data: result[0],
+      message: "성공적으로 회원 별 닉네임, 기여도, 기여 순위를 가져왔습니다.",
+    });
+  } catch (error) {
+    console.error(error);
+    console.log("adminContoller-getUserList에서 에러 발생");
+  }
+};
 // 북마크가 많이 된 순서대로 정렬하여 출력
 exports.getBookmarkRanking = async (req, res) => {
   try {
@@ -126,6 +173,7 @@ exports.getBookmarkRanking = async (req, res) => {
   } catch (error) {
     console.error(error);
     console.log("adminContoller-getConstraint에서 에러 발생");
+
     res.status(500).send({
       success: false,
       message: "서버 에러",
