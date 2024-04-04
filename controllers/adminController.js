@@ -139,15 +139,31 @@ exports.getDocsViews = async(req, res) =>{
 exports.getUserList = async(req, res)=>
 {
   try{
+    //const result = await pool.query(
+    //   `
+    //   SELECT nickname, point,
+    //   (SELECT COUNT(*) + 1 FROM users AS u WHERE u.point > users.point) AS point_rank
+    //   FROM users
+    //   ORDER BY point DESC
+    //   LIMIT 100
+    //   `
+    // );
     const result = await pool.query(
       `
-      SELECT nickname, point,
-      (SELECT COUNT(*) + 1 FROM users AS u WHERE u.point > users.point) AS point_rank
+      SELECT users.* 
       FROM users
       ORDER BY point DESC
-      LIMIT 100
       `
-    )
+    );
+    // const result = await pool.query(
+    //   `
+    //   SET @rank=0;
+    //   SELECT nickname, point, (@rank:=@rank+1) AS point_rank 
+    //   FROM users 
+    //   ORDER BY point DESC 
+    //   LIMIT 100;
+    //   `
+    // );
     return res.status(200).send({
       success: true,
       data: result[0],
