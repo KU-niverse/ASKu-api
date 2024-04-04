@@ -112,11 +112,10 @@ exports.getDocsViews = async (req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT A.title, count(*) as DOCS_VIEWS
+      SELECT A.*, count(*) as docs_views
       FROM wiki_docs A INNER JOIN wiki_docs_views B ON A.id = B.doc_id
       GROUP BY B.doc_id
-      ORDER BY DOCS_VIEWS DESC
-      LIMIT 100
+      ORDER BY docs_views DESC
       `
     );
     return res.status(200).send({
@@ -159,11 +158,10 @@ exports.getBookmarkRanking = async (req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT A.title, count(*) AS BOOKMARK_COUNT 
+      SELECT A.id, A.title, count(*) AS BOOKMARK_COUNT 
       FROM wiki_docs A INNER JOIN wiki_favorites B ON A.id = B.doc_id 
       GROUP BY B.doc_id
-      ORDER BY BOOKMARK_COUNT DESC 
-      LIMIT 100`
+      ORDER BY BOOKMARK_COUNT DESC`
     );
     return res.status(200).send({
       success: true,
