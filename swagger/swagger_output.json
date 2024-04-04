@@ -52,9 +52,7 @@
       "description": "검색"
     }
   ],
-  "schemes": [
-    "http"
-  ],
+  "schemes": ["http"],
   "components": {
     "schemas": {
       "Error": {
@@ -200,9 +198,7 @@
   "paths": {
     "/user/auth/signup/emailcheck": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 회원가입 이메일 인증",
         "description": "유저 회원가입 시도 후 이메일 인증",
         "requestBody": {
@@ -217,9 +213,7 @@
                     "example": " 550e8400-e29b-41d4-a716-446655440000"
                   }
                 },
-                "required": [
-                  "auth_uuid"
-                ]
+                "required": ["auth_uuid"]
               }
             }
           }
@@ -290,9 +284,7 @@
     },
     "/user/auth/signup": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 회원가입",
         "description": "유저 회원가입을 시도하고 인증 이메일을 전송합니다. 해당 api로 회원가입이 완료되지 않습니다.",
         "requestBody": {
@@ -425,9 +417,7 @@
     },
     "/user/auth/signin": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 로그인",
         "description": "유저 로그인을 진행합니다.",
         "requestBody": {
@@ -446,10 +436,7 @@
                     "example": "qwer1234!"
                   }
                 },
-                "required": [
-                  "login_id",
-                  "password"
-                ]
+                "required": ["login_id", "password"]
               }
             }
           }
@@ -580,9 +567,7 @@
     },
     "/user/auth/signout": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 로그아웃",
         "description": "유저 로그아웃을 진행합니다.",
         "responses": {
@@ -651,9 +636,7 @@
     },
     "/user/auth/deactivate": {
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "회원 탈퇴",
         "description": "회원 탈퇴를 진행합니다.",
         "responses": {
@@ -742,9 +725,7 @@
     },
     "/user/auth/nickdupcheck/{nick}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "닉네임 중복확인",
         "description": "회원가입시, 닉네임 변경시에 닉네임 중복확인을 진행합니다.",
         "parameters": [
@@ -821,9 +802,7 @@
     },
     "/user/auth/iddupcheck/{loginid}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "아이디 중복확인",
         "description": "회원가입시 아이디 중복확인을 진행합니다.",
         "parameters": [
@@ -920,9 +899,7 @@
     },
     "/user/auth/emaildupcheck/{email}": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "이메일 중복 확인",
         "description": "회원가입시 이메일 중복확인을 진행합니다.",
         "parameters": [
@@ -1039,9 +1016,7 @@
     },
     "/user/auth/issignedin": {
       "get": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 로그인 여부 확인",
         "description": "유저 로그인 여부 확인",
         "responses": {
@@ -1110,9 +1085,7 @@
     },
     "/user/auth/findid": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 아이디 찾기",
         "description": "유저 아이디 찾기를 진행합니다.",
         "requestBody": {
@@ -1127,9 +1100,7 @@
                     "example": "sup1214@korea.ac.kr"
                   }
                 },
-                "required": [
-                  "email"
-                ]
+                "required": ["email"]
               }
             }
           }
@@ -1220,9 +1191,7 @@
     },
     "/user/auth/findpw": {
       "post": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 비밀번호 찾기",
         "description": "유저 비밀번호 찾기를 진행합니다. 유저에게 비밀번호 변경 링크를 이메일로 전송합니다.",
         "requestBody": {
@@ -1237,9 +1206,7 @@
                     "example": "sup1214"
                   }
                 },
-                "required": [
-                  "login_id"
-                ]
+                "required": ["login_id"]
               }
             }
           }
@@ -1330,9 +1297,7 @@
     },
     "/user/auth/changepw": {
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 비밀번호 변경",
         "description": "로그인이 되어있는 상태인 유저가 마이페이지에서 비밀번호 변경, 기존 비밀번호와 새로운 비밀번호를 입력합니다.",
         "requestBody": {
@@ -1351,10 +1316,7 @@
                     "example": "qwer2345!"
                   }
                 },
-                "required": [
-                  "password",
-                  "new_password"
-                ]
+                "required": ["password", "new_password"]
               }
             }
           }
@@ -1445,9 +1407,7 @@
     },
     "/user/auth/resetpw": {
       "put": {
-        "tags": [
-          "user"
-        ],
+        "tags": ["user"],
         "summary": "유저 비밀번호 재설정",
         "description": "비밀번호를 잊어버린 유저가 비밀번호 재설정, 새로운 비밀번호와 재설정 토큰을 입력합니다.",
         "requestBody": {
@@ -1466,10 +1426,7 @@
                     "example": "qwer2345!"
                   }
                 },
-                "required": [
-                  "hashed_login_id",
-                  "new_password"
-                ]
+                "required": ["hashed_login_id", "new_password"]
               }
             }
           }
@@ -1580,9 +1537,7 @@
     },
     "/user/mypage/info": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 정보",
         "description": "로그인된 유저의 정보를 get합니다.",
         "responses": {
@@ -1673,9 +1628,7 @@
     },
     "/user/mypage/wikihistory": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 위키 히스토리",
         "description": "유저의 위키 히스토리를 조회합니다.",
         "responses": {
@@ -1794,9 +1747,7 @@
     },
     "/user/mypage/questionhistory/{arrange}": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 질문 히스토리",
         "description": "유저의 질문 히스토리를 조회합니다. arrange = latest or arrange = popularity",
         "parameters": [
@@ -1949,9 +1900,7 @@
     },
     "/user/mypage/debatehistory": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 토론 히스토리",
         "description": "유저의 토론 히스토리를 조회합니다.",
         "responses": {
@@ -2025,9 +1974,7 @@
     },
     "/user/mypage/badgehistory": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 뱃지 히스토리",
         "description": "유저의 배지 획득 내역을 조회합니다.",
         "responses": {
@@ -2121,9 +2068,7 @@
     },
     "/user/mypage/setrepbadge": {
       "put": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 대표 배지 설정",
         "description": "유저의 대표배지를 변경",
         "requestBody": {
@@ -2138,9 +2083,7 @@
                     "example": 3
                   }
                 },
-                "required": [
-                  "rep_badge_id"
-                ]
+                "required": ["rep_badge_id"]
               }
             }
           }
@@ -2211,9 +2154,7 @@
     },
     "/user/mypage/editnick": {
       "put": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "유저 닉네임 수정",
         "description": "유저의 닉네임을 변경",
         "requestBody": {
@@ -2228,9 +2169,7 @@
                     "example": "키키2"
                   }
                 },
-                "required": [
-                  "nick_name"
-                ]
+                "required": ["nick_name"]
               }
             }
           }
@@ -2321,9 +2260,7 @@
     },
     "/user/mypage/badges": {
       "get": {
-        "tags": [
-          "mypage"
-        ],
+        "tags": ["mypage"],
         "summary": "모든 배지 정보",
         "description": "모든 배지 정보를 불러옵니다.",
         "responses": {
@@ -2406,9 +2343,7 @@
     },
     "/question/view/{flag}/{title}": {
       "get": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 조회",
         "parameters": [
           {
@@ -2531,9 +2466,7 @@
     },
     "/question/lookup/{id}": {
       "get": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 조회(id 사용)",
         "parameters": [
           {
@@ -2622,9 +2555,7 @@
     },
     "/question/new/{title}": {
       "post": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 등록",
         "parameters": [
           {
@@ -2720,9 +2651,7 @@
     },
     "/question/edit/{question}": {
       "post": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 수정 (답변이 달리기 전까지 가능)",
         "parameters": [
           {
@@ -2805,9 +2734,7 @@
     },
     "/question/answer/{question_id}": {
       "get": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "답변 리스트 불러오기",
         "parameters": [
           {
@@ -2903,9 +2830,7 @@
     },
     "/question/delete/{question}": {
       "delete": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 삭제 (답변, 좋아요 달리기 전까지 가능)",
         "parameters": [
           {
@@ -2974,9 +2899,7 @@
     },
     "/question/like/{question}": {
       "post": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 좋아요",
         "parameters": [
           {
@@ -3065,9 +2988,7 @@
     },
     "/question/query/{query(*)}": {
       "get": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "질문 제목 기반 검색",
         "parameters": [
           {
@@ -3169,9 +3090,7 @@
     },
     "/question/popular": {
       "get": {
-        "tags": [
-          "question"
-        ],
+        "tags": ["question"],
         "summary": "인기 질문 조회",
         "responses": {
           "200": {
@@ -3284,9 +3203,7 @@
     },
     "/debate/new/{title}": {
       "post": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "토론방 생성",
         "parameters": [
           {
@@ -3385,9 +3302,7 @@
     },
     "/debate/{title}/new/{debate}": {
       "post": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "토론방에서 메시지 입력",
         "parameters": [
           {
@@ -3492,9 +3407,7 @@
     },
     "/debate/list/{title}": {
       "get": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "토론방 목록 조회(문서별, 최근 생성순)",
         "parameters": [
           {
@@ -3570,9 +3483,7 @@
     },
     "/debate/all/recent": {
       "get": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "최근 수정된 전체 토론방 목록 조회(전체, 최근 수정순)",
         "responses": {
           "200": {
@@ -3639,9 +3550,7 @@
     },
     "/debate/view/{title}/{debate}": {
       "get": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "토론방 메시지 조회",
         "parameters": [
           {
@@ -3724,9 +3633,7 @@
     },
     "/debate/search/{title}/{query}": {
       "get": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "문서별 토론방 목록 검색",
         "parameters": [
           {
@@ -3831,9 +3738,7 @@
     },
     "/debate/searchall/{query}": {
       "get": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "전체 토론방 목록 검색",
         "parameters": [
           {
@@ -3931,9 +3836,7 @@
     },
     "/debate/end/{title}/{debate}": {
       "post": {
-        "tags": [
-          "debate"
-        ],
+        "tags": ["debate"],
         "summary": "토론방 종료",
         "parameters": [
           {
@@ -4011,9 +3914,7 @@
     },
     "/notification/user": {
       "get": {
-        "tags": [
-          "notification"
-        ],
+        "tags": ["notification"],
         "summary": "유저 알림 조회",
         "responses": {
           "200": {
@@ -4074,9 +3975,7 @@
     },
     "/notification/admin": {
       "get": {
-        "tags": [
-          "notification"
-        ],
+        "tags": ["notification"],
         "summary": "관리자 알림 조회",
         "responses": {
           "200": {
@@ -4146,9 +4045,7 @@
     },
     "/notification/read": {
       "post": {
-        "tags": [
-          "notification"
-        ],
+        "tags": ["notification"],
         "summary": "알림 읽음 처리",
         "responses": {
           "200": {
@@ -4220,9 +4117,7 @@
     },
     "/report/{type}": {
       "post": {
-        "tags": [
-          "report"
-        ],
+        "tags": ["report"],
         "summary": "신고",
         "parameters": [
           {
@@ -4320,9 +4215,7 @@
     },
     "/report/check": {
       "put": {
-        "tags": [
-          "report"
-        ],
+        "tags": ["report"],
         "summary": "신고 내역 확인(관리자만 가능)",
         "requestBody": {
           "description": "신고 내역 확인을 위한 정보",
@@ -4432,9 +4325,7 @@
     },
     "/wiki/contents/new/{title(*)}": {
       "post": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "새 위키 문서 생성하기 및 기여도 지급",
         "description": "POST 방식으로 새 문서를 생성하고 기여도를 지급합니다.",
         "parameters": [
@@ -4553,9 +4444,7 @@
       "get": {
         "summary": "위키 문서 버전 미리보기 정보 가져오기",
         "description": "GET 방식으로 위키 문서 버전 미리보기 정보를 가져옵니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -4699,9 +4588,7 @@
       "get": {
         "summary": "위키 문서의 특정 섹션 정보 가져오기",
         "description": "GET 방식으로 위키 문서의 특정 섹션 정보를 가져옵니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -4814,9 +4701,7 @@
       "post": {
         "summary": "위키 문서의 특정 섹션 수정하기 및 기여도 지급",
         "description": "POST 방식으로 위키 문서의 특정 섹션을 수정하고 기여도를 지급합니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -4950,9 +4835,7 @@
     },
     "/wiki/contents/question/{qid}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "같은 목차가 존재하는지 확인",
         "description": "GET 방식으로 같은 목차가 존재하는지 확인합니다. ex) based_on_section: true, section: 3",
         "parameters": [
@@ -5077,9 +4960,7 @@
       "get": {
         "summary": "위키 문서 정보 가져오기",
         "description": "GET 방식으로 위키 문서 정보를 가져옵니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -5216,9 +5097,7 @@
       "post": {
         "summary": "위키 문서 수정하기 및 기여도 지급",
         "description": "POST 방식으로 위키 문서를 수정하고 기여도를 지급합니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -5342,9 +5221,7 @@
       "delete": {
         "summary": "위키 문서 삭제하기",
         "description": "DELETE 방식으로 위키 문서를 삭제합니다.",
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "parameters": [
           {
             "name": "title(*)",
@@ -5415,9 +5292,7 @@
     },
     "/wiki/titles": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "모든 글 제목 조회",
         "description": "GET 방식으로 모든 글 제목을 조회합니다.",
         "responses": {
@@ -5467,9 +5342,7 @@
     },
     "/wiki/random": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "랜덤 글 제목 조회",
         "description": "GET 방식으로 랜덤 글 제목을 조회합니다.",
         "responses": {
@@ -5515,9 +5388,7 @@
     },
     "/wiki/image": {
       "post": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "이미지 업로드",
         "description": "POST 방식으로 이미지를 업로드하고 이미지의 링크를 반환합니다.",
         "requestBody": {
@@ -5615,9 +5486,7 @@
     },
     "/wiki/historys/{title(*)}/version/{version}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "특정 버전의 위키 raw data 불러오기",
         "description": "GET 방식으로 특정 버전의 위키 raw data를 불러옵니다.",
         "parameters": [
@@ -5705,9 +5574,7 @@
         }
       },
       "post": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "특정 버전으로 문서 롤백하기",
         "description": "POST 버전으로 문서를 롤백합니다.",
         "parameters": [
@@ -5807,9 +5674,7 @@
     },
     "/wiki/historys/{title(*)}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 히스토리 불러오기",
         "description": "GET 방식으로 위키 히스토리를 불러옵니다.",
         "parameters": [
@@ -5937,9 +5802,7 @@
     },
     "/wiki/historys?type={type}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "최근 변경된 위키 히스토리 불러오기",
         "description": "GET 방식으로 최근 변경된 위키 히스토리를 불러옵니다.",
         "parameters": [
@@ -6057,9 +5920,7 @@
     },
     "/wiki/comparison/{title(*)}/rev/{rev}/oldrev/{oldrev}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 문서 비교하기",
         "description": "GET 방식으로 두 버전의 위키 문서의 raw 파일을 전달합니다.",
         "parameters": [
@@ -6219,9 +6080,7 @@
     },
     "/wiki/query/{title(*)}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 문서 검색",
         "description": "GET 방식으로 위키 문서를 검색합니다.",
         "parameters": [
@@ -6320,9 +6179,7 @@
     },
     "/wiki/favorite": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 즐겨찾기 조회",
         "description": "GET 방식으로 위키 즐겨찾기를 조회합니다.",
         "responses": {
@@ -6417,9 +6274,7 @@
     },
     "/wiki/favorite/{title(*)}": {
       "post": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 즐겨찾기 추가",
         "description": "POST 방식으로 위키 즐겨찾기를 추가합니다.",
         "parameters": [
@@ -6486,9 +6341,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 즐겨찾기 삭제",
         "description": "DELETE 방식으로 위키 즐겨찾기를 삭제합니다.",
         "parameters": [
@@ -6567,9 +6420,7 @@
     },
     "/wiki/contributions": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "로그인한 유저 기여도 순위 및 문서별 기여도 비율 조회",
         "description": "GET 로그인한 유저 기여도 순위 및 문서별 기여도 비율을 조회합니다.",
         "responses": {
@@ -6665,9 +6516,7 @@
     },
     "/wiki/contributions/total": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "전체 기여도 리스트 조회",
         "description": "GET 방식으로 전체 기여도 리스트 조회합니다.",
         "responses": {
@@ -6747,9 +6596,7 @@
     },
     "/wiki/contributions/{title(*)}": {
       "get": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "위키 문서 내 기여도 조회",
         "description": "GET 방식으로 위키 문서 내 기여도를 조회합니다.",
         "parameters": [
@@ -6837,9 +6684,7 @@
     },
     "/admin/setconstraint": {
       "post": {
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "summary": "유저 이용제한",
         "description": "특정 일 만큼 해당 유저 이용제한, restrict_period가 0이면 제한 해제",
         "requestBody": {
@@ -6858,10 +6703,7 @@
                     "example": 3
                   }
                 },
-                "required": [
-                  "target_user_id",
-                  "restrict_period"
-                ]
+                "required": ["target_user_id", "restrict_period"]
               }
             }
           }
@@ -6972,9 +6814,7 @@
     },
     "/admin/constraint": {
       "get": {
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "summary": "이용 제한된 유저 리스트 확인",
         "description": "현재 이용 제한 중인 유저들의 정보를 불러옵니다.",
         "responses": {
@@ -7077,11 +6917,115 @@
         }
       }
     },
+    "/admin/userlist": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "유저 정보를 기여도 순위로 확인",
+        "description": "모든 유저들의 정보를 불러옵니다. 해당 유저는 기여도가 많은 유저부터 나열됩니다.",
+        "responses": {
+          "200": {
+            "description": "유저 리스트 불러오기 성공",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "list",
+                      "example": [
+                        {
+                          "id": 1,
+                          "login_id": "sup1214",
+                          "name": "최영섭",
+                          "stu_id": "2019190530",
+                          "email": "sup1214@korea.ac.kr",
+                          "nickname": "키키",
+                          "point": 0,
+                          "restrict_period": "2023-08-09T15:00:00.000Z",
+                          "restrict_count": 0
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "성공적으로 회원 별 닉네임, 기여도, 기여 순위를 가져왔습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인 되지 않은 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "로그인이 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "관리자가 아닌 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "관리자가 아닙니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "서버 에러"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/admin/report": {
       "get": {
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "summary": "신고 목록 확인",
         "description": "현재 신고가 들어온 내역을 불러옵니다.",
         "responses": {
@@ -7200,11 +7144,217 @@
         }
       }
     },
+    "/admin/docsviews": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "문서를 조회수 순으로 나열",
+        "description": "문서를 조회수가 높은 문서부터 나열",
+        "responses": {
+          "200": {
+            "description": "성공적으로 문서 조회수 순위를 가져왔습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "list",
+                      "example": [
+                        {
+                          "id": 1,
+                          "title": "복돌이",
+                          "text_pointer": "asfieojaosdjfs3alsefj.asiefjosjd",
+                          "latest_ver": 1,
+                          "type": "doc",
+                          "is_deleted": 0,
+                          "recent_filtered_content": "복돌이는 귀여워, 이건 문서본문 내용입니다!!",
+                          "created_at": "2023-08-03T13:16:16.000Z"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "성공적으로 문서목록을 불러왔습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인 되지 않은 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "로그인이 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "관리자가 아닌 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "관리자가 아닙니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "서버 에러"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bookmarkrank": {
+      "get": {
+        "tags": ["admin"],
+        "summary": "문서를 북마크 순으로 나열",
+        "description": "문서를 북마크수가 높은 문서부터 나열",
+        "responses": {
+          "200": {
+            "description": "성공적으로 문서 북마크 순위를 가져왔습니다.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "list",
+                      "example": [
+                        {
+                          "id": 1,
+                          "title": "복돌이",
+                          "text_pointer": "asfieojaosdjfs3alsefj.asiefjosjd",
+                          "latest_ver": 1,
+                          "type": "doc",
+                          "is_deleted": 0,
+                          "recent_filtered_content": "복돌이는 귀여워, 이건 문서본문 내용입니다!!",
+                          "created_at": "2023-08-03T13:16:16.000Z"
+                        }
+                      ]
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "북마크 랭킹을 가져왔습니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "로그인 되지 않은 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "로그인이 필요합니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "관리자가 아닌 유저가 해당 api호출",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "관리자가 아닙니다."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "서버 에러",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": false
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "서버 에러"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/newdoc": {
       "get": {
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "summary": "최근 생성된 문서 확인",
         "description": "최근에 생성된 문서부터 모든 문서를 나열",
         "responses": {
@@ -7307,9 +7457,7 @@
     },
     "/admin/wikiHistory": {
       "get": {
-        "tags": [
-          "admin"
-        ],
+        "tags": ["admin"],
         "summary": "모든 위키 히스토리 확인",
         "description": "최근에 생성된 위키 히스토리부터 모든 위키 히스토리를 나열",
         "responses": {
@@ -7423,9 +7571,7 @@
     },
     "/wiki/badhis/{hisid}": {
       "put": {
-        "tags": [
-          "wiki"
-        ],
+        "tags": ["wiki"],
         "summary": "특정 히스토리 bad로 변경",
         "description": "PUT 방식으로 특정 히스토리를 bad로 변경합니다.",
         "parameters": [
@@ -7504,9 +7650,7 @@
     },
     "/search/popular": {
       "get": {
-        "tags": [
-          "search"
-        ],
+        "tags": ["search"],
         "summary": "인기 검색어 조회 (최근 24시간 기준)",
         "description": "GET 방식으로 최근 24시간 기준 인기 검색어를 조회합니다.",
         "responses": {
