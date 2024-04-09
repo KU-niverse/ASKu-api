@@ -372,7 +372,7 @@ CREATE TABLE
         `id` int NOT NULL AUTO_INCREMENT,
         `doc_id` int NOT NULL,
         `user_id` int NOT NULL,
-        `subject` varchar(20) NOT NULL,
+        `subject` varchar(255) NOT NULL,
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `recent_edited_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         -- 가장 마지막으로 토론한 시각
