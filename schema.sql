@@ -288,6 +288,9 @@ CREATE TABLE
         PRIMARY KEY(`id`)
     );
 
+-- wiki_docs 테이블에 FULLTEXT 인덱스 생성
+ALTER TABLE wiki_docs ADD FULLTEXT wikidocs_title_content_fulltext (title, recent_filtered_content) WITH PARSER ngram;
+
 CREATE TABLE
     `wiki_docs_views` (
         `id` int NOT NULL AUTO_INCREMENT,
@@ -318,6 +321,9 @@ CREATE TABLE
         FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
+
+-- questions 테이블에 FULLTEXT 인덱스 생성
+ALTER TABLE questions ADD FULLTEXT question_content_fulltext (content) WITH PARSER ngram;
 
 CREATE TABLE
     `wiki_history` (
