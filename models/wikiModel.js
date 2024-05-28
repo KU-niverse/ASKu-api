@@ -91,16 +91,16 @@ class Wiki_docs {
     const [rows] = await pool.query(
       `
       SELECT wiki_docs.*, IF(wiki_favorites.user_id IS NOT NULL, 1, 0) AS is_favorite
-      FROM wiki_docs
-      LEFT JOIN (
-          SELECT user_id, doc_id
-          FROM wiki_favorites
-          WHERE user_id = ?  -- 여기에 현재 사용자의 ID를 삽입
-      ) AS wiki_favorites
-      ON wiki_docs.id = wiki_favorites.doc_id
-      WHERE wiki_docs.title LIKE ?;
+  FROM wiki_docs
+  LEFT JOIN (
+      SELECT user_id, doc_id
+      FROM wiki_favorites
+      WHERE user_id = ?  -- 여기에 현재 사용자의 ID를 삽입
+  ) AS wiki_favorites
+  ON wiki_docs.id = wiki_favorites.doc_id
+  WHERE MATCH(wiki_docs.title, wiki_docs.recent_filtered_content) AGAINST (? IN BOOLEAN MODE);
       `,
-      [user_id, `%${title}%`]
+      [user_id, title]
     );
 
     return rows;

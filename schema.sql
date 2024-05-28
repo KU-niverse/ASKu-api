@@ -288,6 +288,9 @@ CREATE TABLE
         PRIMARY KEY(`id`)
     );
 
+-- wiki_docs 테이블에 FULLTEXT 인덱스 생성
+ALTER TABLE wiki_docs ADD FULLTEXT wikidocs_title_content_fulltext (title, recent_filtered_content) WITH PARSER ngram;
+
 CREATE TABLE
     `wiki_docs_views` (
         `id` int NOT NULL AUTO_INCREMENT,
@@ -318,6 +321,9 @@ CREATE TABLE
         FOREIGN KEY (`doc_id`) REFERENCES `wiki_docs` (`id`),
         FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
     );
+
+-- questions 테이블에 FULLTEXT 인덱스 생성
+ALTER TABLE questions ADD FULLTEXT question_content_fulltext (content) WITH PARSER ngram;
 
 CREATE TABLE
     `wiki_history` (
@@ -372,7 +378,7 @@ CREATE TABLE
         `id` int NOT NULL AUTO_INCREMENT,
         `doc_id` int NOT NULL,
         `user_id` int NOT NULL,
-        `subject` varchar(20) NOT NULL,
+        `subject` varchar(255) NOT NULL,
         `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         `recent_edited_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
         -- 가장 마지막으로 토론한 시각
@@ -445,9 +451,13 @@ CREATE TABLE
         `is_deleted` bool NOT NULL DEFAULT 0,
         -- [히스토리 초기화 여부] 0: 존재 1: 삭제(초기화)된 히스토리
         `has_feedback` bool NOT NULL DEFAULT 0,
+        `requested_at` timestamp NULL,
+        `responsed_at` timestamp NULL,
+        `latency_time` int NULL,
         PRIMARY KEY (`id`),
         FOREIGN KEY (`session_id`) REFERENCES `ai_session` (`id`)
     );
+
 
 CREATE TABLE
     `report_type` (
