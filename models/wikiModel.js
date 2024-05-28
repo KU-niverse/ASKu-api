@@ -98,7 +98,7 @@ class Wiki_docs {
       WHERE user_id = ?  -- 여기에 현재 사용자의 ID를 삽입
   ) AS wiki_favorites
   ON wiki_docs.id = wiki_favorites.doc_id
-  WHERE MATCH(wiki_docs.title, wiki_docs.recent_filtered_content) AGAINST (? IN NATURAL LANGUAGE MODE);
+  WHERE MATCH(wiki_docs.title, wiki_docs.recent_filtered_content) AGAINST (? IN BOOLEAN MODE);
       `,
       [user_id, title]
     );
