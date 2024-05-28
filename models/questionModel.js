@@ -174,9 +174,9 @@ Question.getQuestionSearchByQuery = async (query) => {
         FROM answers 
         GROUP BY question_id
     ) a ON q.id = a.question_id
-    WHERE q.content LIKE ?
+    WHERE MATCH(q.content) AGAINST(? IN BOOLEAN MODE)
     ORDER BY q.created_at DESC`,
-    [`%${query}%`]
+    [query]
   );
   return result[0];
 };
