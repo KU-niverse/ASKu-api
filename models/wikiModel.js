@@ -380,22 +380,19 @@ class Wiki_point {
     SELECT
       wh.doc_id,
       wd.title AS doc_title,
-      SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) AS doc_point,
-      (SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) / 
-        (SELECT SUM(CASE WHEN diff > 0 THEN CASE WHEN is_q_based = 1 THEN diff * 5 ELSE diff * 4 END ELSE 0 END) 
-        FROM wiki_history 
-        WHERE is_bad = 0 AND is_rollback = 0)
-      ) * 100 AS percentage
+      SUM(CASE WHEN wh.diff > 0 THEN CASE WHEN wh.is_q_based = 1 THEN wh.diff * 5 ELSE wh.diff * 4 END ELSE 0 END) AS doc_point
     FROM wiki_history wh
     JOIN wiki_docs wd ON wd.id = wh.doc_id
     WHERE wh.user_id = ? AND wh.is_bad = 0 AND wh.is_rollback = 0
     GROUP BY wh.doc_id
-    ORDER BY percentage DESC`,
+    ORDER BY doc_point DESC`,
       [user_id]
     );
 
     return rows;
   }
+
+
 }
 
 // 위키 즐겨찾기

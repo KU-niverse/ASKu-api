@@ -916,6 +916,18 @@ exports.userContributionGetMid = async (req, res) => {
   try {
     const rows = await Wiki.Wiki_point.getRankingById(req.user[0].id);
     const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
+
+    // 모든 doc_point의 합을 계산
+    const totalDocPoints = rows2.reduce((acc, doc) => acc + parseFloat(doc.doc_point), 0);
+
+    // 각 문서에 대해 percentage 계산하여 추가
+    rows2.forEach(doc => {
+      doc.percentage = (parseFloat(doc.doc_point) / totalDocPoints).toFixed(4); // 소수점 두 자리로 제한
+    });
+
+    // console.log("getRankingById rows:", JSON.stringify(rows, null, 2));
+    // console.log("getDocsContributions rows2:", JSON.stringify(rows2, null, 2));
+
     rows.docs = rows2;
 
     res.status(200).send({ success: true, message: rows });
