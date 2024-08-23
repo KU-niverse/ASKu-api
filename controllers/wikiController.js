@@ -925,8 +925,8 @@ exports.userContributionGetMid = async (req, res) => {
       doc.percentage = (parseFloat(doc.doc_point) / totalDocPoints).toFixed(4); // 소수점 두 자리로 제한
     });
 
-    console.log("getRankingById rows:", JSON.stringify(rows, null, 2));
-    console.log("getDocsContributions rows2:", JSON.stringify(rows2, null, 2));
+    // console.log("getRankingById rows:", JSON.stringify(rows, null, 2));
+    // console.log("getDocsContributions rows2:", JSON.stringify(rows2, null, 2));
 
     rows.docs = rows2;
 
