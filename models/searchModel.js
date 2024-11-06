@@ -7,10 +7,10 @@ async function postSearch(user_id, keyword) {
     AND TIMESTAMPDIFF(MINUTE, search_time, NOW()) <= 10`,
     [user_id, keyword]
   );
-  
+
   if (isOften[0].length) {
     return;
-  } else{
+  } else {
     const result = await pool.query(
       `INSERT INTO search_history (user_id, keyword) VALUES (?, ?)`,
       [user_id, keyword]
@@ -26,9 +26,9 @@ async function getKeywordRank() {
      WHERE TIMESTAMPDIFF(DAY, search_time, NOW()) <= 30
      GROUP BY keyword 
      ORDER BY count DESC 
-     LIMIT 5`
+     LIMIT 12`
   );
   return rows;
 }
 
-module.exports = {postSearch, getKeywordRank};
+module.exports = { postSearch, getKeywordRank };
