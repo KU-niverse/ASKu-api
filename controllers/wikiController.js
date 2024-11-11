@@ -696,7 +696,7 @@ exports.comparisonGetMid = async (req, res) => {
       return;
     }
 
-    if (oldrev >= rev) {
+    if (parseInt(oldrev) >= parseInt(rev)) {
       res.status(432).send({
         success: false,
         message: "oldrev should be smaller than rev",
@@ -918,10 +918,13 @@ exports.userContributionGetMid = async (req, res) => {
     const rows2 = await Wiki.Wiki_point.getDocsContributions(req.user[0].id);
 
     // 모든 doc_point의 합을 계산
-    const totalDocPoints = rows2.reduce((acc, doc) => acc + parseFloat(doc.doc_point), 0);
+    const totalDocPoints = rows2.reduce(
+      (acc, doc) => acc + parseFloat(doc.doc_point),
+      0
+    );
 
     // 각 문서에 대해 percentage 계산하여 추가
-    rows2.forEach(doc => {
+    rows2.forEach((doc) => {
       doc.percentage = (parseFloat(doc.doc_point) / totalDocPoints).toFixed(4); // 소수점 두 자리로 제한
     });
 
